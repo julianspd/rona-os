@@ -1,0 +1,143 @@
+/* ============================================================
+   SECTIONS & CARDS
+   Sections separate by SPACE first, rule second.
+   Cards read as briefing notes, not tickets.
+   ============================================================ */
+
+/* ---- Section ----------------------------------------------- */
+.sec { margin-bottom: var(--gap-section); }
+
+.sec__head {
+  display: flex; align-items: baseline; gap: var(--s2);
+  padding-bottom: var(--s3);
+  margin-bottom: var(--s3);
+  border-bottom: var(--hairline);
+}
+
+/* Editorial and understated — sentence case, not shouting */
+.sec__title {
+  font-size: var(--fs-meta);
+  font-weight: var(--w-semi);
+  letter-spacing: 0.01em;
+  color: var(--ink);
+  display: flex; align-items: baseline; gap: var(--s2);
+}
+
+.sec__count {
+  font-size: var(--fs-micro);
+  font-weight: var(--w-regular);
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.sec__all {
+  margin-left: auto;
+  font-size: var(--fs-action);
+  color: var(--ink-3);
+  transition: color var(--t);
+}
+.sec__all:hover { color: var(--gold-deep); }
+
+.sec__list { display: flex; flex-direction: column; gap: var(--s2); }
+
+/* ---- Overdue — the one section that outranks everything ----
+   A narrow rule, not a filled alarm block. Restraint reads as
+   more serious than saturation.                                */
+.sec--overdue .sec__head { border-bottom-color: var(--u-overdue-line); }
+.sec--overdue .sec__title { color: var(--u-overdue-fg); }
+.sec--overdue .card {
+  border-color: var(--u-overdue-line);
+  background: var(--u-overdue-bg);
+}
+.sec--overdue .card::before { background: var(--u-overdue-fg); }
+.sec--overdue .act { background: var(--surface); }
+
+/* ============================================================
+   CARD — the base every variant extends
+   ============================================================ */
+.card {
+  position: relative;
+  display: flex; align-items: flex-start; gap: var(--s3);
+  width: 100%;
+  padding: var(--s3) var(--s4);
+  background: var(--surface);
+  border: var(--hairline);
+  border-radius: var(--r);
+  box-shadow: var(--shadow-rest);
+  text-align: left;
+  transition: border-color var(--t), box-shadow var(--t), background var(--t);
+}
+
+/* A narrow accent edge, only when the item genuinely earns it.
+   Set by .card--marked (gold, curated) or .sec--overdue (urgency). */
+.card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 10px; bottom: 10px;
+  width: 2px;
+  border-radius: 0 2px 2px 0;
+  background: transparent;
+  transition: background var(--t);
+}
+
+.card:hover {
+  border-color: var(--border-2);
+  box-shadow: var(--shadow-hover);
+}
+
+/* Gold marks curation and ownership — the Top 3, never urgency */
+.card--marked::before { background: var(--gold); }
+
+.card--done { opacity: 0.55; }
+.card--done .card__title { text-decoration: line-through; text-decoration-thickness: 1px; }
+
+.card__lead { display: flex; align-items: center; padding-top: 5px; flex: none; }
+
+.card__body { flex: 1; min-width: 0; }
+
+/* Level 1 of 3 — the title */
+.card__title {
+  font-size: var(--fs-body);
+  font-weight: var(--w-regular);
+  line-height: var(--lh-tight);
+  color: var(--ink);
+  letter-spacing: var(--ls-tight);
+  /* two lines, never mid-word */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  hyphens: none;
+}
+
+/* Level 2 of 3 — context */
+.card__meta {
+  display: flex; align-items: center; gap: var(--s2);
+  flex-wrap: wrap;
+  margin-top: 7px;
+  font-size: var(--fs-meta);
+  color: var(--ink-2);
+}
+
+/* Level 3 of 3 — actions */
+.card__right {
+  display: flex; align-items: center; gap: var(--s2);
+  flex: none;
+  align-self: center;
+}
+
+/* Actions stay quiet until the row is engaged, on pointer devices */
+@media (hover: hover) {
+  .card .acts { opacity: 0.5; transition: opacity var(--t); }
+  .card:hover .acts,
+  .card:focus-within .acts { opacity: 1; }
+}
+
+/* ---- Density ------------------------------------------------
+   Home is for scanning. Working views are for working.          */
+.home .sec__list { gap: var(--s2); }
+.home .card { padding: var(--s4); }
+
+.list-dense .card { padding: var(--s3) var(--s4); border-radius: var(--r-sm); }
+.list-dense .card__meta { margin-top: 5px; }

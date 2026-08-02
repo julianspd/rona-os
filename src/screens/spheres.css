@@ -1,0 +1,180 @@
+/* ============================================================
+   SPHERES, ENTITY DETAIL, PIPELINE
+   ============================================================ */
+
+/* ---- Spheres grid ------------------------------------------
+   Index cards in a directory, not a wall of coloured tiles.    */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(216px, 1fr));
+  gap: 0;
+  border-top: var(--hairline);
+  border-left: var(--hairline);
+}
+
+.tile {
+  position: relative;
+  display: flex; flex-direction: column; gap: 4px;
+  text-align: left;
+  padding: var(--s5) var(--s4);
+  background: var(--surface);
+  border-right: var(--hairline);
+  border-bottom: var(--hairline);
+  transition: background var(--t);
+}
+.tile::after {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: transparent;
+  transition: background var(--t);
+}
+.tile:hover { background: var(--bg); }
+.tile:hover::after { background: var(--gold); }
+
+.tile__label {
+  font-size: var(--fs-body);
+  color: var(--ink);
+  letter-spacing: var(--ls-tight);
+}
+.tile__blurb {
+  font-size: var(--fs-meta);
+  color: var(--ink-3);
+  line-height: var(--lh-tight);
+}
+.tile__n {
+  position: absolute;
+  top: var(--s5); right: var(--s4);
+  font-size: var(--fs-micro);
+  color: var(--ink-4);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Entity detail ----------------------------------------- */
+.crumb {
+  font-size: var(--fs-meta);
+  color: var(--ink-3);
+  margin-bottom: var(--s3);
+  display: inline-block;
+  transition: color var(--t);
+}
+.crumb:hover { color: var(--gold-deep); }
+
+.page__meta {
+  display: flex; align-items: center; gap: var(--s2);
+  flex-wrap: wrap;
+  margin-top: var(--s3);
+  font-size: var(--fs-meta);
+  color: var(--ink-2);
+}
+
+/* "Why does this matter?" — the field that separates meaningful
+   from merely busy. Given the weight of a pull quote.           */
+.why {
+  margin: 0 0 var(--s7);
+  padding: 0 0 0 var(--s5);
+  border-left: 2px solid var(--gold);
+  font-family: var(--font-serif);
+  font-size: var(--fs-serif-sm);
+  line-height: var(--lh-read);
+  letter-spacing: var(--ls-serif);
+  color: var(--ink);
+  max-width: 58ch;
+}
+.why__label {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-eyebrow);
+  font-weight: var(--w-semi);
+  color: var(--gold-deep);
+  margin-bottom: var(--s3);
+}
+
+.chips { display: flex; gap: var(--s2); flex-wrap: wrap; }
+
+.docrow {
+  display: flex; align-items: center; gap: var(--s3);
+  padding: var(--s3) var(--s4);
+  background: var(--surface);
+  border: var(--hairline);
+  border-radius: var(--r-sm);
+  font-size: var(--fs-meta);
+}
+.docrow .date { margin-left: auto; }
+
+/* ---- Pipeline stage separators ------------------------------ */
+.stage {
+  display: flex; align-items: center; gap: var(--s3);
+  margin: var(--s6) 0 var(--s3);
+}
+.stage__name {
+  font-size: var(--fs-micro);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-eyebrow);
+  font-weight: var(--w-semi);
+  color: var(--ink-3);
+}
+.stage__n { font-size: var(--fs-micro); color: var(--ink-4); font-variant-numeric: tabular-nums; }
+.stage__line { flex: 1; height: 1px; background: var(--border); }
+
+/* ---- Shared row annotations -------------------------------- */
+.outcome {
+  font-size: var(--fs-meta);
+  color: var(--ink-2);
+  line-height: var(--lh-read);
+  padding: var(--s2) var(--s4) var(--s3) calc(var(--s4) + 19px);
+  max-width: 74ch;
+}
+
+/* A statement, not an alarm block */
+.warnbox {
+  padding: var(--s4) var(--s5);
+  background: transparent;
+  border-left: 2px solid var(--u-overdue-fg);
+  font-size: var(--fs-meta);
+  color: var(--ink-2);
+  margin-bottom: var(--s5);
+  line-height: var(--lh-read);
+}
+.warnbox strong { color: var(--u-overdue-fg); font-weight: var(--w-semi); }
+
+/* ---- Decision log — reads as a record, not a ticket -------- */
+.dec {
+  padding: var(--s5);
+  background: var(--surface);
+  border: var(--hairline);
+  border-radius: var(--r);
+}
+.dec__head {
+  display: flex; align-items: center; gap: var(--s2);
+  flex-wrap: wrap;
+  margin-bottom: var(--s4);
+}
+.dec__title {
+  font-family: var(--font-serif);
+  font-size: var(--fs-serif-sm);
+  letter-spacing: var(--ls-serif);
+  margin-right: auto;
+}
+.dec__row {
+  font-size: var(--fs-meta);
+  color: var(--ink-2);
+  line-height: var(--lh-read);
+  margin-bottom: var(--s2);
+  max-width: 74ch;
+}
+.dec__row em {
+  color: var(--ink-3);
+  font-style: normal;
+  font-weight: var(--w-medium);
+  margin-right: 4px;
+}
+.dec .act { margin-top: var(--s3); }
+
+@media (max-width: 760px) {
+  .grid { grid-template-columns: 1fr 1fr; }
+  .why { font-size: var(--fs-body); padding-left: var(--s4); }
+}

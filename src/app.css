@@ -1,0 +1,357 @@
+/* ============================================================
+   APP SHELL
+   Desktop: slim editorial rail + disciplined centre column.
+   Mobile:  five-item bottom bar with a distinct central Capture.
+   ============================================================ */
+
+.shell { min-height: 100%; display: flex; flex-direction: column; }
+
+/* ---- Prototype banner --------------------------------------
+   Present, honest, and visually subordinate to everything else. */
+.banner {
+  display: flex; align-items: center; gap: var(--s3);
+  padding: var(--s2) var(--s5);
+  background: var(--surface-2);
+  border-bottom: var(--hairline);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.01em;
+  color: var(--ink-3);
+  flex-wrap: wrap;
+}
+.banner strong { color: var(--ink-2); font-weight: var(--w-semi); }
+.banner__toggle {
+  margin-left: auto;
+  font-size: var(--fs-micro);
+  font-weight: var(--w-medium);
+  color: var(--gold-deep);
+  white-space: nowrap;
+  border-bottom: 1px solid var(--gold-line);
+  padding-bottom: 1px;
+  transition: border-color var(--t);
+}
+.banner__toggle:hover { border-color: var(--gold); }
+.banner__x {
+  color: var(--ink-4); font-size: 15px; line-height: 1;
+  padding: 2px 4px; transition: color var(--t);
+}
+.banner__x:hover { color: var(--ink-2); }
+
+.shell__body { display: flex; flex: 1; align-items: flex-start; }
+
+/* ============================================================
+   Left rail — slim, quiet, editorial
+   ============================================================ */
+.rail {
+  width: var(--rail-w);
+  flex: none;
+  padding: var(--s6) var(--s4) var(--s5);
+  position: sticky;
+  top: 0;
+  align-self: stretch;
+  border-right: var(--hairline);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Monogram-inspired mark — a gold hairline and the name, nothing more */
+.rail__brand {
+  display: flex; align-items: baseline; gap: var(--s2);
+  padding: 0 var(--s2) var(--s6);
+}
+.rail__mono {
+  font-family: var(--font-serif);
+  font-size: var(--fs-serif-sm);
+  line-height: 1;
+  color: var(--ink);
+  letter-spacing: var(--ls-serif);
+}
+.rail__mono::after {
+  content: '';
+  display: block;
+  width: 22px; height: 1px;
+  background: var(--gold);
+  margin-top: 7px;
+}
+.rail__brandname {
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.rail__list { display: flex; flex-direction: column; gap: 1px; }
+
+.rail__item {
+  position: relative;
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 8px var(--s3);
+  border-radius: var(--r-sm);
+  font-size: var(--fs-meta);
+  color: var(--ink-2);
+  transition: background var(--t), color var(--t);
+}
+.rail__item:hover { background: var(--surface-2); color: var(--ink); }
+
+/* Selected — gold marker, the system's ownership signal */
+.rail__item--on { color: var(--ink); font-weight: var(--w-medium); background: var(--surface-2); }
+.rail__item--on::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 50%;
+  transform: translateY(-50%);
+  width: 2px; height: 15px;
+  border-radius: 0 2px 2px 0;
+  background: var(--gold);
+}
+
+.rail__div {
+  height: 1px;
+  background: var(--border);
+  margin: var(--s3) var(--s3);
+}
+
+/* Capture — prominent but tasteful. Charcoal, gold hairline. */
+.rail__capture {
+  margin-top: var(--s5);
+  width: 100%;
+  padding: 10px;
+  border-radius: var(--r-sm);
+  background: var(--ink);
+  color: #fff;
+  font-size: var(--fs-meta);
+  font-weight: var(--w-medium);
+  letter-spacing: 0.01em;
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  transition: background var(--t);
+}
+.rail__capture:hover { background: #35332F; }
+.rail__kbd {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.04em;
+}
+
+/* ---- Main column -------------------------------------------- */
+.main {
+  flex: 1;
+  padding: var(--s7) var(--s7) var(--s9);
+  min-width: 0;
+  display: flex;
+  justify-content: flex-start;
+}
+.main > * { width: 100%; }
+
+/* ============================================================
+   Quick Capture — a signature moment
+   ============================================================ */
+.sheet {
+  position: fixed; inset: 0;
+  background: rgba(34, 33, 31, 0.22);
+  backdrop-filter: blur(1.5px);
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 14vh var(--s4) var(--s4);
+  z-index: 50;
+  animation: fade var(--t) both;
+}
+@keyframes fade { from { opacity: 0 } to { opacity: 1 } }
+
+.sheet__box {
+  width: 100%; max-width: 580px;
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-float);
+  overflow: hidden;
+  animation: rise var(--t) both;
+}
+@keyframes rise { from { transform: translateY(6px) } to { transform: none } }
+
+/* The gold hairline that opens the sheet */
+.sheet__rule { height: 2px; background: var(--gold); }
+
+.sheet__main { padding: var(--s5) var(--s5) var(--s4); }
+
+.sheet__eyebrow {
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: var(--s3);
+}
+
+.sheet__input {
+  width: 100%;
+  font-family: var(--font-serif);
+  font-size: var(--fs-serif-md);
+  line-height: 1.35;
+  letter-spacing: var(--ls-serif);
+  border: none;
+  padding: 0;
+  background: none;
+  color: var(--ink);
+}
+.sheet__input:focus { outline: none; }
+.sheet__input::placeholder { color: var(--ink-4); }
+
+.sheet__hints { display: flex; gap: var(--s1); flex-wrap: wrap; margin-top: var(--s5); }
+
+.hint {
+  font-size: var(--fs-action);
+  padding: 5px 11px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--border);
+  color: var(--ink-2);
+  min-height: 28px;
+  transition: background var(--t), border-color var(--t), color var(--t);
+}
+.hint:hover { border-color: var(--border-2); background: var(--surface-2); }
+.hint--on {
+  background: var(--gold-surface);
+  color: var(--gold-deep);
+  border-color: var(--gold-line);
+  font-weight: var(--w-medium);
+}
+
+.sheet__foot {
+  display: flex; align-items: center; gap: var(--s3);
+  padding: var(--s3) var(--s5);
+  background: var(--surface-2);
+  border-top: var(--hairline);
+}
+.sheet__note { font-size: var(--fs-micro); color: var(--ink-3); }
+.sheet__foot .act { margin-left: auto; }
+
+/* ---- Toast -------------------------------------------------- */
+.toast {
+  position: fixed;
+  left: 50%; bottom: var(--s6);
+  transform: translateX(-50%);
+  display: flex; align-items: center; gap: var(--s5);
+  background: var(--ink);
+  color: #fff;
+  padding: 11px var(--s5);
+  border-radius: var(--r-pill);
+  font-size: var(--fs-meta);
+  box-shadow: var(--shadow-float);
+  z-index: 60;
+  animation: rise var(--t) both;
+}
+.toast button {
+  color: var(--gold-bright);
+  font-weight: var(--w-medium);
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--t);
+}
+.toast button:hover { border-color: var(--gold-bright); }
+
+/* ============================================================
+   MOBILE — an executive companion, not a shrunken dashboard
+   ============================================================ */
+.rail__more { display: none; }
+
+@media (max-width: 760px) {
+  .shell__body { flex-direction: column; }
+
+  .rail {
+    order: 2;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    width: auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    gap: 0;
+    padding: var(--s2) var(--s2) max(var(--s2), env(safe-area-inset-bottom));
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(12px);
+    border-right: none;
+    border-top: var(--hairline);
+    z-index: 40;
+  }
+
+  .rail__brand { display: none; }
+  .rail__div { display: none; }
+
+  .rail__list {
+    flex-direction: row;
+    justify-content: space-around;
+    flex: 1;
+    gap: 0;
+  }
+
+  .rail__list li { flex: 1; }
+
+  .rail__item {
+    padding: 8px 4px;
+    text-align: center;
+    font-size: var(--fs-micro);
+    min-height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: var(--r-sm);
+  }
+  .rail__item--on::before {
+    left: 50%; top: auto; bottom: 2px;
+    transform: translateX(-50%);
+    width: 14px; height: 2px;
+    border-radius: 2px;
+  }
+
+  .rail__more { display: flex; flex: 1; }
+
+  /* Central capture — visually distinct, thumb-reachable */
+  .rail__capture {
+    order: 0;
+    margin: 0 var(--s2);
+    width: 46px; height: 46px;
+    min-width: 46px;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 19px;
+    line-height: 1;
+    box-shadow: 0 2px 10px rgba(34, 33, 31, 0.18);
+  }
+  .rail__capture::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    border: 1px solid var(--gold);
+    pointer-events: none;
+  }
+  .rail__capture { position: relative; }
+  .rail__kbd { display: none; }
+
+  .main { padding: var(--s5) var(--s4) 104px; }
+
+  .toast { bottom: 92px; left: var(--s4); right: var(--s4); transform: none; }
+
+  .sheet { padding: 0; align-items: flex-end; }
+  .sheet__box { max-width: none; border-radius: var(--r-lg) var(--r-lg) 0 0; }
+  .sheet__input { font-size: var(--fs-serif-sm); }
+}
+
+/* ---- Mobile "More" sheet ------------------------------------ */
+.more {
+  position: fixed; inset: 0;
+  background: rgba(34, 33, 31, 0.22);
+  z-index: 45;
+  display: flex; align-items: flex-end;
+}
+.more__box {
+  width: 100%;
+  background: var(--surface);
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  padding: var(--s5) var(--s4) calc(var(--s5) + env(safe-area-inset-bottom));
+  box-shadow: var(--shadow-float);
+}
+.more__list { display: flex; flex-direction: column; gap: 2px; }
+.more__item {
+  display: block; width: 100%; text-align: left;
+  padding: 13px var(--s3);
+  border-radius: var(--r-sm);
+  font-size: var(--fs-body);
+  color: var(--ink);
+  min-height: 44px;
+}
+.more__item:hover { background: var(--surface-2); }

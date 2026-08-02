@@ -1,0 +1,220 @@
+/* ============================================================
+   RONA OS — DESIGN TOKENS
+   Editorial executive system. Warm, quiet, precise.
+
+   Two rules govern colour in this system:
+     1. GOLD means selection, ownership, importance, signature.
+        It never means urgency and it is never decoration.
+     2. URGENCY is a separate, accessible semantic ramp that
+        deliberately avoids yellow-gold hues entirely.
+
+   No webfonts — NFR-7 forbids runtime network requests. The serif
+   is the system editorial stack (New York / Iowan Old Style /
+   Palatino / Georgia), which is genuinely refined and costs nothing.
+   ============================================================ */
+
+:root {
+  /* ---------------------------------------------------------
+     1 · SURFACE — warm, never blue-white
+     --------------------------------------------------------- */
+  --bg:            #FAF8F3;   /* soft ivory — the page          */
+  --surface:       #FFFFFF;   /* elevated — cards, sheets       */
+  --surface-2:     #F4F1E8;   /* warm stone — sunk, secondary   */
+  --surface-3:     #EDE9DE;   /* pressed / hover on stone       */
+
+  --border:        #E9E4D8;   /* hairline, low visual weight    */
+  --border-2:      #D9D3C4;   /* emphasis, hover                */
+
+  /* ---------------------------------------------------------
+     2 · INK — warm neutrals, all AA on white or ivory
+     --------------------------------------------------------- */
+  --ink:           #22211F;   /* charcoal — primary       15.9:1 */
+  --ink-2:         #6B675F;   /* warm slate — secondary    5.9:1 */
+  --ink-3:         #857F74;   /* taupe — metadata          4.6:1 */
+  --ink-4:         #B4AEA1;   /* hairline / decorative only      */
+
+  /* ---------------------------------------------------------
+     3 · GOLD — the signature. Selection, ownership, importance.
+         NEVER urgency. NEVER decoration.
+     --------------------------------------------------------- */
+  --gold:          #C99A2E;   /* the mark — rules, dots, edges   */
+  --gold-bright:   #F2C94C;   /* highlight, sparingly            */
+  --gold-deep:     #8A6418;   /* text on light            5.4:1  */
+  --gold-surface:  #FFF7DC;   /* pale wash                       */
+  --gold-line:     #E7CE86;   /* border on gold surfaces         */
+
+  /* ---------------------------------------------------------
+     4 · URGENCY — five steps, separate from gold.
+         Colour carries only the top two. The rest step down in
+         WEIGHT and TONE, so a realistic day stays quiet and the
+         two coloured steps keep their meaning.
+         Never colour alone — each pairs with dot shape + label.
+     --------------------------------------------------------- */
+  --u-overdue-fg:  #9E2B20;   /* deep oxblood            7.6:1  */
+  --u-overdue-bg:  #FBEEEB;
+  --u-overdue-line:#E9CBC4;
+
+  --u-today-fg:    #A9521C;   /* rust — clearly not gold  5.1:1 */
+  --u-today-bg:    #FDF3EB;
+  --u-today-line:  #EFD9C4;
+
+  --u-soon-fg:     var(--ink);    /* full weight, no colour     */
+  --u-soon-bg:     transparent;
+  --u-soon-line:   var(--border-2);
+
+  --u-upcoming-fg: var(--ink-2);
+  --u-upcoming-bg: transparent;
+  --u-upcoming-line: var(--border);
+
+  --u-later-fg:    var(--ink-3);
+  --u-later-bg:    transparent;
+  --u-later-line:  var(--border);
+
+  /* ---------------------------------------------------------
+     5 · TYPE — two families, strict roles
+         Sans  : all interface content, navigation, metadata
+         Serif : greetings, dates, section moments, reflection
+     --------------------------------------------------------- */
+  --font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI",
+               Inter, "Helvetica Neue", Arial, sans-serif;
+  --font-serif: ui-serif, "New York", "Iowan Old Style", "Palatino Linotype",
+                Palatino, "Book Antiqua", Georgia, serif;
+
+  /* Interface scale — three levels inside a card, no more */
+  --fs-micro:   0.6875rem;   /* 11 — eyebrow labels, counts     */
+  --fs-action:  0.75rem;     /* 12 — actions, badges            */
+  --fs-meta:    0.8125rem;   /* 13 — context line               */
+  --fs-body:    0.9375rem;   /* 15 — card title, body           */
+  --fs-lead:    1.0625rem;   /* 17 — page title, inputs         */
+
+  /* Editorial scale — used sparingly */
+  --fs-serif-sm: 1.125rem;   /* 18 — section moments            */
+  --fs-serif-md: 1.5rem;     /* 24 — page-level editorial       */
+  --fs-serif-lg: 2.125rem;   /* 34 — the morning greeting       */
+
+  --lh-tight: 1.28;
+  --lh-body:  1.55;
+  --lh-read:  1.65;
+
+  --ls-eyebrow:  0.11em;    /* wide, for small caps labels      */
+  --ls-tight:   -0.011em;   /* headline optical correction      */
+  --ls-serif:   -0.006em;
+
+  --w-regular: 400;
+  --w-medium:  500;
+  --w-semi:    600;
+
+  /* ---------------------------------------------------------
+     6 · SPACE — vertical rhythm on a 4px base
+     --------------------------------------------------------- */
+  --s1:  4px;   --s2:  8px;   --s3: 12px;  --s4: 16px;
+  --s5: 24px;   --s6: 32px;   --s7: 48px;  --s8: 64px;  --s9: 88px;
+
+  /* Section separation is SPACE first, rule second */
+  --gap-section: var(--s8);
+  --gap-block:   var(--s5);
+
+  /* ---------------------------------------------------------
+     7 · FORM — restrained radii, almost no shadow at rest
+     --------------------------------------------------------- */
+  --r-xs: 3px;
+  --r-sm: 5px;
+  --r:    7px;
+  --r-lg: 12px;
+  --r-pill: 999px;
+
+  --shadow-rest:  none;
+  --shadow-hover: 0 1px 2px rgba(34, 33, 31, 0.05);
+  --shadow-float: 0 18px 52px -14px rgba(34, 33, 31, 0.24),
+                  0 2px 6px rgba(34, 33, 31, 0.06);
+
+  --hairline: 1px solid var(--border);
+
+  /* ---------------------------------------------------------
+     8 · MOTION — 150ms ceiling, always
+     --------------------------------------------------------- */
+  --t-fast: 90ms cubic-bezier(0.2, 0, 0.2, 1);
+  --t:     140ms cubic-bezier(0.2, 0, 0.2, 1);
+
+  /* Layout */
+  --rail-w:    216px;
+  --col-home:  680px;   /* low density — Home is for scanning  */
+  --col-work:  900px;   /* denser — Tasks, People, Pipeline    */
+}
+
+/* ============================================================
+   Urgency helper classes — one place, applied by UrgencyDot
+   and any card that needs the ramp.
+   ============================================================ */
+.u-overdue  { --u-fg: var(--u-overdue-fg);  --u-bg: var(--u-overdue-bg);  --u-line: var(--u-overdue-line); }
+.u-today    { --u-fg: var(--u-today-fg);    --u-bg: var(--u-today-bg);    --u-line: var(--u-today-line); }
+.u-soon     { --u-fg: var(--u-soon-fg);     --u-bg: var(--u-soon-bg);     --u-line: var(--u-soon-line); }
+.u-upcoming { --u-fg: var(--u-upcoming-fg); --u-bg: var(--u-upcoming-bg); --u-line: var(--u-upcoming-line); }
+.u-later    { --u-fg: var(--u-later-fg);    --u-bg: var(--u-later-bg);    --u-line: var(--u-later-line); }
+
+/* ============================================================
+   Base
+   ============================================================ */
+* { box-sizing: border-box; }
+
+html, body, #root { height: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  font-feature-settings: "kern" 1, "liga" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, p, ul, ol, dl, dd, figure, blockquote { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+a { color: inherit; }
+
+input, textarea { font: inherit; color: inherit; }
+
+/* Numerals align in columns wherever they carry meaning */
+.tnum { font-variant-numeric: tabular-nums; }
+
+/* ---- Focus — visible, warm, never removed (WCAG 2.4.7) ---- */
+:focus { outline: none; }
+:focus-visible {
+  outline: 2px solid var(--gold-deep);
+  outline-offset: 2px;
+  border-radius: var(--r-xs);
+}
+
+/* ---- The signature gold rule ------------------------------- */
+.rule-gold {
+  height: 1px;
+  border: 0;
+  background: linear-gradient(to right, var(--gold) 0, var(--gold) 34px, var(--border) 34px);
+}
+
+/* ---- Editorial eyebrow — replaces shouty all-caps headers --- */
+.eyebrow {
+  font-size: var(--fs-micro);
+  font-weight: var(--w-semi);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}

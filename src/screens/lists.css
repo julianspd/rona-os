@@ -1,0 +1,152 @@
+/* ============================================================
+   WORKING VIEWS
+   Denser than Home. Editorial headers, quiet filters.
+   ============================================================ */
+
+.page { max-width: var(--col-work); }
+
+.page__head { margin-bottom: var(--s6); }
+
+.page__title {
+  font-family: var(--font-serif);
+  font-size: var(--fs-serif-md);
+  font-weight: var(--w-regular);
+  letter-spacing: var(--ls-serif);
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+.page__sub {
+  font-size: var(--fs-meta);
+  color: var(--ink-3);
+  margin-top: var(--s2);
+  max-width: 62ch;
+  line-height: var(--lh-read);
+}
+
+.list { display: flex; flex-direction: column; gap: var(--s2); }
+
+/* Thoughtful empty space, not an illustration */
+.empty {
+  font-family: var(--font-serif);
+  font-size: var(--fs-serif-sm);
+  color: var(--ink-4);
+  padding: var(--s8) 0;
+  text-align: center;
+  letter-spacing: var(--ls-serif);
+}
+
+/* ---- Tabs — the saved views, as a quiet filter row ---------- */
+.tabs {
+  display: flex; gap: var(--s1);
+  flex-wrap: wrap;
+  margin-bottom: var(--s5);
+  padding-bottom: var(--s4);
+  border-bottom: var(--hairline);
+}
+
+.tab {
+  font-size: var(--fs-meta);
+  color: var(--ink-2);
+  padding: 6px 12px;
+  border-radius: var(--r-pill);
+  border: 1px solid transparent;
+  min-height: 32px;
+  display: inline-flex; align-items: center; gap: 7px;
+  transition: background var(--t), color var(--t), border-color var(--t);
+}
+.tab:hover { background: var(--surface-2); color: var(--ink); }
+
+/* Selected — gold, the ownership signal */
+.tab--on {
+  background: var(--gold-surface);
+  border-color: var(--gold-line);
+  color: var(--gold-deep);
+  font-weight: var(--w-medium);
+}
+
+.tab__n {
+  font-size: var(--fs-micro);
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.tab--on .tab__n { color: var(--gold-deep); opacity: 0.7; }
+
+/* ---- Search ------------------------------------------------ */
+.search {
+  width: 100%;
+  font-family: var(--font-serif);
+  font-size: var(--fs-serif-md);
+  letter-spacing: var(--ls-serif);
+  padding: var(--s4) 0;
+  border: none;
+  border-bottom: 1px solid var(--border-2);
+  border-radius: 0;
+  background: none;
+  color: var(--ink);
+  margin-bottom: var(--s4);
+  transition: border-color var(--t);
+}
+.search::placeholder { color: var(--ink-4); }
+.search:focus { outline: none; border-bottom-color: var(--gold); }
+
+.res {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: var(--s3) var(--s4);
+  border: var(--hairline);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  transition: border-color var(--t), box-shadow var(--t);
+}
+.res:hover { border-color: var(--border-2); box-shadow: var(--shadow-hover); }
+
+.res__kind {
+  display: inline-block;
+  font-size: var(--fs-micro);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-eyebrow);
+  color: var(--ink-3);
+  margin-bottom: 4px;
+}
+
+.res__title {
+  display: block;
+  font-size: var(--fs-body);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tight);
+}
+.res__ctx { display: block; font-size: var(--fs-meta); color: var(--ink-2); margin-top: 4px; }
+
+/* ---- Detail — a briefing sheet ----------------------------- */
+.detail { display: flex; flex-direction: column; gap: var(--s7); }
+
+.fields {
+  display: grid;
+  grid-template-columns: 168px 1fr;
+  gap: 0;
+  background: var(--surface);
+  border: var(--hairline);
+  border-radius: var(--r);
+  padding: var(--s2) var(--s5);
+}
+.field { display: contents; }
+
+.fields dt,
+.fields dd {
+  padding: var(--s3) 0;
+  border-bottom: 1px solid var(--border);
+  font-size: var(--fs-meta);
+  line-height: var(--lh-read);
+}
+.fields dt { color: var(--ink-3); }
+.fields dd { color: var(--ink); margin: 0; }
+.field:last-child dt, .field:last-child dd { border-bottom: none; }
+
+@media (max-width: 640px) {
+  .fields { grid-template-columns: 1fr; padding: var(--s3) var(--s4); }
+  .fields dt { border-bottom: none; padding-bottom: 0; }
+  .fields dd { padding-top: 2px; }
+  .page__title { font-size: var(--fs-serif-sm); }
+}

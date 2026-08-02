@@ -1,0 +1,104 @@
+/* ============================================================
+   HOME
+   Low density by design. Home is for scanning; the working
+   views are for working.
+   ============================================================ */
+
+.home { max-width: var(--col-home); }
+
+/* ---- The morning greeting ----------------------------------
+   The single editorial moment on the screen. Serif, assured
+   rather than oversized, with a gold rule closing it.          */
+.greet { margin-bottom: var(--s8); }
+
+.greet__date {
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: var(--s3);
+}
+
+.greet__line {
+  font-family: var(--font-serif);
+  font-size: var(--fs-serif-lg);
+  font-weight: var(--w-regular);
+  line-height: 1.15;
+  letter-spacing: var(--ls-serif);
+  color: var(--ink);
+}
+
+.greet__brief {
+  margin-top: var(--s3);
+  font-size: var(--fs-body);
+  line-height: var(--lh-read);
+  color: var(--ink-2);
+  max-width: 46ch;
+}
+
+.greet__rule { margin-top: var(--s5); }
+
+/* ---- Requires you — Decide / Review / Connect / Do ----------
+   Columns of plain sentences. No tiles, no counts, no colour.  */
+.attn {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+  gap: var(--s5) var(--s5);
+}
+
+.attn__col { min-width: 0; }
+
+.attn__label {
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  font-weight: var(--w-semi);
+  color: var(--ink-3);
+  padding-bottom: var(--s2);
+  margin-bottom: var(--s3);
+  border-bottom: 1px solid var(--border);
+}
+
+.attn__list { display: flex; flex-direction: column; gap: var(--s3); }
+
+.attn__item {
+  font-size: var(--fs-meta);
+  line-height: var(--lh-tight);
+  color: var(--ink);
+  text-align: left;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color var(--t);
+  position: relative;
+  padding-left: var(--s3);
+}
+.attn__item::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 7px;
+  width: 4px; height: 1px;
+  background: var(--ink-4);
+  transition: background var(--t), width var(--t);
+}
+.attn__item:hover { color: var(--gold-deep); }
+.attn__item:hover::before { background: var(--gold); width: 7px; }
+
+/* ---- Inbox footer — quiet, and last -------------------------- */
+.home__inbox {
+  display: flex; align-items: center; gap: var(--s2);
+  padding-top: var(--s5);
+  border-top: var(--hairline);
+  font-size: var(--fs-meta);
+  color: var(--ink-3);
+}
+.home__inbox .tnum { color: var(--ink); font-weight: var(--w-medium); }
+.home__inbox .act { margin-left: auto; }
+
+@media (max-width: 760px) {
+  .greet__line { font-size: var(--fs-serif-md); }
+  .greet { margin-bottom: var(--s6); }
+  .sec { margin-bottom: var(--s7); }
+  .attn { grid-template-columns: 1fr; gap: var(--s5); }
+}

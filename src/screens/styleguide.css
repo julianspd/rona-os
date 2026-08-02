@@ -1,0 +1,82 @@
+/* Design system page */
+
+.sg { max-width: var(--col-work); }
+
+.sg__block { margin-bottom: var(--s8); }
+
+.sg__h {
+  font-size: var(--fs-meta);
+  font-weight: var(--w-semi);
+  color: var(--ink);
+  padding-bottom: var(--s3);
+  margin-bottom: var(--s3);
+  border-bottom: var(--hairline);
+}
+
+.sg__note {
+  font-size: var(--fs-meta);
+  color: var(--ink-3);
+  line-height: var(--lh-read);
+  max-width: 68ch;
+  margin-bottom: var(--s4);
+}
+
+.sg__row { display: flex; align-items: center; gap: var(--s3); flex-wrap: wrap; }
+
+.sg__spec {
+  font-size: var(--fs-micro);
+  color: var(--ink-3);
+  letter-spacing: 0.01em;
+}
+
+/* ---- Swatches ---------------------------------------------- */
+.sw-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+  gap: var(--s4);
+}
+
+.sw__chip {
+  height: 56px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border-2);
+  display: grid; place-items: center;
+  font-size: var(--fs-meta);
+  margin-bottom: var(--s2);
+}
+
+.sw__meta { display: flex; flex-direction: column; gap: 1px; }
+.sw__name { font-size: var(--fs-meta); color: var(--ink); }
+.sw__token, .sw__hex {
+  font-size: var(--fs-micro);
+  color: var(--ink-3);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+/* ---- Urgency ramp ------------------------------------------ */
+.sg__urg { display: flex; flex-direction: column; }
+.sg__urgrow {
+  display: flex; align-items: center; gap: var(--s3);
+  padding: var(--s3) 0;
+  border-bottom: 1px solid var(--border);
+}
+.sg__urglabel {
+  font-size: var(--fs-meta);
+  color: var(--u-fg);
+  font-weight: var(--w-medium);
+  min-width: 180px;
+}
+.sg__urgdesc { font-size: var(--fs-micro); color: var(--ink-3); }
+
+/* ---- Type specimen ----------------------------------------- */
+.sg__type { display: flex; flex-direction: column; gap: var(--s1); }
+.sg__type > p { margin-top: var(--s4); }
+.sg__type > p:first-child { margin-top: 0; }
+
+/* ---- Card specimens ---------------------------------------- */
+.sg__cards { display: flex; flex-direction: column; gap: var(--s2); max-width: 620px; }
+
+@media (max-width: 760px) {
+  .sg__urglabel { min-width: 0; }
+  .sg__urgrow { flex-wrap: wrap; }
+}

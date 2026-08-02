@@ -1,0 +1,227 @@
+/* ============================================================
+   PRIMITIVES
+   Every atom in the system. Shape and text carry meaning
+   alongside colour — never colour alone.
+   ============================================================ */
+
+/* ---- UrgencyDot -------------------------------------------
+   Five steps distinguished by FILL, SIZE and TONE, so the ramp
+   survives greyscale and colour-blind viewing. Only the top two
+   steps carry hue.                                            */
+.dot {
+  display: inline-block;
+  flex: none;
+  border-radius: 50%;
+  transition: background var(--t);
+}
+.dot.u-overdue  { width: 7px; height: 7px; background: var(--u-overdue-fg);
+                  box-shadow: 0 0 0 3px var(--u-overdue-bg); }
+.dot.u-today    { width: 7px; height: 7px; background: var(--u-today-fg); }
+.dot.u-soon     { width: 6px; height: 6px; background: var(--ink); }
+.dot.u-upcoming { width: 6px; height: 6px; background: transparent;
+                  border: 1.5px solid var(--ink-3); }
+.dot.u-later    { width: 5px; height: 5px; background: transparent;
+                  border: 1px solid var(--ink-4); }
+
+/* ---- StatusBadge ------------------------------------------
+   Shape is the primary signal: filled = in motion,
+   outlined = blocked on something external, muted = parked,
+   struck = closed.                                            */
+.badge {
+  display: inline-flex; align-items: center;
+  font-size: var(--fs-action);
+  font-weight: var(--w-medium);
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: var(--r-xs);
+  white-space: nowrap;
+  letter-spacing: 0.005em;
+}
+.badge--filled   { background: var(--ink); color: #fff; }
+.badge--outlined { background: transparent; color: var(--ink-2);
+                   border: 1px dashed var(--border-2); padding: 3px 7px; }
+.badge--muted    { background: var(--surface-2); color: var(--ink-3); }
+.badge--done     { background: transparent; color: var(--ink-3);
+                   text-decoration: line-through; text-decoration-thickness: 1px;
+                   text-underline-offset: 2px; padding-left: 0; }
+
+/* ---- Direction ---------------------------------------------
+   The most important non-urgency signal in the product.
+   Outward responsibility vs incoming dependency, communicated by
+   arrow direction, fill, and language — recognisable across a
+   room and in greyscale.                                       */
+.dir {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: var(--fs-action);
+  font-weight: var(--w-semi);
+  letter-spacing: 0.02em;
+  padding: 4px 9px;
+  border-radius: var(--r-xs);
+  white-space: nowrap;
+  line-height: 1;
+}
+.dir__arrow { font-size: 11px; line-height: 1; }
+
+/* Outward — I carry this */
+.dir--mine {
+  background: var(--ink);
+  color: #FFFFFF;
+}
+/* Incoming — someone else carries this */
+.dir--theirs {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  padding: 3px 8px;
+}
+
+/* ---- LifeAreaTag ------------------------------------------- */
+.la-row { display: inline-flex; gap: var(--s1); flex-wrap: wrap; }
+.la {
+  font-size: var(--fs-micro);
+  letter-spacing: 0.03em;
+  background: transparent;
+  color: var(--ink-3);
+  border: 1px solid var(--border);
+  padding: 2px 7px;
+  border-radius: var(--r-xs);
+  white-space: nowrap;
+}
+
+/* ---- PersonChip -------------------------------------------- */
+.chip {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: var(--fs-meta);
+  color: var(--ink);
+  border-radius: var(--r-pill);
+  padding: 2px 10px 2px 2px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  transition: border-color var(--t), background var(--t);
+  min-height: 26px;
+}
+button.chip:hover { border-color: var(--border-2); background: var(--surface-2); }
+
+.chip__av {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: 1px solid var(--border-2);
+  color: var(--ink-2);
+  font-size: 9px;
+  font-weight: var(--w-semi);
+  letter-spacing: 0.02em;
+  display: grid; place-items: center;
+}
+
+/* ---- DateLabel — relative first ---------------------------- */
+.date {
+  font-size: var(--fs-meta);
+  color: var(--u-fg, var(--ink-2));
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.date.u-overdue { font-weight: var(--w-semi); }
+.date.u-today   { font-weight: var(--w-medium); }
+
+/* ---- NextActionLine ---------------------------------------- */
+.next { font-size: var(--fs-meta); color: var(--ink-2); }
+
+/* Absence of a next action is the finding, so it is stated in
+   words, not implied by an empty space. */
+.next--missing {
+  color: var(--u-overdue-fg);
+  font-weight: var(--w-medium);
+  display: inline-flex; align-items: center; gap: 5px;
+}
+.next--missing::before {
+  content: '';
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--u-overdue-fg);
+}
+
+/* ---- FlagBadge --------------------------------------------- */
+.flag {
+  font-size: var(--fs-micro);
+  font-weight: var(--w-medium);
+  letter-spacing: 0.03em;
+  padding: 3px 7px;
+  border-radius: var(--r-xs);
+  white-space: nowrap;
+  background: transparent;
+  color: var(--ink-2);
+  border: 1px solid var(--border-2);
+}
+/* Only genuine problems take the urgency colour */
+.flag--stalled,
+.flag--at-risk,
+.flag--not-staffed {
+  background: var(--u-overdue-bg);
+  color: var(--u-overdue-fg);
+  border-color: var(--u-overdue-line);
+}
+/* Opportunity, not problem — gold reads as "worth your attention" */
+.flag--delegatable {
+  background: var(--gold-surface);
+  color: var(--gold-deep);
+  border-color: var(--gold-line);
+}
+
+/* ---- InlineActions ----------------------------------------- */
+.acts { display: inline-flex; gap: var(--s1); flex: none; }
+
+.act {
+  font-size: var(--fs-action);
+  font-weight: var(--w-medium);
+  color: var(--ink-2);
+  padding: 6px 11px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  white-space: nowrap;
+  min-height: 30px;
+  transition: background var(--t), border-color var(--t), color var(--t);
+}
+.act:hover { background: var(--surface-2); border-color: var(--border-2); color: var(--ink); }
+.act:active { background: var(--surface-3); }
+
+/* Primary action — gold as ownership, not alarm */
+.act--primary {
+  border-color: var(--gold-line);
+  color: var(--gold-deep);
+  background: var(--gold-surface);
+}
+.act--primary:hover { background: #FCF0C9; border-color: var(--gold); color: var(--gold-deep); }
+
+.act:disabled { opacity: 0.45; cursor: default; }
+
+/* ---- AILabel ----------------------------------------------- */
+.ai {
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--gold);
+  border-radius: var(--r);
+  padding: var(--s4);
+  background: var(--surface);
+  font-size: var(--fs-meta);
+  line-height: var(--lh-read);
+}
+.ai__tag {
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  font-weight: var(--w-semi);
+  color: var(--gold-deep);
+  margin-bottom: var(--s2);
+}
+.ai__why { margin-top: var(--s2); color: var(--ink-3); font-size: var(--fs-action); }
+
+/* ---- Meta row ---------------------------------------------- */
+.meta {
+  display: flex; align-items: center; gap: var(--s2);
+  flex-wrap: wrap;
+  font-size: var(--fs-meta);
+  color: var(--ink-2);
+}
+
+.sep { color: var(--ink-4); }
