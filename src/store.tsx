@@ -5,7 +5,7 @@
 
 import { createContext, useContext, useMemo, useState, useCallback } from 'react';
 import type { ReactNode } from 'react';
-import type { AnyCard, FixtureState, InboxItem } from './types';
+import type { AnyCard, CardKind, FixtureState, InboxItem } from './types';
 import { contacts as fxContacts } from './fixtures/people';
 import {
   commitments, tasks, delegations, reminders, projects, opportunities,
@@ -43,7 +43,7 @@ interface Store {
   followUp: (id: string) => void;
   logInteraction: (id: string) => void;
   capture: (title: string, hint?: InboxItem['hint']) => void;
-  convertInbox: (id: string, kind: AnyCard['kind']) => void;
+  convertInbox: (id: string, kind: CardKind) => void;
   toast: Toast | null;
   clearToast: () => void;
 }
@@ -121,7 +121,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     });
   }, [seq]);
 
-  const convertInbox = useCallback((id: string, kind: AnyCard['kind']) =>
+  const convertInbox = useCallback((id: string, kind: CardKind) =>
     patch(id, c => ({ ...c, kind, status: 'Next' }) as AnyCard, `Filed as ${kind}`), [patch]);
 
   const visible = useMemo(

@@ -4,10 +4,12 @@
    list, a Home section and a detail panel.
    ============================================================ */
 
+import { useState } from 'react';
 import type { ReactNode } from 'react';
 import type {
   AnyCard, Commitment, Contact, Delegation, EventCard,
   Opportunity, Project, Reminder, Goal, Entity, Task, InboxItem,
+  CardKind,
 } from '../types';
 import { urgencyOf, relativeLabel, daysSince, daysFromToday } from '../lib/dates';
 import {
@@ -292,20 +294,57 @@ export function TaskRow({ c, onOpen, marked }: { c: Task; onOpen?: (id: string) 
   );
 }
 
-/* ---- InboxRow ---------------------------------------------- */
+/* ---- InboxRow ----------------------------------------------
+   The filing action matches the captured type. Offering "File as
+   task" for something Rona marked as a person or a renewal makes
+   the system look like it wasn't listening.                     */
+
+const FILE_AS: Record<string, { kind: CardKind; label: string }> = {
+  Task:       { kind: 'task',       label: 'File as task' },
+  Person:     { kind: 'contact',    label: 'Add to people' },
+  Commitment: { kind: 'commitment', label: 'File as commitment' },
+  Idea:       { kind: 'note',       label: 'Keep as idea' },
+  Renewal:    { kind: 'reminder',   label: 'File as renewal' },
+};
+
+const ALL_DESTINATIONS: [string, CardKind][] = [
+  ['Task', 'task'], ['Person', 'contact'], ['Commitment', 'commitment'],
+  ['Idea', 'note'], ['Renewal', 'reminder'],
+];
+
 export function InboxRow({ c }: { c: InboxItem }) {
   const { convertInbox, archive } = useStore();
+  const [picking, setPicking] = useState(false);
+
+  const suggested = c.hint ? FILE_AS[c.hint] : FILE_AS.Task;
+
   return (
-    <AttentionCard
-      title={c.title}
-      meta={<>
-        <span>captured {relativeLabel(c.capturedAt)}</span>
-        {c.hint && <><span className="sep">·</span><span className="la">{c.hint}</span></>}
-      </>}
-      actions={[
-        { label: 'File as task', onClick: () => convertInbox(c.id, 'task'), primary: true },
-        { label: 'Archive', onClick: () => archive(c.id) },
-      ]}
-    />
+    <div className="inboxrow">
+      <AttentionCard
+        title={c.title}
+        meta={<>
+          <span>captured {relativeLabel(c.capturedAt)}</span>
+          {c.hint && <><span className="sep">·</span><span className="la">{c.hint}</span></>}
+        </>}
+        actions={[
+          { label: suggested.label, onClick: () => convertInbox(c.id, suggested.kind), primary: true },
+          { label: picking ? 'Cancel' : 'File elsewhere', onClick: () => setPicking(!picking) },
+          { label: 'Archive', onClick: () => archive(c.id) },
+        ]}
+      />
+      {/* Correction is always one tap away — the suggestion is never final. */}
+      {picking && (
+        <div className="inboxrow__pick">
+          <span className="inboxrow__picklabel">File as</span>
+          {ALL_DESTINATIONS.filter(([label]) => label !== c.hint).map(([label, kind]) => (
+            <button
+              key={label}
+              className="hint"
+              onClick={() => { convertInbox(c.id, kind); setPicking(false); }}
+            >{label}</button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

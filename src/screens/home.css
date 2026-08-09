@@ -102,3 +102,52 @@
   .sec { margin-bottom: var(--s7); }
   .attn { grid-template-columns: 1fr; gap: var(--s5); }
 }
+
+/* ---- The rest of the day -----------------------------------
+   Progressive disclosure, not concealment. The counts stay on
+   screen so Rona can see what she is choosing not to look at.  */
+.rest { margin-bottom: var(--gap-section); }
+
+.rest__toggle {
+  display: flex; align-items: baseline; gap: var(--s3);
+  width: 100%;
+  padding: var(--s4) 0;
+  border-top: var(--hairline);
+  border-bottom: var(--hairline);
+  text-align: left;
+  transition: border-color var(--t);
+}
+.rest__toggle:hover { border-color: var(--border-2); }
+
+.rest__label {
+  font-size: var(--fs-meta);
+  font-weight: var(--w-semi);
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.rest__summary {
+  font-size: var(--fs-micro);
+  color: var(--ink-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.rest__chev {
+  font-size: 14px;
+  color: var(--ink-3);
+  line-height: 1;
+  transition: transform var(--t);
+  flex: none;
+}
+.rest__chev--up { transform: rotate(180deg); }
+
+.rest__body { padding-top: var(--s6); }
+.rest__body .sec:last-child { margin-bottom: 0; }
+
+@media (max-width: 760px) {
+  .rest__toggle { flex-wrap: wrap; gap: var(--s1) var(--s2); }
+  .rest__summary { flex-basis: 100%; white-space: normal; }
+}

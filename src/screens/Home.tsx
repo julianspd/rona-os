@@ -3,7 +3,7 @@
    Understandable in under sixty seconds. Not a widget board.
    ============================================================ */
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useStore } from '../store';
 import { buildHome, inboxCount } from '../lib/home';
 import { SectionBlock } from '../components/SectionBlock';
@@ -26,6 +26,17 @@ const TITLES: Record<string, string> = {
   travel: 'Travel',
 };
 
+/* The morning briefing. What genuinely changes the shape of the day. */
+const CORE = ['meetings', 'iowe', 'waiting'];
+
+/* Real, but not what she needs in the first sixty seconds.
+   Held one interaction away, with counts visible so nothing hides. */
+const DEFERRED = ['opps', 'risk', 'delegation', 'reconnect', 'renewals', 'health', 'travel'];
+
+/* Core sections show three and link out. The full list lives in
+   the module, which is where working — as opposed to scanning — happens. */
+const CORE_CAP = 3;
+
 export function Home({ go }: { go: (view: string, id?: string) => void }) {
   const { cards, top3 } = useStore();
 
@@ -39,6 +50,32 @@ export function Home({ go }: { go: (view: string, id?: string) => void }) {
 
   const attention = ['decide', 'review', 'connect', 'do'].map(s);
   const hasAttention = attention.some(a => a.items.length);
+
+  const [showRest, setShowRest] = useState(false);
+  const deferred = DEFERRED.map(s).filter(d => d.items.length);
+  const deferredCount = deferred.reduce((n, d) => n + d.items.length, 0);
+
+  const renderSection = (key: string, cap: number) => {
+    const sec = s(key);
+    const target =
+      key === 'iowe' || key === 'waiting' ? 'commitments'
+      : key === 'reconnect' ? 'people'
+      : key === 'opps' ? 'opportunities'
+      : key === 'risk' ? 'projects'
+      : key === 'renewals' ? 'renewals'
+      : undefined;
+    return (
+      <SectionBlock
+        key={key}
+        title={TITLES[key] ?? sec.title}
+        items={sec.items}
+        cap={cap}
+        keyOf={c => c.id}
+        renderItem={c => <Card card={c} onOpen={id => go('detail', id)} />}
+        onShowAll={target ? () => go(target) : undefined}
+      />
+    );
+  };
 
   /* The brief: one sentence of orientation, drawn from real counts.
      Not a summary of everything — a statement of the shape of the day. */
@@ -115,30 +152,34 @@ export function Home({ go }: { go: (view: string, id?: string) => void }) {
         </section>
       )}
 
-      {/* ---- Everything else, in priority order.
-             Each hides itself when empty. ---- */}
-      {['meetings', 'iowe', 'waiting', 'opps', 'risk', 'delegation',
-        'reconnect', 'renewals', 'health', 'travel'].map(key => {
-        const sec = s(key);
-        const target =
-          key === 'iowe' || key === 'waiting' ? 'commitments'
-          : key === 'reconnect' ? 'people'
-          : key === 'opps' ? 'opportunities'
-          : key === 'risk' ? 'projects'
-          : key === 'renewals' ? 'renewals'
-          : undefined;
-        return (
-          <SectionBlock
-            key={key}
-            title={TITLES[key] ?? sec.title}
-            items={sec.items}
-            cap={sec.cap}
-            keyOf={c => c.id}
-            renderItem={c => <Card card={c} onOpen={id => go('detail', id)} />}
-            onShowAll={target ? () => go(target) : undefined}
-          />
-        );
-      })}
+      {/* ---- The briefing proper ---- */}
+      {CORE.map(key => renderSection(key, CORE_CAP))}
+
+      {/* ---- Everything else, one interaction away.
+             Counts stay visible so nothing is hidden, only deferred. ---- */}
+      {!!deferredCount && (
+        <section className="rest">
+          <button
+            className="rest__toggle"
+            onClick={() => setShowRest(!showRest)}
+            aria-expanded={showRest}
+          >
+            <span className="rest__label">
+              {showRest ? 'Hide the rest of the day' : 'The rest of the day'}
+            </span>
+            <span className="rest__summary">
+              {deferred.map(d => `${d.items.length} ${(TITLES[d.key] ?? d.title).toLowerCase()}`).join(' · ')}
+            </span>
+            <span className={`rest__chev ${showRest ? 'rest__chev--up' : ''}`} aria-hidden="true">⌄</span>
+          </button>
+
+          {showRest && (
+            <div className="rest__body">
+              {DEFERRED.map(key => renderSection(key, s(key).cap))}
+            </div>
+          )}
+        </section>
+      )}
 
       {/* ---- Inbox — a count, never an alarm ---- */}
       <div className="home__inbox">

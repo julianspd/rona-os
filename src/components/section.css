@@ -141,3 +141,18 @@
 
 .list-dense .card { padding: var(--s3) var(--s4); border-radius: var(--r-sm); }
 .list-dense .card__meta { margin-top: 5px; }
+
+/* ---- Inbox filing ------------------------------------------ */
+.inboxrow { display: flex; flex-direction: column; }
+.inboxrow__pick {
+  display: flex; align-items: center; gap: var(--s2);
+  flex-wrap: wrap;
+  padding: var(--s3) var(--s4);
+  margin-top: -1px;
+  border: var(--hairline);
+  border-top: none;
+  border-radius: 0 0 var(--r) var(--r);
+  background: var(--surface-2);
+}
+.inboxrow__picklabel { font-size: var(--fs-micro); color: var(--ink-3); letter-spacing: var(--ls-eyebrow); text-transform: uppercase; }
+.inboxrow__pick .hint { background: var(--surface); }
