@@ -178,3 +178,22 @@
   .grid { grid-template-columns: 1fr 1fr; }
   .why { font-size: var(--fs-body); padding-left: var(--s4); }
 }
+
+/* ---- Bills ------------------------------------------------- */
+.billbar {
+  display: flex; align-items: center; gap: var(--s3);
+  margin-bottom: var(--s4);
+}
+.billbar__total {
+  margin-left: auto;
+  font-size: var(--fs-meta);
+  color: var(--ink-3);
+}
+.billbar__total .tnum { color: var(--ink); font-weight: var(--w-medium); }
+
+.amount {
+  font-size: var(--fs-meta);
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}

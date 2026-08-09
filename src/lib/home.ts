@@ -11,8 +11,8 @@
    sections (the same reasoning as SectionBlock owning the caps).
    ============================================================ */
 
-import type { AnyCard, AttentionType, Contact, Commitment, Delegation,
-  Entity, EventCard, Opportunity, Project, Reminder } from '../types';
+import type { AnyCard, AttentionType, Bill, Contact, Commitment, Delegation,
+  Entity, EventCard, Opportunity, Project } from '../types';
 import { daysFromToday, daysSince } from './dates';
 
 export interface HomeSection {
@@ -74,9 +74,13 @@ const needsReconnect = (c: AnyCard) => {
   return since !== undefined && since > k.cadenceDays;
 };
 
+/** Reminders and bills share this section — from Rona's side they are
+    the same question: what is coming due that I have not handled? */
 const isRenewalSoon = (c: AnyCard) => {
-  if (c.kind !== 'reminder' || !isOpen(c)) return false;
-  const d = daysFromToday((c as Reminder).dueDate);
+  if (c.kind !== 'reminder' && c.kind !== 'bill') return false;
+  if (!isOpen(c)) return false;
+  if (c.kind === 'bill' && (c as Bill).paymentStatus === 'Paid') return false;
+  const d = daysFromToday(c.dueDate);
   return d !== undefined && d <= 30;
 };
 

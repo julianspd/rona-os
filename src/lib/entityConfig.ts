@@ -102,6 +102,7 @@ export const SPHERES: Sphere[] = [
   { key: 'properties', label: 'Properties',             kind: 'entity', entityType: 'property',   blurb: 'Aliases only' },
   { key: 'vehicles',   label: 'Vehicles',               kind: 'entity', entityType: 'vehicle',    blurb: 'Renewals and service' },
   { key: 'travel',     label: 'Travel',                 kind: 'entity', entityType: 'trip',       blurb: 'Trips and what to combine' },
+  { key: 'bills',      label: 'Bills & obligations',    kind: 'view',   view: 'bills',      blurb: 'Nothing missed' },
   { key: 'renewals',   label: 'Renewals & life admin',  kind: 'view',   view: 'renewals',   blurb: 'The next 90 days' },
   { key: 'goals',      label: 'Goals',                  kind: 'view',   view: 'goals',      blurb: 'Stated, and staffed or not' },
   { key: 'documents',  label: 'Documents',              kind: 'view',   view: 'documents',  blurb: 'Links, held by the thing they belong to' },

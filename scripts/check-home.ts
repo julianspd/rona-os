@@ -2,6 +2,7 @@
    Not a test suite — a check that the data actually exercises the design. */
 
 import { buildHome, inboxCount } from '../src/lib/home';
+import { bills } from '../src/fixtures/bills';
 import type { AnyCard } from '../src/types';
 import { contacts } from '../src/fixtures/people';
 import {
@@ -13,6 +14,7 @@ const ALL: AnyCard[] = [
   ...contacts, ...commitments, ...tasks, ...delegations, ...reminders,
   ...projects, ...opportunities, ...entities, ...goals, ...events,
   ...documents, ...decisions, ...inboxItems,
+  ...bills,
 ];
 
 const sections = buildHome(ALL);
@@ -58,6 +60,7 @@ const counts: [string, number, number][] = [
   ['projects', projects.length, 8],
   ['goals', goals.length, 6],
   ['inbox items', inboxItems.length, 15],
+  ['bills', bills.length, 12],
 ];
 console.log('\n=== MD-4 volume targets ===');
 for (const [name, actual, target] of counts) {
@@ -66,7 +69,10 @@ for (const [name, actual, target] of counts) {
 
 /* ---- FX-7: ~70% of dated items at urgency "later" ----------- */
 import { urgencyOf } from '../src/lib/dates';
-const dated = ALL.filter(c => c.dueDate);
+/* Measure only what actually renders with urgency: settled items are
+   drawn neutral, so counting their past due dates overstates the ramp. */
+const SETTLED = new Set(['Complete', 'Archived', 'Fulfilled', 'Released', 'Closed']);
+const dated = ALL.filter(c => c.dueDate && !SETTLED.has(c.status));
 const later = dated.filter(c => urgencyOf(c.dueDate) === 'later').length;
 const pct = Math.round((later / dated.length) * 100);
 console.log(`\nFX-7 urgency distribution: ${pct}% of ${dated.length} dated items at "later" (target ~70%)`);
@@ -92,3 +98,25 @@ console.log(`Home renders ${rendered} items across ${sections.filter(s => s.item
 console.log(`  of which ${renderedStrong} carry strong colour (${Math.round(renderedStrong / rendered * 100)}%)`);
 console.log(`  total fixture cards: ${ALL.length} — Home shows ${Math.round(rendered / ALL.length * 100)}% of them`);
 console.log(`\n${rendered <= 45 ? '✓' : '✗'} Home item count within a scannable range (≤45)`);
+
+/* ---- What Home renders BEFORE "the rest of the day" is opened ----
+   buildHome does placement; the screen then defers most of it. This
+   measures the briefing itself, which is what the 60-second test sees. */
+const CORE = ['meetings', 'iowe', 'waiting'];
+const DEFERRED = ['opps', 'risk', 'delegation', 'reconnect', 'renewals', 'health', 'travel'];
+const CORE_CAP = 3;
+
+const sec = (k: string) => sections.find(s => s.key === k)!;
+const defaultItems = [
+  ...sec('overdue').items,
+  ...['decide', 'review', 'connect', 'do'].flatMap(k => sec(k).items),
+  ...CORE.flatMap(k => sec(k).items.slice(0, CORE_CAP)),
+];
+const deferredItems = DEFERRED.flatMap(k => sec(k).items);
+const defaultStrong = defaultItems.filter(c => STRONG.has(urgencyOf(c.dueDate))).length;
+
+console.log(`\n=== Default Home (before "the rest of the day") ===`);
+console.log(`${defaultItems.length} items + 3 top three = ${defaultItems.length + 3} on screen`);
+console.log(`  ${defaultStrong} carry strong colour (${Math.round(defaultStrong / defaultItems.length * 100)}%)`);
+console.log(`  ${deferredItems.length} items deferred behind one disclosure, counts still visible`);
+console.log(`${defaultItems.length + 3 <= 26 ? '✓' : '✗'} Briefing stays scannable (≤26 items)`);

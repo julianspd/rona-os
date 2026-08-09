@@ -36,7 +36,7 @@ export type Urgency = 'overdue' | 'today' | 'soon' | 'upcoming' | 'later';
 export type CardKind =
   | 'inbox' | 'task' | 'commitment' | 'delegation' | 'contact' | 'reminder'
   | 'note' | 'project' | 'opportunity' | 'entity' | 'goal' | 'document'
-  | 'event' | 'interaction' | 'decision' | 'evidence';
+  | 'event' | 'interaction' | 'decision' | 'evidence' | 'bill';
 
 /* ---- §7.3 attributes every card carries -------------------- */
 export interface BaseCard {
@@ -213,10 +213,41 @@ export interface Interaction extends BaseCard {
   summary?: string;
 }
 
+/* ---- Bills & obligations -----------------------------------
+   Deliberately narrow. The first financial feature exists to stop
+   a bill being missed — not to model money. No account numbers,
+   no balances, no institutions, no payment credentials. Ever.    */
+
+export type BillCategory =
+  | 'Household' | 'Property' | 'Vehicle' | 'Insurance' | 'Subscription'
+  | 'Professional' | 'Health' | 'Tax' | 'Venture';
+
+export type PaymentStatus = 'Scheduled' | 'Due' | 'Paid' | 'Autopay';
+
+export interface Bill extends BaseCard {
+  kind: 'bill';
+  category: BillCategory;
+  /** Optional by design — whether Rona wants amounts stored is an open
+      question, so the interface works with or without them. */
+  amount?: number;
+  recurrence?: string;
+  paymentStatus: PaymentStatus;
+  paidOn?: string;
+  /** Days before the due date at which this surfaces. */
+  reminderDays: number[];
+  /** A payment page or supporting document. Never a credential. */
+  link?: string;
+  linkLabel?: string;
+  /** The property, vehicle or venture this belongs to. */
+  parentId?: string;
+  /** Who marks it paid — an open question worth making explicit. */
+  paidBy?: string;
+}
+
 export type AnyCard =
   | InboxItem | Task | Commitment | Delegation | Contact | Reminder
   | Project | Opportunity | Entity | Goal | EventCard | DocumentCard
-  | Decision | Interaction;
+  | Decision | Interaction | Bill;
 
 /* ---- Fixture-state toggle — FX-9 --------------------------- */
 export type FixtureState = 'primary' | 'quiet';

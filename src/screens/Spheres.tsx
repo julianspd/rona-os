@@ -26,6 +26,7 @@ export function SphereGrid({ go }: { go: Go }) {
     const map: Record<string, (c: AnyCard) => boolean> = {
       projects: c => c.kind === 'project' && c.status !== 'Archived',
       opportunities: c => c.kind === 'opportunity',
+      bills: c => c.kind === 'bill' && (c as { paymentStatus?: string }).paymentStatus !== 'Paid',
       renewals: c => c.kind === 'reminder',
       goals: c => c.kind === 'goal',
       documents: c => c.kind === 'document',

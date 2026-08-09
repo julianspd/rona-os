@@ -7,7 +7,7 @@ import { StoreProvider, useStore } from './store';
 import { Home } from './screens/Home';
 import { Commitments, Detail, Inbox, People, Search, Tasks, Today } from './screens/Lists';
 import { EntityDetail, EntityList, SphereGrid } from './screens/Spheres';
-import { Decisions, Documents, Goals, Opportunities, Projects, Renewals } from './screens/Pipeline';
+import { Bills, Decisions, Documents, Goals, Opportunities, Projects, Renewals } from './screens/Pipeline';
 import { Styleguide } from './screens/Styleguide';
 import type { EntityType } from './types';
 import './styles/tokens.css';
@@ -219,6 +219,7 @@ function Shell() {
           {view === 'spheres' && <SphereGrid go={go} />}
           {view === 'projects' && <Projects go={go} />}
           {view === 'opportunities' && <Opportunities go={go} />}
+          {view === 'bills' && <Bills go={go} />}
           {view === 'renewals' && <Renewals go={go} />}
           {view === 'goals' && <Goals go={go} />}
           {view === 'documents' && <Documents go={go} />}

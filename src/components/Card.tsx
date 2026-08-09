@@ -9,6 +9,7 @@ import type { ReactNode } from 'react';
 import type {
   AnyCard, Commitment, Contact, Delegation, EventCard,
   Opportunity, Project, Reminder, Goal, Entity, Task, InboxItem,
+  Bill,
   CardKind,
 } from '../types';
 import { urgencyOf, relativeLabel, daysSince, daysFromToday } from '../lib/dates';
@@ -70,6 +71,7 @@ export function Card({ card, onOpen, marked }: {
     case 'goal':        return <GoalCard c={card as Goal} onOpen={onOpen} />;
     case 'entity':      return <EntityCard c={card as Entity} onOpen={onOpen} />;
     case 'inbox':       return <InboxRow c={card as InboxItem} />;
+    case 'bill':        return <BillCard c={card as Bill} onOpen={onOpen} />;
     default:            return <TaskRow c={card as Task} onOpen={onOpen} marked={marked} />;
   }
 }
@@ -289,6 +291,46 @@ export function TaskRow({ c, onOpen, marked }: { c: Task; onOpen?: (id: string) 
       actions={[
         { label: 'Done', onClick: () => complete(c.id), primary: true },
         { label: 'Snooze', onClick: () => snooze(c.id, 7) },
+      ]}
+    />
+  );
+}
+
+/* ---- BillCard ----------------------------------------------
+   Autopay is stated plainly, because "is this handled?" is the
+   actual question. Amounts are optional — see useStore().showAmounts. */
+export function BillCard({ c, onOpen }: { c: Bill; onOpen?: (id: string) => void }) {
+  const { markPaid, showAmounts, nameOf } = useStore();
+  const paid = c.paymentStatus === 'Paid';
+
+  return (
+    <AttentionCard
+      urgencyDate={paid ? undefined : c.dueDate}
+      title={c.title}
+      done={paid}
+      onOpen={onOpen ? () => onOpen(c.id) : undefined}
+      meta={<>
+        <span className={`badge ${
+          paid ? 'badge--done'
+          : c.paymentStatus === 'Autopay' ? 'badge--outlined'
+          : 'badge--filled'}`}>
+          {paid ? `Paid ${relativeLabel(c.paidOn)}` : c.paymentStatus}
+        </span>
+        <DateLabel iso={c.dueDate} prefix={paid ? 'was due' : 'due'} />
+        <span className="sep">·</span>
+        <span>{c.category}</span>
+        {c.recurrence && <><span className="sep">·</span><span>{c.recurrence}</span></>}
+        {c.parentId && <><span className="sep">·</span><span>{nameOf(c.parentId)}</span></>}
+      </>}
+      right={<>
+        {showAmounts && c.amount !== undefined && (
+          <span className="amount tnum">
+            {c.amount.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })}
+          </span>
+        )}
+      </>}
+      actions={paid || c.paymentStatus === 'Autopay' ? [] : [
+        { label: 'Mark paid', onClick: () => markPaid(c.id), primary: true },
       ]}
     />
   );

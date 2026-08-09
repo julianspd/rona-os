@@ -9,7 +9,7 @@ import { Card } from '../components/Card';
 import { DateLabel, FlagBadge, StatusBadge } from '../components/primitives';
 import { daysFromToday } from '../lib/dates';
 import type {
-  AnyCard, Decision, DocumentCard, Goal, Opportunity, OpportunityStage, Project, Reminder,
+  AnyCard, Bill, Decision, DocumentCard, Goal, Opportunity, OpportunityStage, Project, Reminder,
 } from '../types';
 import './spheres.css';
 
@@ -224,6 +224,79 @@ export function Renewals({ go }: { go: Go }) {
           </ul>
         </div>
       ) : null)}
+    </Page>
+  );
+}
+
+/* ---- Bills & obligations -----------------------------------
+   The narrowest useful financial feature: nothing is missed.
+   Not a ledger, not forecasting, not account aggregation.       */
+export function Bills({ go }: { go: Go }) {
+  const { cards, showAmounts, setShowAmounts } = useStore();
+  const all = (cards.filter(c => c.kind === 'bill') as Bill[])
+    .sort((a, b) => (daysFromToday(a.dueDate) ?? 999) - (daysFromToday(b.dueDate) ?? 999));
+
+  const open = all.filter(b => b.paymentStatus !== 'Paid');
+  const needsAction = open.filter(b => b.paymentStatus !== 'Autopay');
+  const overdue = needsAction.filter(b => (daysFromToday(b.dueDate) ?? 99) < 0);
+  const soon = open.filter(b => {
+    const d = daysFromToday(b.dueDate);
+    return d !== undefined && d >= 0 && d <= 30;
+  });
+  const autopay = open.filter(b => b.paymentStatus === 'Autopay');
+  const paid = all.filter(b => b.paymentStatus === 'Paid');
+
+  const [tab, setTab] = useState('soon');
+  const map: Record<string, Bill[]> = { soon, action: needsAction, autopay, paid, all: open };
+
+  const total = (list: Bill[]) => list.reduce((n, b) => n + (b.amount ?? 0), 0);
+
+  return (
+    <Page
+      title="Bills & obligations"
+      sub="Built to stop something being missed — not to model money. No accounts, no balances, no institutions."
+    >
+      {!!overdue.length && (
+        <div className="warnbox">
+          <strong>{overdue.length} past its due date.</strong>{' '}
+          {overdue.map(b => b.title).join(' · ')}
+        </div>
+      )}
+
+      <Tabs
+        active={tab} onChange={setTab}
+        tabs={[
+          { key: 'soon', label: 'Next 30 days', count: soon.length },
+          { key: 'action', label: 'Needs you', count: needsAction.length },
+          { key: 'autopay', label: 'On autopay', count: autopay.length },
+          { key: 'all', label: 'All open', count: open.length },
+          { key: 'paid', label: 'Settled', count: paid.length },
+        ]}
+      />
+
+      {/* Whether amounts are stored at all is an open question, so the
+          interface works either way and Rona can decide by using it. */}
+      <div className="billbar">
+        <button className="act" onClick={() => setShowAmounts(!showAmounts)}>
+          {showAmounts ? 'Hide amounts' : 'Show amounts'}
+        </button>
+        {showAmounts && !!map[tab].length && (
+          <span className="billbar__total">
+            {tab === 'paid' ? 'Settled' : 'Expected'}{' '}
+            <span className="tnum">
+              {total(map[tab]).toLocaleString('en-US', {
+                style: 'currency', currency: 'USD', maximumFractionDigits: 0,
+              })}
+            </span>
+          </span>
+        )}
+      </div>
+
+      <ul className="list list-dense">
+        {map[tab].map(b => <li key={b.id}><Card card={b} onOpen={id => go('detail', id)} /></li>)}
+      </ul>
+
+      {!map[tab].length && <p className="empty">Nothing here.</p>}
     </Page>
   );
 }

@@ -689,13 +689,13 @@ const rem = (
 });
 
 export const reminders: Reminder[] = [
+  /* The financial rungs of this ladder now live in fixtures/bills.ts.
+     A bill and a reminder for the same obligation would put it on Home
+     twice under different headings — the P4 violation caught in H.8.2.
+     Reminders keep what costs nothing: documents, inspections, dates. */
   /* ---- E.4 ladder ---- */
   rem('r1', 'Passport expires', 'renewal', '2026-10-29', ['Travel', 'Personal']),
-  rem('r2', 'The Cottage — insurance renewal', 'renewal', '2026-09-29', ['Property', 'Money'], 'e7'),
-  rem('r3', 'The Sedan — registration renewal', 'renewal', '2026-08-30', ['Vehicles'], 'e8'),
   rem('r4', 'Bayfront — board materials due', 'due-date', '2026-08-14', ['Nonprofit'], 'e5'),
-  rem('r5', 'Gym membership auto-renews', 'renewal', '2026-08-07', ['Health', 'Money']),
-  rem('r6', 'Quarterly tax reminder', 'recurring', '2026-07-31', ['Money'], undefined, { recurrence: 'Quarterly', importance: 'High' }),
 
   /* ---- E.3 — the thrice-postponed errand ---- */
   rem('r7', 'Donate the boxes in the hall closet', 'one-time', '2026-07-28', ['Personal'], undefined,
@@ -703,7 +703,6 @@ export const reminders: Reminder[] = [
 
   rem('r8', 'The Wagon — inspection due', 'preventive', '2026-09-18', ['Vehicles'], 'e11'),
   rem('r9', 'The Sedan — autumn service', 'preventive', '2026-10-03', ['Vehicles'], 'e8'),
-  rem('r10', 'Lakeside Unit — HOA dues', 'recurring', '2026-10-01', ['Property', 'Money'], 'e6', { recurrence: 'Quarterly' }),
   rem('r11', 'Lakeside Unit — gutter clearance', 'preventive', '2026-09-20', ['Property'], 'e6', { recurrence: 'Twice yearly' }),
   /* P4 "one fact, one place": there is deliberately NO reminder for the
      annual physical (the calendar event ev5 carries it), none for the
@@ -712,17 +711,20 @@ export const reminders: Reminder[] = [
      Duplicating them would put the same obligation on Home twice. */
   rem('r13', 'Dental check', 'preventive', '2026-11-12', ['Health']),
   rem('r14', 'Eye test', 'preventive', '2026-12-04', ['Health']),
-  rem('r17', 'Professional association dues', 'renewal', '2026-11-01', ['Career', 'Money']),
-  rem('r18', 'Newsletter subscription renews', 'renewal', '2026-09-14', ['Learning', 'Money']),
-  rem('r19', 'Coastline — public liability cover renewal', 'renewal', '2026-10-11', ['Ventures', 'Money'], 'e1'),
   rem('r20', 'Bayfront — annual filing deadline', 'due-date', '2026-11-30', ['Nonprofit'], 'e5'),
   rem('r21', 'Chicago — check in for the flight', 'one-time', '2026-08-11', ['Travel'], 'e9'),
   rem('r22', 'Aunt Ines — birthday', 'recurring', '2026-08-19', ['Personal', 'Relationships'], 'c12', { recurrence: 'Annual' }),
-  rem('r23', 'Streaming subscription renews', 'renewal', '2026-09-02', ['Personal', 'Money']),
   rem('r24', 'Cottage — chimney sweep', 'preventive', '2026-10-19', ['Property'], 'e7', { recurrence: 'Annual' }),
   rem('r25', 'Review the Q4 launch retro date', 'one-time', '2026-09-25', ['Work'], 'p1'),
-  rem('r26', 'Roadside assistance renews', 'renewal', '2026-12-01', ['Vehicles', 'Money']),
   rem('r27', 'Update the LinkedIn headline after the keynote', 'one-time', '2026-09-30', ['Brand']),
+  rem('r31', 'Lakeside Unit — smoke and CO alarm check', 'preventive', '2026-10-22', ['Property'], 'e6', { recurrence: 'Twice yearly' }),
+  rem('r32', 'The Cottage — winterise before the first frost', 'preventive', '2026-11-07', ['Property'], 'e7', { recurrence: 'Annual' }),
+  rem('r33', 'Bayfront — conflict of interest declaration due', 'due-date', '2026-10-09', ['Nonprofit'], 'e5'),
+  rem('r34', 'Meridian Grove — performance review window opens', 'due-date', '2026-09-21', ['Work']),
+  rem('r35', 'Fieldwork — speaker materials deadline', 'due-date', '2026-09-11', ['Brand', 'Career']),
+  rem('r36', 'Coastline — annual recipe documentation review', 'recurring', '2026-12-05', ['Ventures'], 'e1', { recurrence: 'Annual' }),
+  rem('r37', 'Update the household emergency contact list', 'one-time', '2026-10-30', ['Personal']),
+  rem('r38', 'Book the autumn photography session', 'one-time', '2026-09-26', ['Brand'], undefined, { flags: ['delegatable'] }),
   rem('r28', 'Coastline — trade show registration closes', 'due-date', '2026-11-14', ['Ventures']),
   rem('r29', 'Lakeside Unit — tenancy renewal window opens', 'due-date', '2026-10-15', ['Property'], 'e6'),
   rem('r30', 'Fieldnote — annual practice review', 'recurring', '2026-12-12', ['Consulting'], 'e2', { recurrence: 'Annual' }),

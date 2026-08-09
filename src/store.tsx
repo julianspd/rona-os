@@ -6,6 +6,7 @@
 import { createContext, useContext, useMemo, useState, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import type { AnyCard, CardKind, FixtureState, InboxItem } from './types';
+import { bills } from './fixtures/bills';
 import { contacts as fxContacts } from './fixtures/people';
 import {
   commitments, tasks, delegations, reminders, projects, opportunities,
@@ -17,6 +18,7 @@ const ALL: AnyCard[] = [
   ...fxContacts, ...commitments, ...tasks, ...delegations, ...reminders,
   ...projects, ...opportunities, ...entities, ...goals, ...events,
   ...documents, ...decisions, ...inboxItems,
+  ...bills,
 ];
 
 /* FX-9 — the "quiet Tuesday" state. Same fixtures, most of the
@@ -44,6 +46,9 @@ interface Store {
   logInteraction: (id: string) => void;
   capture: (title: string, hint?: InboxItem['hint']) => void;
   convertInbox: (id: string, kind: CardKind) => void;
+  markPaid: (id: string) => void;
+  showAmounts: boolean;
+  setShowAmounts: (v: boolean) => void;
   toast: Toast | null;
   clearToast: () => void;
 }
@@ -56,6 +61,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [top3, setTop3] = useState<string[]>(['t5', 't1', 't2']);
   const [toast, setToast] = useState<Toast | null>(null);
   const [seq, setSeq] = useState(0);
+  /** Open question: does Rona want amounts stored at all? Built so
+      either answer works, and she can decide by using it. */
+  const [showAmounts, setShowAmounts] = useState(true);
 
   /** ST-3 — every mutation is undoable for a few seconds. */
   const patch = useCallback((id: string, fn: (c: AnyCard) => AnyCard, message: string) => {
@@ -124,6 +132,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const convertInbox = useCallback((id: string, kind: CardKind) =>
     patch(id, c => ({ ...c, kind, status: 'Next' }) as AnyCard, `Filed as ${kind}`), [patch]);
 
+  /** The bill ledger is a record of what was settled and when. */
+  const markPaid = useCallback((id: string) =>
+    patch(id, c => ({
+      ...c, paymentStatus: 'Paid', paidOn: '2026-07-31', status: 'Complete',
+    }) as AnyCard, 'Marked paid'), [patch]);
+
   const visible = useMemo(
     () => fixtureState === 'quiet' ? cards.filter(c => !QUIET_HIDDEN.has(c.id)) : cards,
     [cards, fixtureState],
@@ -136,9 +150,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     fixtureState, setFixtureState,
     top3, setTop3,
     complete, archive, snooze, followUp, logInteraction, capture, convertInbox,
+    markPaid, showAmounts, setShowAmounts,
     toast, clearToast: () => setToast(null),
   }), [visible, fixtureState, top3, complete, archive, snooze, followUp,
-      logInteraction, capture, convertInbox, toast]);
+      logInteraction, capture, convertInbox, markPaid, showAmounts, toast]);
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
