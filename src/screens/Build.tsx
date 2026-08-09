@@ -138,8 +138,10 @@ export function Build() {
           ))}
         </ul>
         <p className="build__footnote">
-          Worth saying out loud before she reads a date: this demo is fixed to
-          31 July. Every “11 days overdue” is measured from then, not from today.
+          Dates run on the real Pacific calendar. The demo content keeps its
+          own internal spacing, so the story stays the same however long the
+          site sits unopened — “eleven days overdue” does not quietly become
+          forty.
         </p>
       </section>
     </div>

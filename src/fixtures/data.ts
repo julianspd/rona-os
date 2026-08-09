@@ -654,13 +654,14 @@ export const entities: Entity[] = [
     lastTouched: '2026-06-11', flags: [],
   },
   {
-    ...B, kind: 'entity', id: 'e9', title: 'Chicago — August',
+    ...B, kind: 'entity', id: 'e9', title: 'Chicago',
     entityType: 'trip',
+    dueDate: '2026-08-12',
     status: 'Active', importance: 'High', lifeAreas: ['Travel', 'Consulting', 'Relationships'],
     nextAction: 'Send Joaquin the scope outline before departure',
     contactIds: ['c1', 'c8', 'c9'],
     typeFields: {
-      'Dates': '12–14 August',
+      'Length': 'Three days',
       'Purpose': 'Halden working session',
       'What can be combined': 'Joaquin on the advisory scope · Simone on the keynote · dinner with Marisol',
       'Lodging': 'Booked',
@@ -668,10 +669,11 @@ export const entities: Entity[] = [
     lastTouched: '2026-07-26', flags: [], relatedIds: ['o2', 'ev7', 'ev8'],
   },
   {
-    ...B, kind: 'entity', id: 'e12', title: 'Lisbon — March',
+    ...B, kind: 'entity', id: 'e12', title: 'Lisbon',
     entityType: 'trip',
+    dueDate: '2026-03-04',
     status: 'Archived', lifeAreas: ['Travel', 'Personal'],
-    typeFields: { 'Dates': '4–11 March', 'Purpose': 'Personal', 'Follow-ups': 'All closed' },
+    typeFields: { 'Length': 'Eight days', 'Purpose': 'Personal', 'Follow-ups': 'All closed' },
     lastTouched: '2026-03-14', flags: [],
   },
 ];

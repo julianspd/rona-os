@@ -91,11 +91,9 @@ const isHealthItem = (c: AnyCard) =>
 
 const isNearTrip = (c: AnyCard) => {
   if (c.kind !== 'entity' || !isOpen(c)) return false;
-  const e = c as Entity;
-  if (e.entityType !== 'trip') return false;
-  const dates = e.typeFields['Dates'] ?? '';
-  // Fixtures date the Chicago trip inside the window on purpose (PRD H.4).
-  return dates.includes('August');
+  if ((c as Entity).entityType !== 'trip') return false;
+  const d = daysFromToday(c.dueDate);
+  return d !== undefined && d >= 0 && d <= 14;
 };
 
 /* ---- ordering within a section ----------------------------- */

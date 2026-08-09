@@ -9,6 +9,7 @@ import { Card } from '../components/Card';
 import { ENTITY_CONFIG, SPHERES } from '../lib/entityConfig';
 import type { AnyCard, Commitment, Contact, Delegation, Entity, EntityType, Reminder } from '../types';
 import { DateLabel, NextActionLine, PersonChip, StatusBadge } from '../components/primitives';
+import { longLabel } from '../lib/dates';
 import './spheres.css';
 
 type Go = (v: string, id?: string) => void;
@@ -119,7 +120,14 @@ export function EntityDetail({ id, go }: { id: string; go: Go }) {
     .map(cid => cards.find(c => c.id === cid))
     .filter(Boolean) as Contact[];
 
+  /* Trips carry a real date rather than a literal string, so it moves
+     with the calendar instead of going stale. */
+  const dateRow: [string, string][] = e.entityType === 'trip' && e.dueDate
+    ? [['Departs', longLabel(e.dueDate)]]
+    : [];
+
   const ordered = [
+    ...dateRow,
     ...cfg.fieldOrder.filter(k => e.typeFields[k]).map(k => [k, e.typeFields[k]] as const),
     ...Object.entries(e.typeFields).filter(([k]) => !cfg.fieldOrder.includes(k)),
   ];

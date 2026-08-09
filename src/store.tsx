@@ -12,7 +12,7 @@ import {
   commitments, tasks, delegations, reminders, projects, opportunities,
   entities, goals, events, documents, decisions, inboxItems,
 } from './fixtures/data';
-import { shiftDate } from './lib/dates';
+import { shiftDate, ANCHOR_ISO } from './lib/dates';
 
 const ALL: AnyCard[] = [
   ...fxContacts, ...commitments, ...tasks, ...delegations, ...reminders,
@@ -98,28 +98,28 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     patch(id, c => ({
       ...c,
       dueDate: c.dueDate ? shiftDate(c.dueDate, days) : undefined,
-      lastTouched: '2026-07-31',
+      lastTouched: ANCHOR_ISO,
     }) as AnyCard, `Snoozed ${days} days`), [patch]);
 
   /** FR-COM-6 — for "They Owe" the move is to ask, not to do. */
   const followUp = useCallback((id: string) =>
     patch(id, c => ({
-      ...c, status: 'Follow-up scheduled', lastTouched: '2026-07-31',
+      ...c, status: 'Follow-up scheduled', lastTouched: ANCHOR_ISO,
     }) as AnyCard, 'Follow-up logged'), [patch]);
 
   /** FR-CRM-4 — one tap. */
   const logInteraction = useCallback((id: string) =>
     patch(id, c => (c.kind === 'contact'
-      ? { ...c, lastInteraction: '2026-07-31', lastTouched: '2026-07-31', flags: [] }
+      ? { ...c, lastInteraction: ANCHOR_ISO, lastTouched: ANCHOR_ISO, flags: [] }
       : c) as AnyCard, 'Interaction logged'), [patch]);
 
   /** FR-CAP-2 / FR-CAP-3 — text is the only required input. */
   const capture = useCallback((title: string, hint?: InboxItem['hint']) => {
     const item: InboxItem = {
       id: `new-${seq}`, kind: 'inbox', title, hint,
-      capturedAt: '2026-07-31', status: 'Inbox', importance: 'Normal',
+      capturedAt: ANCHOR_ISO, status: 'Inbox', importance: 'Normal',
       lifeAreas: [], owner: 'Me', relatedIds: [], tags: [],
-      lastTouched: '2026-07-31', flags: [],
+      lastTouched: ANCHOR_ISO, flags: [],
     };
     setSeq(s => s + 1);
     setCards(prev => {
@@ -135,7 +135,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   /** The bill ledger is a record of what was settled and when. */
   const markPaid = useCallback((id: string) =>
     patch(id, c => ({
-      ...c, paymentStatus: 'Paid', paidOn: '2026-07-31', status: 'Complete',
+      ...c, paymentStatus: 'Paid', paidOn: ANCHOR_ISO, status: 'Complete',
     }) as AnyCard, 'Marked paid'), [patch]);
 
   const visible = useMemo(

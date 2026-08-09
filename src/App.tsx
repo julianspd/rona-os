@@ -54,7 +54,7 @@ function EnvironmentLabel({ go }: { go: (v: string) => void }) {
   return (
     <div className="env">
       <span className="env__tag">Demo</span>
-      <span className="env__date">Today is fixed to {todayLabel}</span>
+      <span className="env__date">{todayLabel} · Pacific</span>
       <button className="env__more" onClick={() => setDetail(!detail)} aria-expanded={detail}>
         {detail ? 'Less' : 'What this means'}
       </button>
@@ -68,10 +68,11 @@ function EnvironmentLabel({ go }: { go: (v: string) => void }) {
       {detail && (
         <p className="env__detail">
           Every person, organisation, property and figure here is invented.
-          Changes are held in memory and reset on reload. Dates are relative
-          to the fixed date above, not to the real one. Stalled, at-risk and
-          dormant flags are hand-authored in the demo data — nothing is
-          detecting them yet.
+          Changes are held in memory and reset on reload. Dates run on the real
+          Pacific calendar, but the demo content keeps its own spacing — so
+          “eleven days overdue” stays eleven days overdue rather than growing
+          worse each week the demo sits unopened. Stalled, at-risk and dormant
+          flags are hand-authored — nothing is detecting them yet.
         </p>
       )}
     </div>
