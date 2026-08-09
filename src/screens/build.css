@@ -1,0 +1,185 @@
+/* ============================================================
+   Build status
+
+   Status colour is its own small vocabulary. It deliberately does
+   NOT reuse the urgency ramp — that belongs to Rona's dates, and
+   borrowing it here would dilute what red means everywhere else.
+   Gold marks what is committed next, consistent with gold meaning
+   ownership rather than alarm.
+   ============================================================ */
+
+.build { max-width: var(--col-work); }
+
+.st-built    { --st-fg: var(--ink);            --st-bg: var(--surface-2);   --st-line: var(--border-2); }
+.st-partial  { --st-fg: var(--ink-2);          --st-bg: transparent;        --st-line: var(--border-2); }
+.st-next     { --st-fg: var(--gold-deep);      --st-bg: var(--gold-surface);--st-line: var(--gold-line); }
+.st-blocked  { --st-fg: var(--u-overdue-fg);   --st-bg: var(--u-overdue-bg);--st-line: var(--u-overdue-line); }
+.st-later    { --st-fg: var(--ink-3);          --st-bg: transparent;        --st-line: var(--border); }
+
+/* ---- The tally ---------------------------------------------- */
+.tally {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0;
+  border: var(--hairline);
+  border-radius: var(--r);
+  overflow: hidden;
+  margin-bottom: var(--s6);
+}
+
+.tally__cell {
+  display: flex; flex-direction: column; gap: 3px;
+  align-items: flex-start;
+  padding: var(--s4);
+  background: var(--surface);
+  border-right: var(--hairline);
+  text-align: left;
+  transition: background var(--t);
+}
+.tally__cell:last-child { border-right: none; }
+.tally__cell:hover { background: var(--bg); }
+.tally__cell--on { background: var(--surface-2); }
+
+.tally__n {
+  font-family: var(--font-serif);
+  font-size: var(--fs-serif-md);
+  line-height: 1;
+  color: var(--st-fg);
+}
+.tally__label { font-size: var(--fs-micro); color: var(--ink-3); }
+
+.build__clear {
+  display: block;
+  font-size: var(--fs-meta);
+  color: var(--gold-deep);
+  margin: calc(var(--s6) * -1 + var(--s2)) 0 var(--s6);
+  border-bottom: 1px solid var(--gold-line);
+  padding-bottom: 1px;
+}
+
+.build__lead {
+  font-size: var(--fs-meta);
+  color: var(--ink-2);
+  line-height: var(--lh-read);
+  max-width: 72ch;
+  margin-bottom: var(--s4);
+}
+
+.build__list { display: flex; flex-direction: column; gap: var(--s2); }
+
+/* ---- A feature ---------------------------------------------- */
+.bitem {
+  display: flex; align-items: flex-start; gap: var(--s4);
+  padding: var(--s4);
+  background: var(--surface);
+  border: var(--hairline);
+  border-radius: var(--r);
+}
+
+.chipst {
+  flex: none;
+  width: 132px;
+  font-size: var(--fs-micro);
+  font-weight: var(--w-medium);
+  letter-spacing: 0.02em;
+  color: var(--st-fg);
+  background: var(--st-bg);
+  border: 1px solid var(--st-line);
+  border-radius: var(--r-xs);
+  padding: 4px 8px;
+  text-align: center;
+}
+
+.bitem__body { min-width: 0; }
+.bitem__title { font-size: var(--fs-body); letter-spacing: var(--ls-tight); }
+.bitem__note {
+  font-size: var(--fs-meta);
+  color: var(--ink-2);
+  line-height: var(--lh-read);
+  margin-top: 4px;
+  max-width: 74ch;
+}
+.bitem__blocked {
+  font-size: var(--fs-action);
+  color: var(--u-overdue-fg);
+  margin-top: var(--s2);
+}
+
+/* ---- A decision --------------------------------------------- */
+.dq {
+  padding: var(--s4) var(--s5);
+  background: var(--surface);
+  border: var(--hairline);
+  border-radius: var(--r);
+}
+.dq--gate { border-left: 2px solid var(--u-overdue-fg); }
+
+.dq__flag {
+  display: inline-block;
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  font-weight: var(--w-semi);
+  color: var(--u-overdue-fg);
+  margin-bottom: var(--s2);
+}
+.dq__q {
+  font-family: var(--font-serif);
+  font-size: var(--fs-serif-sm);
+  letter-spacing: var(--ls-serif);
+  line-height: var(--lh-tight);
+  max-width: 62ch;
+}
+.dq__why {
+  font-size: var(--fs-meta);
+  color: var(--ink-2);
+  line-height: var(--lh-read);
+  margin-top: var(--s2);
+  max-width: 74ch;
+}
+.dq__owner {
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-top: var(--s3);
+}
+
+/* ---- Agenda -------------------------------------------------- */
+.ag {
+  display: flex; align-items: baseline; gap: var(--s4);
+  padding: var(--s3) var(--s4);
+  border-bottom: 1px solid var(--border);
+}
+.ag:last-child { border-bottom: none; }
+.ag__min {
+  flex: none;
+  width: 56px;
+  font-size: var(--fs-meta);
+  color: var(--gold-deep);
+  font-weight: var(--w-medium);
+}
+.ag__what { font-size: var(--fs-body); }
+.ag__why {
+  font-size: var(--fs-meta);
+  color: var(--ink-2);
+  line-height: var(--lh-read);
+  margin-top: 2px;
+  max-width: 70ch;
+}
+
+.build__footnote {
+  margin-top: var(--s5);
+  padding-top: var(--s4);
+  border-top: var(--hairline);
+  font-size: var(--fs-meta);
+  color: var(--ink-3);
+  line-height: var(--lh-read);
+  max-width: 74ch;
+}
+
+@media (max-width: 760px) {
+  .bitem { flex-direction: column; gap: var(--s2); }
+  .chipst { width: auto; }
+  .ag { flex-direction: column; gap: var(--s1); }
+}

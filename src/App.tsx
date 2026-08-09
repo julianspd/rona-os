@@ -9,6 +9,7 @@ import { Commitments, Detail, Inbox, People, Search, Tasks, Today } from './scre
 import { EntityDetail, EntityList, SphereGrid } from './screens/Spheres';
 import { Bills, Decisions, Documents, Goals, Opportunities, Projects, Renewals } from './screens/Pipeline';
 import { Styleguide } from './screens/Styleguide';
+import { Build } from './screens/Build';
 import type { EntityType } from './types';
 import { classify } from './lib/classify';
 import type { Hint } from './lib/classify';
@@ -47,7 +48,7 @@ function useIsMobile() {
    Not a warning any more — a discreet statement of which
    environment this is, with the fixed demo date made explicit so
    nobody reads "11 days overdue" against the wrong today.        */
-function EnvironmentLabel() {
+function EnvironmentLabel({ go }: { go: (v: string) => void }) {
   const [detail, setDetail] = useState(false);
   const { fixtureState, setFixtureState } = useStore();
   return (
@@ -57,6 +58,7 @@ function EnvironmentLabel() {
       <button className="env__more" onClick={() => setDetail(!detail)} aria-expanded={detail}>
         {detail ? 'Less' : 'What this means'}
       </button>
+      <button className="env__more" onClick={() => go('build')}>Build status</button>
       <button
         className="env__toggle"
         onClick={() => setFixtureState(fixtureState === 'primary' ? 'quiet' : 'primary')}
@@ -200,7 +202,7 @@ function Shell() {
 
   return (
     <div className="shell">
-      <EnvironmentLabel />
+      <EnvironmentLabel go={go} />
 
       <div className="shell__body">
         <nav className="rail" aria-label="Primary">
@@ -254,6 +256,7 @@ function Shell() {
           {view === 'goals' && <Goals go={go} />}
           {view === 'documents' && <Documents go={go} />}
           {view === 'decisions' && <Decisions go={go} />}
+          {view === 'build' && <Build />}
           {view === 'styleguide' && <Styleguide />}
           {view.startsWith('entity:') && (
             <EntityList type={view.split(':')[1] as EntityType} go={go} />
