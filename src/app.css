@@ -355,3 +355,63 @@
   min-height: 44px;
 }
 .more__item:hover { background: var(--surface-2); }
+
+/* ---- Environment label — discreet, not a warning ------------ */
+.env {
+  display: flex; align-items: center; gap: var(--s3);
+  flex-wrap: wrap;
+  padding: var(--s2) var(--s5);
+  background: var(--surface-2);
+  border-bottom: var(--hairline);
+  font-size: var(--fs-micro);
+  color: var(--ink-3);
+}
+.env__tag {
+  font-weight: var(--w-semi);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--gold-deep);
+  border: 1px solid var(--gold-line);
+  background: var(--gold-surface);
+  padding: 2px 7px;
+  border-radius: var(--r-xs);
+}
+.env__date { color: var(--ink-2); }
+.env__more, .env__toggle {
+  font-size: var(--fs-micro);
+  color: var(--ink-3);
+  border-bottom: 1px solid var(--border-2);
+  padding-bottom: 1px;
+  transition: color var(--t), border-color var(--t);
+}
+.env__toggle { margin-left: auto; color: var(--gold-deep); border-color: var(--gold-line); }
+.env__more:hover, .env__toggle:hover { color: var(--ink); border-color: var(--ink-3); }
+.env__detail {
+  flex-basis: 100%;
+  padding: var(--s2) 0 var(--s1);
+  line-height: var(--lh-read);
+  max-width: 78ch;
+  color: var(--ink-2);
+}
+
+/* ---- Capture suggestion ------------------------------------- */
+.hint--suggested {
+  border-style: dashed;
+  border-color: var(--gold-line);
+  color: var(--gold-deep);
+}
+.sheet__why {
+  margin-top: var(--s3);
+  font-size: var(--fs-action);
+  color: var(--ink-3);
+  line-height: var(--lh-read);
+}
+.sheet__whytag {
+  display: inline-block;
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  font-weight: var(--w-semi);
+  color: var(--gold-deep);
+  margin-right: 7px;
+}

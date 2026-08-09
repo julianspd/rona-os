@@ -35,6 +35,7 @@ export const contacts: Contact[] = [
     howWeMet: 'Worked together at Meridian Grove, 2019–2022',
     theyCareAbout: 'Building a brand team from scratch; her daughter starts school this year',
     workingOn: 'Halden’s DTC relaunch',
+    channels: ['Gmail', 'WhatsApp', 'Zoom'],
     waysICanHelp: 'Intro to a fractional creative director',
     flags: [], attentionType: 'Connect',
   },
@@ -47,6 +48,7 @@ export const contacts: Contact[] = [
     howWeMet: 'Introduced by a former colleague when I joined the board',
     theyCareAbout: 'Getting the collective to a sustainable funding base',
     workingOn: 'The autumn fundraising push',
+    channels: ['Gmail', 'Google Meet'],
     flags: [],
   },
   {
@@ -58,6 +60,7 @@ export const contacts: Contact[] = [
     howWeMet: 'Hired her in 2024',
     theyCareAbout: 'Wants a VP track conversation this year',
     workingOn: 'Q4 launch analytics + the competitive scan',
+    channels: ['Slack', 'Gmail', 'Google Meet'],
     flags: [],
   },
   {
@@ -69,6 +72,7 @@ export const contacts: Contact[] = [
     howWeMet: 'Started Coastline together in 2023',
     theyCareAbout: 'Keeping production small enough to stay good',
     workingOn: 'The packaging decision and the autumn wholesale push',
+    channels: ['WhatsApp', 'Gmail'],
     flags: [],
   },
   {
@@ -90,6 +94,7 @@ export const contacts: Contact[] = [
     howWeMet: 'Graduate program; twenty years of friendship',
     theyCareAbout: 'Just moved and is rebuilding her client base',
     waysICanHelp: 'Two introductions I have been meaning to make',
+    channels: ['iMessage', 'WhatsApp'],
     /* E.3 — the dormant inner-circle contact. 147 days. */
     flags: ['dormant'], attentionType: 'Connect', importance: 'High',
   },
@@ -149,6 +154,7 @@ export const contacts: Contact[] = [
     lastInteraction: '2026-07-20', lastTouched: '2026-07-20',
     city: 'Sacramento', lifeAreas: ['Personal', 'Relationships'],
     theyCareAbout: 'Her garden, and being told things in person rather than by text',
+    channels: ['iMessage'],
     importantDates: [{ label: 'Birthday', date: '2026-08-19' }],
     flags: [],
   },

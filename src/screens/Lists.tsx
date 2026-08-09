@@ -115,32 +115,122 @@ export function Commitments({ go }: { go: (v: string, id?: string) => void }) {
   );
 }
 
-/* ---- People — FR-CRM-6 -------------------------------------- */
+/* ---- People — FR-CRM-6 --------------------------------------
+   Forty contacts is already past the point where an alphabetical
+   list is useful. The default answers "who needs me?", not "who
+   exists?" — sorted by how far past cadence, weighted by how much
+   the relationship matters.                                      */
+
+const STRENGTH_WEIGHT: Record<Contact['strength'], number> = {
+  'Inner Circle': 4, 'Active': 2.5, 'New': 2, 'Warm': 1, 'Dormant': 0.5,
+};
+
+/** Higher means more overdue, relative to what this relationship deserves. */
+function attentionScore(c: Contact) {
+  const since = daysSince(c.lastInteraction) ?? 0;
+  return ((since - c.cadenceDays) / c.cadenceDays) * STRENGTH_WEIGHT[c.strength];
+}
+
+type Sort = 'priority' | 'recent' | 'name' | 'strength';
+
 export function People({ go }: { go: (v: string, id?: string) => void }) {
   const { cards } = useStore();
   const all = cards.filter(c => c.kind === 'contact') as Contact[];
 
-  const reconnect = all.filter(c => (daysSince(c.lastInteraction) ?? 0) > c.cadenceDays);
+  const [tab, setTab] = useState('priority');
+  const [sort, setSort] = useState<Sort>('priority');
+  const [q, setQ] = useState('');
+  const [city, setCity] = useState<string>('');
+
+  const cities = useMemo(
+    () => [...new Set(all.map(c => c.city).filter(Boolean))].sort() as string[],
+    [all],
+  );
+
+  const needsAttention = all.filter(c => attentionScore(c) > 0);
   const inner = all.filter(c => c.strength === 'Inner Circle');
   const dormant = all.filter(c => c.flags.includes('dormant'));
   const fresh = all.filter(c => c.strength === 'New');
 
-  const [tab, setTab] = useState('all');
-  const map: Record<string, Contact[]> = { all, reconnect, inner, dormant, fresh };
+  const base: Record<string, Contact[]> = {
+    priority: needsAttention, inner, dormant, fresh, all,
+  };
+
+  const shown = useMemo(() => {
+    const term = q.trim().toLowerCase();
+    let list = base[tab] ?? all;
+
+    if (term) {
+      list = list.filter(c =>
+        c.title.toLowerCase().includes(term) ||
+        (c.organization ?? '').toLowerCase().includes(term) ||
+        (c.role ?? '').toLowerCase().includes(term) ||
+        (c.city ?? '').toLowerCase().includes(term) ||
+        (c.theyCareAbout ?? '').toLowerCase().includes(term) ||
+        (c.workingOn ?? '').toLowerCase().includes(term));
+    }
+    if (city) list = list.filter(c => c.city === city);
+
+    const sorted = [...list];
+    if (sort === 'priority') sorted.sort((a, b) => attentionScore(b) - attentionScore(a));
+    if (sort === 'recent') sorted.sort((a, b) => (daysSince(a.lastInteraction) ?? 0) - (daysSince(b.lastInteraction) ?? 0));
+    if (sort === 'name') sorted.sort((a, b) => a.title.localeCompare(b.title));
+    if (sort === 'strength') sorted.sort((a, b) =>
+      STRENGTH_WEIGHT[b.strength] - STRENGTH_WEIGHT[a.strength] || a.title.localeCompare(b.title));
+    return sorted;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab, q, city, sort, all]);
 
   return (
-    <Page title="People" sub="Relationship intelligence, not a contact database.">
+    <Page
+      title="People"
+      sub="Relationship intelligence, not an address book. Sorted by who is furthest past the cadence their relationship deserves."
+    >
+      <input
+        className="filterfield"
+        placeholder="Search by name, organisation, city, or what they care about…"
+        value={q}
+        onChange={e => setQ(e.target.value)}
+      />
+
       <Tabs
         active={tab} onChange={setTab}
         tabs={[
-          { key: 'all', label: 'All', count: all.length },
-          { key: 'reconnect', label: 'Reconnect', count: reconnect.length },
+          { key: 'priority', label: 'Needs you', count: needsAttention.length },
           { key: 'inner', label: 'Inner circle', count: inner.length },
           { key: 'dormant', label: 'Dormant', count: dormant.length },
           { key: 'fresh', label: 'New', count: fresh.length },
+          { key: 'all', label: 'Everyone', count: all.length },
         ]}
       />
-      <List items={map[tab]} go={go} />
+
+      <div className="controls">
+        <span className="controls__label">Sort</span>
+        {([
+          ['priority', 'Who needs you'], ['recent', 'Last contact'],
+          ['name', 'Name'], ['strength', 'Closeness'],
+        ] as const).map(([k, label]) => (
+          <button
+            key={k}
+            className={`hint ${sort === k ? 'hint--on' : ''}`}
+            onClick={() => setSort(k)}
+          >{label}</button>
+        ))}
+
+        <select
+          className="controls__select"
+          value={city}
+          onChange={e => setCity(e.target.value)}
+          aria-label="Filter by city"
+        >
+          <option value="">Anywhere</option>
+          {cities.map(ct => <option key={ct} value={ct}>{ct}</option>)}
+        </select>
+
+        <span className="controls__count tnum">{shown.length}</span>
+      </div>
+
+      <List items={shown} go={go} />
     </Page>
   );
 }
@@ -257,9 +347,25 @@ export function Detail({ id, go }: { id: string; go: (v: string, id?: string) =>
     ] : []),
   ];
 
+  const channels = c.kind === 'contact' ? (c as Contact).channels : undefined;
+
   return (
     <Page title={c.title} sub={c.kind}>
       <div className="detail">
+        {/* The channels Rona actually uses for this person. Shown as
+            intent, and plainly marked as not connected — a button that
+            looks live but does nothing is worse than no button. */}
+        {!!channels?.length && (
+          <div className="channels">
+            <span className="channels__label">Reaches them by</span>
+            {channels.map(ch => (
+              <button key={ch} className="channel" disabled title="Not connected in this demo">
+                {ch}
+              </button>
+            ))}
+            <span className="channels__note">Not connected yet</span>
+          </div>
+        )}
         <dl className="fields">
           {fields.filter(([, v]) => v).map(([k, v]) => (
             <div className="field" key={k}><dt>{k}</dt><dd>{v}</dd></div>

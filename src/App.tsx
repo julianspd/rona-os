@@ -2,7 +2,7 @@
    App shell — navigation, capture, undo
    ============================================================ */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { StoreProvider, useStore } from './store';
 import { Home } from './screens/Home';
 import { Commitments, Detail, Inbox, People, Search, Tasks, Today } from './screens/Lists';
@@ -10,6 +10,9 @@ import { EntityDetail, EntityList, SphereGrid } from './screens/Spheres';
 import { Bills, Decisions, Documents, Goals, Opportunities, Projects, Renewals } from './screens/Pipeline';
 import { Styleguide } from './screens/Styleguide';
 import type { EntityType } from './types';
+import { classify } from './lib/classify';
+import type { Hint } from './lib/classify';
+import { todayLabel } from './lib/dates';
 import './styles/tokens.css';
 import './app.css';
 
@@ -40,24 +43,35 @@ function useIsMobile() {
   return m;
 }
 
-/* ---- Prototype banner — honest, and visually subordinate ------ */
-function PrototypeBanner() {
-  const [open, setOpen] = useState(true);
+/* ---- Environment label ---------------------------------------
+   Not a warning any more — a discreet statement of which
+   environment this is, with the fixed demo date made explicit so
+   nobody reads "11 days overdue" against the wrong today.        */
+function EnvironmentLabel() {
+  const [detail, setDetail] = useState(false);
   const { fixtureState, setFixtureState } = useStore();
-  if (!open) return null;
   return (
-    <div className="banner">
-      <span>
-        <strong>Prototype.</strong> Fictional data, resets on reload.
-        Stalled, at-risk and dormant flags are hand-authored, not detected.
-      </span>
+    <div className="env">
+      <span className="env__tag">Demo</span>
+      <span className="env__date">Today is fixed to {todayLabel}</span>
+      <button className="env__more" onClick={() => setDetail(!detail)} aria-expanded={detail}>
+        {detail ? 'Less' : 'What this means'}
+      </button>
       <button
-        className="banner__toggle"
+        className="env__toggle"
         onClick={() => setFixtureState(fixtureState === 'primary' ? 'quiet' : 'primary')}
       >
         {fixtureState === 'primary' ? 'View a quiet day' : 'View a full day'}
       </button>
-      <button className="banner__x" onClick={() => setOpen(false)} aria-label="Dismiss">×</button>
+      {detail && (
+        <p className="env__detail">
+          Every person, organisation, property and figure here is invented.
+          Changes are held in memory and reset on reload. Dates are relative
+          to the fixed date above, not to the real one. Stalled, at-risk and
+          dormant flags are hand-authored in the demo data — nothing is
+          detecting them yet.
+        </p>
+      )}
     </div>
   );
 }
@@ -66,11 +80,17 @@ function PrototypeBanner() {
 function QuickCapture({ onClose }: { onClose: () => void }) {
   const { capture } = useStore();
   const [text, setText] = useState('');
-  const [hint, setHint] = useState<'Task' | 'Person' | 'Commitment' | 'Idea' | 'Renewal' | undefined>();
+  const [hint, setHint] = useState<Hint | undefined>();
+  const [overridden, setOverridden] = useState(false);
+
+  /* Suggested, never applied. Rona confirms by capturing, and any
+     tap on a different type takes the suggestion out of the way. */
+  const suggestion = useMemo(() => classify(text), [text]);
+  const effective = overridden ? hint : (hint ?? suggestion?.hint);
 
   const submit = () => {
     if (!text.trim()) return;
-    capture(text.trim(), hint);
+    capture(text.trim(), effective);
     onClose();
   };
 
@@ -99,15 +119,25 @@ function QuickCapture({ onClose }: { onClose: () => void }) {
             {(['Task', 'Person', 'Commitment', 'Idea', 'Renewal'] as const).map(h => (
               <button
                 key={h}
-                className={`hint ${hint === h ? 'hint--on' : ''}`}
-                onClick={() => setHint(hint === h ? undefined : h)}
-                aria-pressed={hint === h}
+                className={`hint ${effective === h ? 'hint--on' : ''}${
+                  !overridden && !hint && suggestion?.hint === h ? ' hint--suggested' : ''}`}
+                onClick={() => { setHint(hint === h ? undefined : h); setOverridden(true); }}
+                aria-pressed={effective === h}
               >{h}</button>
             ))}
           </div>
+
+          {/* The reason is shown, always. A suggestion you cannot
+              interrogate is just an instruction. */}
+          {suggestion && !overridden && (
+            <p className="sheet__why">
+              <span className="sheet__whytag">Suggested</span>
+              {suggestion.because}. Tap another type to change it.
+            </p>
+          )}
         </div>
         <div className="sheet__foot">
-          <span className="sheet__note">Goes to Inbox. Nothing else required.</span>
+          <span className="sheet__note">Goes to Inbox. Nothing is filed until you say so.</span>
           <button className="act act--primary" onClick={submit}>Capture</button>
         </div>
       </div>
@@ -170,7 +200,7 @@ function Shell() {
 
   return (
     <div className="shell">
-      <PrototypeBanner />
+      <EnvironmentLabel />
 
       <div className="shell__body">
         <nav className="rail" aria-label="Primary">

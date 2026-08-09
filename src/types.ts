@@ -94,6 +94,8 @@ export interface Delegation extends BaseCard {
 
 export type Strength = 'Inner Circle' | 'Active' | 'Warm' | 'New' | 'Dormant';
 
+export type Channel = 'Gmail' | 'Slack' | 'WhatsApp' | 'iMessage' | 'Zoom' | 'Google Meet';
+
 export interface Contact extends BaseCard {
   kind: 'contact';
   organization?: string;
@@ -107,6 +109,9 @@ export interface Contact extends BaseCard {
   workingOn?: string;
   waysICanHelp?: string;
   importantDates?: { label: string; date: string }[];
+  /** How Rona actually reaches this person. Displayed as intent, not
+      as a live connection — none of these are wired to anything. */
+  channels?: Channel[];
 }
 
 export type ReminderKind =

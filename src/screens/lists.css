@@ -150,3 +150,80 @@
   .fields dd { padding-top: 2px; }
   .page__title { font-size: var(--fs-serif-sm); }
 }
+
+/* ---- Filters & sort ---------------------------------------- */
+.filterfield {
+  width: 100%;
+  font-size: var(--fs-body);
+  padding: 10px var(--s4);
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--ink);
+  margin-bottom: var(--s4);
+  transition: border-color var(--t);
+}
+.filterfield::placeholder { color: var(--ink-4); }
+.filterfield:focus { outline: none; border-color: var(--gold); }
+
+.controls {
+  display: flex; align-items: center; gap: var(--s2);
+  flex-wrap: wrap;
+  margin-bottom: var(--s5);
+}
+.controls__label {
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-right: var(--s1);
+}
+.controls__select {
+  font-size: var(--fs-action);
+  padding: 5px 9px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  color: var(--ink-2);
+  min-height: 28px;
+}
+.controls__select:focus { outline: none; border-color: var(--gold); }
+.controls__count {
+  margin-left: auto;
+  font-size: var(--fs-micro);
+  color: var(--ink-3);
+}
+
+/* ---- Communication channels --------------------------------
+   Intent, not integration. Disabled and labelled, because a
+   button that looks live and is not is worse than no button.  */
+.channels {
+  display: flex; align-items: center; gap: var(--s2);
+  flex-wrap: wrap;
+  padding: var(--s3) var(--s4);
+  border: 1px dashed var(--border-2);
+  border-radius: var(--r);
+  background: var(--surface-2);
+}
+.channels__label {
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.channel {
+  font-size: var(--fs-action);
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--border-2);
+  background: var(--surface);
+  color: var(--ink-3);
+  opacity: 0.6;
+  cursor: default;
+}
+.channels__note {
+  margin-left: auto;
+  font-size: var(--fs-micro);
+  color: var(--ink-4);
+  font-style: italic;
+}
