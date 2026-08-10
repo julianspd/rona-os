@@ -5,15 +5,70 @@
    review call by people who did not write the code.
    ============================================================ */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AGENDA, DECISIONS, ITEMS, REVIEW, STATUS_LABEL } from '../data/roadmap';
-import type { BuildStatus } from '../data/roadmap';
+import type { BuildStatus, Decision } from '../data/roadmap';
+import {
+  canPersist, clearAnswers, formatAnswers, loadAnswers, saveAnswers,
+} from '../lib/answers';
+import type { Answers } from '../lib/answers';
+import { todayLabel } from '../lib/dates';
 import './build.css';
 
 const ORDER: BuildStatus[] = ['built', 'partial', 'next', 'blocked', 'later'];
 
+/* ---- One decision, with somewhere to answer it --------------- */
+function DecisionCard({ d, value, onChange }: {
+  d: Decision; value: string; onChange: (v: string) => void;
+}) {
+  const answered = value.trim().length > 0;
+  return (
+    <li className={`dq ${d.gate ? 'dq--gate' : ''} ${answered ? 'dq--answered' : ''}`}>
+      <div className="dq__head">
+        {d.gate && <span className="dq__flag">Gates everything</span>}
+        {answered && <span className="dq__done">Answered</span>}
+      </div>
+      <p className="dq__q">{d.question}</p>
+      <p className="dq__why">{d.consequence}</p>
+
+      <label className="dq__label" htmlFor={`ans-${d.id}`}>Your answer</label>
+      <textarea
+        id={`ans-${d.id}`}
+        className="dq__input"
+        value={value}
+        rows={2}
+        placeholder="Type here — including “not sure yet, ask me again”"
+        onChange={e => onChange(e.target.value)}
+      />
+
+      <p className="dq__owner">{d.owner}</p>
+    </li>
+  );
+}
+
 export function Build() {
   const [filter, setFilter] = useState<BuildStatus | 'all'>('all');
+  const [answers, setAnswers] = useState<Answers>(() => loadAnswers());
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => { saveAnswers(answers); }, [answers]);
+
+  const setAnswer = (id: string, v: string) =>
+    setAnswers(prev => ({ ...prev, [id]: v }));
+
+  const answeredCount = DECISIONS.filter(d => answers[d.id]?.trim()).length;
+
+  const copyOut = async () => {
+    const text = formatAnswers(DECISIONS, answers, todayLabel);
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch {
+      // Clipboard blocked — put it on screen so it can still be selected.
+      window.prompt('Copy your answers:', text);
+    }
+  };
 
   const count = (s: BuildStatus) => ITEMS.filter(i => i.status === s).length;
   const shown = filter === 'all' ? ITEMS : ITEMS.filter(i => i.status === filter);
@@ -93,30 +148,50 @@ export function Build() {
         <header className="sec__head">
           <h2 className="sec__title">
             Decisions we need
-            <span className="sec__count">{DECISIONS.length}</span>
+            <span className="sec__count">{answeredCount} of {DECISIONS.length} answered</span>
           </h2>
         </header>
 
         <p className="build__lead">
           Two of these gate everything else, and neither is a technical
-          question. They are worth answering before more is built.
+          question. Answer what you can — “not sure yet” is a useful answer,
+          and so is “ask me again after the next call”.
         </p>
 
+        {/* Nothing is sent anywhere on its own. Saying so plainly matters
+            more than the feature working. */}
+        <div className="answers__bar">
+          <span className="answers__note">
+            {canPersist
+              ? 'Answers are saved in this browser only. They are not sent anywhere.'
+              : 'This browser will not let the page save. Copy your answers before closing the tab.'}
+          </span>
+          <button className="act act--primary" onClick={copyOut} disabled={!answeredCount}>
+            {copied ? 'Copied' : 'Copy answers to send'}
+          </button>
+          {!!answeredCount && (
+            <button
+              className="act"
+              onClick={() => {
+                if (window.confirm('Clear every answer on this page? This cannot be undone.')) {
+                  clearAnswers();
+                  setAnswers({});
+                }
+              }}
+            >
+              Clear
+            </button>
+          )}
+        </div>
+
         <ul className="build__list">
-          {gates.map(d => (
-            <li key={d.id} className="dq dq--gate">
-              <span className="dq__flag">Gates everything</span>
-              <p className="dq__q">{d.question}</p>
-              <p className="dq__why">{d.consequence}</p>
-              <p className="dq__owner">{d.owner}</p>
-            </li>
-          ))}
-          {rest.map(d => (
-            <li key={d.id} className="dq">
-              <p className="dq__q">{d.question}</p>
-              <p className="dq__why">{d.consequence}</p>
-              <p className="dq__owner">{d.owner}</p>
-            </li>
+          {[...gates, ...rest].map(d => (
+            <DecisionCard
+              key={d.id}
+              d={d}
+              value={answers[d.id] ?? ''}
+              onChange={v => setAnswer(d.id, v)}
+            />
           ))}
         </ul>
       </section>

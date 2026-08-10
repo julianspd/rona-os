@@ -68,11 +68,13 @@ function EnvironmentLabel({ go }: { go: (v: string) => void }) {
       {detail && (
         <p className="env__detail">
           Every person, organisation, property and figure here is invented.
-          Changes are held in memory and reset on reload. Dates run on the real
-          Pacific calendar, but the demo content keeps its own spacing — so
-          “eleven days overdue” stays eleven days overdue rather than growing
-          worse each week the demo sits unopened. Stalled, at-risk and dormant
-          flags are hand-authored — nothing is detecting them yet.
+          Changes are held in memory and reset on reload — with one exception:
+          answers typed into Build status are kept in this browser so a refresh
+          cannot lose them. Dates run on the real Pacific calendar, but the demo
+          content keeps its own spacing, so “eleven days overdue” stays eleven
+          days overdue rather than worsening each week the site sits unopened.
+          Stalled, at-risk and dormant flags are hand-authored — nothing is
+          detecting them yet.
         </p>
       )}
     </div>
