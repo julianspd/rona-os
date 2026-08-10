@@ -6,10 +6,11 @@
    ============================================================ */
 
 import { useEffect, useState } from 'react';
-import { AGENDA, DECISIONS, ITEMS, REVIEW, STATUS_LABEL } from '../data/roadmap';
+import { AGENDA, DECISIONS, ITEMS, REVIEW, SEND_TO, STATUS_LABEL } from '../data/roadmap';
 import type { BuildStatus, Decision } from '../data/roadmap';
 import {
-  canPersist, clearAnswers, formatAnswers, loadAnswers, saveAnswers,
+  buildMailto, canPersist, clearAnswers, downloadAnswers, formatAnswers,
+  lastSent, loadAnswers, markSent, saveAnswers,
 } from '../lib/answers';
 import type { Answers } from '../lib/answers';
 import { todayLabel } from '../lib/dates';
@@ -56,17 +57,34 @@ export function Build() {
   const setAnswer = (id: string, v: string) =>
     setAnswers(prev => ({ ...prev, [id]: v }));
 
+  const [sentAt, setSentAt] = useState<string | null>(() => lastSent());
+
   const answeredCount = DECISIONS.filter(d => answers[d.id]?.trim()).length;
+  const unanswered = DECISIONS.length - answeredCount;
+  const plan = buildMailto(SEND_TO.email, DECISIONS, answers, todayLabel);
+
+  const fullText = () => formatAnswers(DECISIONS, answers, todayLabel);
+
+  const send = () => {
+    window.location.href = plan.href;
+    markSent(todayLabel);
+    setSentAt(todayLabel);
+  };
+
+  const download = () => {
+    downloadAnswers(fullText(), 'rona-os-decisions.md');
+    markSent(todayLabel);
+    setSentAt(todayLabel);
+  };
 
   const copyOut = async () => {
-    const text = formatAnswers(DECISIONS, answers, todayLabel);
     try {
-      await navigator.clipboard.writeText(text);
+      await navigator.clipboard.writeText(fullText());
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
     } catch {
       // Clipboard blocked — put it on screen so it can still be selected.
-      window.prompt('Copy your answers:', text);
+      window.prompt('Copy your answers:', fullText());
     }
   };
 
@@ -158,29 +176,61 @@ export function Build() {
           and so is “ask me again after the next call”.
         </p>
 
-        {/* Nothing is sent anywhere on its own. Saying so plainly matters
-            more than the feature working. */}
+        {/* The send is honest about what it does: it hands the answers to
+            her mail client. Nothing leaves the page by itself. */}
         <div className="answers__bar">
-          <span className="answers__note">
-            {canPersist
-              ? 'Answers are saved in this browser only. They are not sent anywhere.'
-              : 'This browser will not let the page save. Copy your answers before closing the tab.'}
-          </span>
-          <button className="act act--primary" onClick={copyOut} disabled={!answeredCount}>
-            {copied ? 'Copied' : 'Copy answers to send'}
-          </button>
-          {!!answeredCount && (
+          <div className="answers__status">
+            <p className="answers__count">
+              {answeredCount
+                ? <>{answeredCount} answered{unanswered ? `, ${unanswered} still open` : ' — all of them'}</>
+                : 'Nothing answered yet'}
+            </p>
+            <p className="answers__note">
+              {canPersist
+                ? `Saved in this browser as you type. Sending opens your email to ${SEND_TO.name} — nothing leaves this page until you press send there.`
+                : 'This browser will not let the page save your typing. Send or download before closing the tab.'}
+            </p>
+            {sentAt && <p className="answers__sent">Last sent {sentAt}</p>}
+          </div>
+
+          <div className="answers__acts">
             <button
-              className="act"
-              onClick={() => {
-                if (window.confirm('Clear every answer on this page? This cannot be undone.')) {
-                  clearAnswers();
-                  setAnswers({});
-                }
-              }}
+              className="act act--primary"
+              onClick={send}
+              disabled={!answeredCount || !plan.viable}
+              title={plan.viable ? undefined : 'Too long for email — use Download instead'}
             >
-              Clear
+              Send to {SEND_TO.name}
             </button>
+            <button className="act" onClick={download} disabled={!answeredCount}>
+              Download
+            </button>
+            <button className="act" onClick={copyOut} disabled={!answeredCount}>
+              {copied ? 'Copied' : 'Copy'}
+            </button>
+            {!!answeredCount && (
+              <button
+                className="act"
+                onClick={() => {
+                  if (window.confirm('Clear every answer on this page? This cannot be undone.')) {
+                    clearAnswers();
+                    setAnswers({});
+                  }
+                }}
+              >
+                Clear
+              </button>
+            )}
+          </div>
+
+          {/* Mail clients truncate long links. Better to say so than to
+              let a long answer arrive silently cut in half. */}
+          {!!answeredCount && !plan.viable && (
+            <p className="answers__warn">
+              These answers are longer than an email link can carry safely.
+              Use <strong>Download</strong> or <strong>Copy</strong> instead, so
+              nothing arrives cut short.
+            </p>
           )}
         </div>
 

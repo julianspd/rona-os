@@ -44,6 +44,12 @@ export const REVIEW = {
   stage: 'High-fidelity prototype on invented data',
 };
 
+/** Where answered decisions are sent. Change this and nothing else. */
+export const SEND_TO = {
+  email: 'julian@thededicationagency.com',
+  name: 'Julian',
+};
+
 /* ============================================================
    Features
    ============================================================ */
@@ -106,6 +112,8 @@ export const ITEMS: BuildItem[] = [
   /* ---- Blocked on a decision ---- */
   { id: 'data', group: 'Real data', status: 'blocked', blockedBy: 'accounts', title: 'Saved data',
     note: 'Right now nothing persists — refreshing resets everything. Needs the database set up under her ownership.' },
+  { id: 'submit', group: 'Real data', status: 'blocked', blockedBy: 'accounts', title: 'Answers arriving on their own',
+    note: 'Sending your answers currently opens your email with everything filled in — you still press send. Having them land straight in an inbox, with no step in between, needs the database set up first.' },
   { id: 'login', group: 'Real data', status: 'blocked', blockedBy: 'accounts', title: 'Login',
     note: 'No accounts exist yet. Required before any real information goes in.' },
   { id: 'gcal', group: 'Real data', status: 'blocked', blockedBy: 'employer', title: 'Google Calendar',

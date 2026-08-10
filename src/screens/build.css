@@ -186,7 +186,7 @@
 
 /* ---- Answering the decisions -------------------------------- */
 .answers__bar {
-  display: flex; align-items: center; gap: var(--s3);
+  display: flex; align-items: flex-start; gap: var(--s4);
   flex-wrap: wrap;
   padding: var(--s3) var(--s4);
   border: 1px dashed var(--border-2);
@@ -194,12 +194,37 @@
   background: var(--surface-2);
   margin-bottom: var(--s4);
 }
+.answers__status { flex: 1; min-width: 240px; }
+
+.answers__count {
+  font-size: var(--fs-meta);
+  font-weight: var(--w-medium);
+  color: var(--ink);
+  margin-bottom: 3px;
+}
+
 .answers__note {
   font-size: var(--fs-micro);
   color: var(--ink-3);
-  flex: 1;
-  min-width: 220px;
   line-height: var(--lh-read);
+  max-width: 62ch;
+}
+
+.answers__sent {
+  font-size: var(--fs-micro);
+  color: var(--gold-deep);
+  margin-top: var(--s2);
+}
+
+.answers__acts { display: flex; gap: var(--s1); flex-wrap: wrap; }
+
+.answers__warn {
+  flex-basis: 100%;
+  font-size: var(--fs-micro);
+  color: var(--u-overdue-fg);
+  line-height: var(--lh-read);
+  padding-top: var(--s2);
+  max-width: 70ch;
 }
 .answers__bar .act { background: var(--surface); }
 .answers__bar .act--primary { background: var(--gold-surface); }

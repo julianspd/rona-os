@@ -56,13 +56,17 @@ export function clearAnswers(): void {
   storage()?.removeItem(KEY);
 }
 
+export interface DecisionLike { id: string; question: string; owner: string; gate: boolean }
+
 /** Formatted for pasting into an email or a message. */
 export function formatAnswers(
-  decisions: { id: string; question: string; owner: string; gate: boolean }[],
+  decisions: DecisionLike[],
   answers: Answers,
   today: string,
+  answeredOnly = false,
 ): string {
   const done = decisions.filter(d => answers[d.id]?.trim()).length;
+  const list = answeredOnly ? decisions.filter(d => answers[d.id]?.trim()) : decisions;
 
   const lines = [
     'Rona OS — decisions',
@@ -70,7 +74,7 @@ export function formatAnswers(
     '',
   ];
 
-  for (const d of decisions) {
+  for (const d of list) {
     const a = answers[d.id]?.trim();
     lines.push(`${d.gate ? '[GATES EVERYTHING] ' : ''}${d.question}`);
     lines.push(a ? a : '— not yet answered —');
@@ -78,4 +82,65 @@ export function formatAnswers(
   }
 
   return lines.join('\n');
+}
+
+/* ============================================================
+   Sending
+
+   There is no server, so "submit" means handing the answers to
+   something Rona already has: her mail client, or a file. Both
+   happen entirely on her machine — the page makes no network
+   request either way.
+
+   A real submit — answers landing straight in an inbox or a
+   database without her pressing send — needs the backend, which
+   is on the blocked list for a reason.
+   ============================================================ */
+
+/** Mail clients truncate long URLs. Below this we can use mailto safely. */
+const MAILTO_LIMIT = 1600;
+
+export interface SendPlan {
+  href: string;
+  /** True when the body is short enough to survive a mailto URL. */
+  viable: boolean;
+  length: number;
+}
+
+export function buildMailto(
+  to: string,
+  decisions: DecisionLike[],
+  answers: Answers,
+  today: string,
+): SendPlan {
+  const done = decisions.filter(d => answers[d.id]?.trim()).length;
+  const subject = `Rona OS — decisions (${done} of ${decisions.length} answered)`;
+  // Only answered questions, to stay well inside the URL ceiling.
+  const body = formatAnswers(decisions, answers, today, true);
+  const href = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  return { href, viable: href.length <= MAILTO_LIMIT, length: href.length };
+}
+
+/** Saves to disk. No network, no upload, nothing leaves the machine. */
+export function downloadAnswers(text: string, filename: string): void {
+  const blob = new Blob([text], { type: 'text/markdown;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+/* ---- A record of the last send, so she is not left guessing --- */
+const SENT_KEY = 'rona-os.decision-answers-sent.v1';
+
+export function markSent(label: string): void {
+  try { storage()?.setItem(SENT_KEY, label); } catch { /* nothing to do */ }
+}
+
+export function lastSent(): string | null {
+  return storage()?.getItem(SENT_KEY) ?? null;
 }
