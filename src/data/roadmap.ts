@@ -101,6 +101,8 @@ export const ITEMS: BuildItem[] = [
     note: 'On every contact, live, updating each minute. Turns amber and says “likely asleep” outside 8am to 9pm their time, so a follow-up never lands at their 3am. The hours difference shows on their full record.' },
   { id: 'birthdays', group: 'Life areas', status: 'built', title: 'Birthdays and important dates',
     note: 'One list, ordered by what is next, replacing the Instagram, Facebook and two-calendar morning check. Includes gift notes, because remembering the date is the easy half. Anyone with a date inside a week also surfaces on Home as worth reaching out to.' },
+  { id: 'urls', group: 'Foundations', status: 'built', title: 'Every screen has an address',
+    note: 'The URL follows you — /today, /commitments, /properties, /review. Back and forward work, a refresh lands where you were rather than at the top, and any screen can be sent as a link. The browser tab names the section too.' },
   { id: 'undo', group: 'Foundations', status: 'built', title: 'Undo, and a way back',
     note: 'Every action can be reversed for a few seconds afterwards. Past that, nothing is gone either — anything dropped, archived or completed sits under Dropped & postponed and can be brought back.' },
   { id: 'edit', group: 'Foundations', status: 'built', title: 'Viewing and editing an item',

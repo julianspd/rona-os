@@ -55,9 +55,14 @@ export class ErrorTrap extends Component<{ children: ReactNode }, State> {
 /* ---- What the device actually thinks ------------------------ */
 export function DebugPanel() {
   /* Accept every form of it. A hash gets dropped by some keyboards and
-     autocompletes, and a wrong guess costs another round trip. */
-  const { hash, search, pathname } = window.location;
-  const on = /debug/.test(hash) || /debug/.test(search) || /debug/.test(pathname);
+     autocompletes, and a wrong guess costs another round trip.
+
+     Latched on first render, because the router normalises the URL a
+     moment later and would otherwise switch the panel off mid-session. */
+  const [on] = useState(() => {
+    const { hash, search, pathname } = window.location;
+    return /debug/.test(hash) || /debug/.test(search) || /debug/.test(pathname);
+  });
   if (!on) return null;
 
   const mq = (q: string) => {

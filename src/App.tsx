@@ -19,6 +19,7 @@ import type { EntityType } from './types';
 import { classify } from './lib/classify';
 import type { Hint } from './lib/classify';
 import { todayLabel } from './lib/dates';
+import { fromPath, titleFor, toPath } from './lib/router';
 import './styles/tokens.css';
 import './app.css';
 
@@ -208,18 +209,56 @@ function Toast() {
 }
 
 function Shell() {
-  const [view, setView] = useState<string>('home');
-  const [detailId, setDetailId] = useState<string | null>(null);
+  /* The URL is the source of truth, so a refresh or a shared link
+     lands in the right place rather than back at Home. */
+  const first = fromPath(window.location.pathname);
+  const [view, setView] = useState<string>(first.view);
+  const [detailId, setDetailId] = useState<string | null>(first.id ?? null);
   const [capturing, setCapturing] = useState(false);
   const [more, setMore] = useState(false);
   const isMobile = useIsMobile();
+  const { byId } = useStore();
 
-  const go = (v: string, id?: string) => {
+  const apply = (v: string, id?: string) => {
     if ((v === 'detail' || v === 'detail-entity') && id) { setDetailId(id); setView(v); }
     else setView(v);
+  };
+
+  const go = (v: string, id?: string) => {
+    apply(v, id);
+    const path = toPath(v, id);
+    if (path !== window.location.pathname) {
+      window.history.pushState({ v, id }, '', path);
+    }
     setMore(false);
     window.scrollTo(0, 0);
   };
+
+  /* Back and forward have to work, or the address bar is decoration. */
+  useEffect(() => {
+    const pop = () => {
+      const r = fromPath(window.location.pathname);
+      apply(r.view, r.id);
+      window.scrollTo(0, 0);
+    };
+    window.addEventListener('popstate', pop);
+    return () => window.removeEventListener('popstate', pop);
+  }, []);
+
+  /* Normalise the first URL, so /Today or a trailing slash settles. */
+  useEffect(() => {
+    const path = toPath(first.view, first.id);
+    if (path !== window.location.pathname) {
+      window.history.replaceState({}, '', path + window.location.hash);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  /* The tab says which section you are in — same idea as the URL. */
+  useEffect(() => {
+    const name = detailId ? byId(detailId)?.title : undefined;
+    document.title = titleFor(view, name);
+  }, [view, detailId, byId]);
 
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
