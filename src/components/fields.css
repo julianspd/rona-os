@@ -132,3 +132,53 @@ button.area:hover { border-color: var(--border-2); background: var(--surface-2);
   .fselect { min-width: 0; width: 100%; }
   .area { min-height: 36px; }
 }
+
+/* ---- A value that is also its own control -------------------- */
+.fpill {
+  display: inline-flex; align-items: center; gap: 7px;
+  color: var(--oc, var(--ink));
+  font-weight: var(--w-medium);
+  white-space: nowrap;
+}
+.fpill__dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--oc, var(--ink-4));
+  flex: none;
+}
+.tone-crit { --oc: var(--u-overdue-fg); }
+.tone-high { --oc: var(--u-today-fg); }
+.tone-norm { --oc: var(--ink-2); }
+.tone-low  { --oc: var(--ink-4); }
+.tone-st-moving  { --oc: var(--ink); }
+.tone-st-blocked { --oc: #5F7080; }
+.tone-st-parked  { --oc: var(--ink-3); }
+.tone-st-closed  { --oc: var(--ink-4); }
+
+/* Text and dates have no option list, so the affordance is a pen
+   that appears on approach rather than a permanent control. */
+.fedit {
+  display: inline-flex; align-items: center; gap: var(--s2);
+  width: 100%;
+  text-align: left;
+  padding: 5px 8px;
+  margin-left: -8px;
+  border-radius: var(--r-sm);
+  border: 1px solid transparent;
+  min-height: 32px;
+  transition: background var(--t), border-color var(--t);
+}
+.fedit:hover { background: var(--surface-2); border-color: var(--border); }
+.fedit__pen {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--ink-4);
+  opacity: 0;
+  transition: opacity var(--t);
+  flex: none;
+}
+.fedit:hover .fedit__pen { opacity: 1; }
+
+@media (hover: none) {
+  .fedit__pen { opacity: 0.5; }
+}

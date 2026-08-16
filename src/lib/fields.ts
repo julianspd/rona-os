@@ -36,6 +36,43 @@ export const LIFE_AREA_COLOR: Record<LifeArea, string> = {
 
 export const ALL_LIFE_AREAS = Object.keys(LIFE_AREA_COLOR) as LifeArea[];
 
+/* ---- What an item needs from her ----------------------------
+   Six verbs, no ranking between them — categorical, so hues. Drawn
+   from the same muted family as life areas so the two sit together
+   without competing. */
+export const ATTENTION_COLOR: Record<AttentionType, string> = {
+  Decide:   '#8A5A62',
+  Review:   '#5A5B8C',
+  Connect:  '#3F7A6E',
+  Do:       '#5B6B8A',
+  Delegate: '#7A6248',
+  Wait:     '#8A6A52',
+};
+
+/* ---- Importance ---------------------------------------------
+   Ordinal, not categorical, so it takes a ramp rather than hues —
+   and deliberately the same ramp as urgency. "How much does this
+   matter" and "how soon" are the same question asked twice; giving
+   them separate colour languages would teach two scales to mean
+   one thing. */
+export const IMPORTANCE_TONE: Record<Importance, string> = {
+  Critical: 'crit',
+  High: 'high',
+  Normal: 'norm',
+  Low: 'low',
+};
+
+/* ---- Status lifecycle ---------------------------------------
+   Shape still carries the meaning. The tone only separates the one
+   distinction that matters at a glance: is this moving, or is it
+   sitting with somebody else? */
+export function statusTone(status: string): 'moving' | 'blocked' | 'parked' | 'closed' {
+  if (['Waiting', 'Delegated', 'Blocked', 'Follow-up scheduled'].includes(status)) return 'blocked';
+  if (['On Hold', 'Someday', 'Nurture', 'Incubating', 'Exploring', 'Dormant', 'Inbox'].includes(status)) return 'parked';
+  if (['Complete', 'Archived', 'Fulfilled', 'Released', 'Closed'].includes(status)) return 'closed';
+  return 'moving';
+}
+
 /* ---- Option sets --------------------------------------------- */
 export const IMPORTANCE: Importance[] = ['Critical', 'High', 'Normal', 'Low'];
 export const ATTENTION: AttentionType[] = ['Decide', 'Review', 'Connect', 'Do', 'Delegate', 'Wait'];

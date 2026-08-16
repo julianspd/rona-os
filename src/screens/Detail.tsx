@@ -1,12 +1,13 @@
 /* ============================================================
-   Detail — read, then edit, in the same place
+   Detail — every field is its own control
 
-   View is the default. Editing is deliberate, because most visits
-   are to check something rather than change it, and a screen full
-   of live inputs reads as work even when you only came to look.
+   No edit mode. The value IS the control: click a status and the
+   options appear where the status was; click a date and it becomes
+   a calendar in place. Nothing moves, and there is no button to
+   press before you are allowed to change something.
 
-   Changes save as they are made. There is no Save button, because
-   a Save button implies a way to lose what you typed.
+   Changes save as they are made. No save button, because a save
+   button implies a way to lose what you typed.
    ============================================================ */
 
 import { useState } from 'react';
@@ -29,7 +30,7 @@ type Go = (v: string, id?: string) => void;
 
 export function Detail({ id, go }: { id: string; go: Go }) {
   const { byId, cards, nameOf, update, complete, archive } = useStore();
-  const [editing, setEditing] = useState(false);
+  const [renaming, setRenaming] = useState(false);
 
   const c = byId(id);
   if (!c) {
@@ -48,36 +49,39 @@ export function Detail({ id, go }: { id: string; go: Go }) {
     .map(r => cards.find(x => x.id === r))
     .filter(Boolean) as AnyCard[];
 
+  /** Which option set colours this field. */
+  const colouring = (key: string) =>
+    key === 'status' ? 'status' as const
+    : key === 'importance' ? 'importance' as const
+    : key === 'attentionType' ? 'attention' as const
+    : 'plain' as const;
+
   const control = (f: FieldSpec) => {
     switch (f.type) {
       case 'select':
-        return <SelectField editing={editing} value={val(f.key) as string}
-          options={f.options ?? []} onChange={v => set(f.key, v || undefined)} />;
+        return <SelectField label={f.label} field={colouring(f.key)}
+          value={val(f.key) as string} options={f.options ?? []}
+          onChange={v => set(f.key, v)} />;
       case 'date':
-        return <DateField editing={editing} value={val(f.key) as string}
-          onChange={v => set(f.key, v)} />;
+        return <DateField value={val(f.key) as string} onChange={v => set(f.key, v)} />;
       case 'areas':
-        return <AreaField editing={editing} value={(val(f.key) as LifeArea[]) ?? []}
-          onChange={v => set(f.key, v)} />;
+        return <AreaField value={(val(f.key) as LifeArea[]) ?? []} onChange={v => set(f.key, v)} />;
       case 'tags':
-        return <TagField editing={editing} value={(val(f.key) as string[]) ?? []}
-          onChange={v => set(f.key, v)} />;
+        return <TagField value={(val(f.key) as string[]) ?? []} onChange={v => set(f.key, v)} />;
       case 'person':
         return <PersonChip name={nameOf(val(f.key) as string)}
           onClick={() => go('detail', val(f.key) as string)} />;
       case 'longtext':
-        return <TextField editing={editing} long value={val(f.key) as string}
-          onChange={v => set(f.key, v)} />;
+        return <TextField long value={val(f.key) as string} onChange={v => set(f.key, v)} />;
       default:
-        return <TextField editing={editing} value={val(f.key) as string}
-          onChange={v => set(f.key, v)} />;
+        return <TextField value={val(f.key) as string} onChange={v => set(f.key, v)} />;
     }
   };
 
-  /* An empty field is noise when reading and necessary when editing —
-     except where the absence is itself the finding. */
-  const visible = (f: FieldSpec) =>
-    editing || f.showWhenEmpty || !isBlank(val(f.key));
+  /* Everything is editable, so everything shows. An empty row is
+     an invitation, not clutter — it is the only way to know the
+     field exists at all. */
+  const visible = (_f: FieldSpec) => true;
 
   return (
     <div className="page detail2">
@@ -85,21 +89,20 @@ export function Detail({ id, go }: { id: string; go: Go }) {
         <button className="crumb" onClick={() => go('home')}>← Back</button>
 
         <div className="dhead__top">
-          {editing ? (
+          {renaming ? (
             <input
               className="dhead__title dhead__title--edit"
+              autoFocus
               value={c.title}
+              onBlur={() => setRenaming(false)}
+              onKeyDown={e => e.key === 'Enter' && setRenaming(false)}
               onChange={e => update(c.id, { title: e.target.value })}
             />
           ) : (
-            <h1 className="dhead__title">{c.title}</h1>
+            <h1 className="dhead__title dhead__title--btn" onClick={() => setRenaming(true)}>
+              {c.title}
+            </h1>
           )}
-          <button
-            className={`act ${editing ? 'act--primary' : ''}`}
-            onClick={() => setEditing(!editing)}
-          >
-            {editing ? 'Done' : 'Edit'}
-          </button>
         </div>
 
         <div className="dhead__meta">
@@ -109,12 +112,10 @@ export function Detail({ id, go }: { id: string; go: Go }) {
           {c.flags.map(f => <FlagBadge key={f} flag={f} />)}
         </div>
 
-        {editing && (
-          <p className="dhead__hint">
-            Changes save as you make them. There is no save button, and
-            nothing here can be lost.
-          </p>
-        )}
+        <p className="dhead__hint">
+          Every field here is editable — click it. Changes save as you make
+          them, and nothing can be lost.
+        </p>
       </header>
 
       {GROUPS.map(group => {
@@ -149,11 +150,6 @@ export function Detail({ id, go }: { id: string; go: Go }) {
       </div>
     </div>
   );
-}
-
-function isBlank(v: unknown) {
-  if (v === undefined || v === null || v === '') return true;
-  return Array.isArray(v) && v.length === 0;
 }
 
 /* ---- Contacts keep their own shape --------------------------- */

@@ -1,0 +1,127 @@
+/* ============================================================
+   Option picker
+   ============================================================ */
+
+.pick { position: relative; display: inline-block; max-width: 100%; }
+
+.pick__trigger {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 8px 5px 6px;
+  border-radius: var(--r-sm);
+  border: 1px solid transparent;
+  min-height: 32px;
+  max-width: 100%;
+  transition: background var(--t), border-color var(--t);
+}
+.pick__trigger:hover { background: var(--surface-2); border-color: var(--border); }
+.pick__trigger[aria-expanded="true"] { background: var(--surface-2); border-color: var(--border-2); }
+
+.pick__chev {
+  font-size: 12px;
+  color: var(--ink-4);
+  line-height: 1;
+  flex: none;
+  transition: color var(--t);
+}
+.pick__trigger:hover .pick__chev { color: var(--ink-2); }
+
+/* ---- Menu ---------------------------------------------------- */
+.pick__menu {
+  position: absolute;
+  top: calc(100% + 4px); left: 0;
+  z-index: 70;
+  min-width: 208px;
+  max-height: 264px;
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  border-radius: var(--r);
+  box-shadow: var(--shadow-float);
+  padding: var(--s1);
+  animation: pickIn 110ms cubic-bezier(.2, 0, .2, 1) both;
+}
+.pick__menu--up { top: auto; bottom: calc(100% + 4px); }
+
+@keyframes pickIn { from { opacity: 0; transform: translateY(-3px) } to { opacity: 1 } }
+
+.pick__list { display: flex; flex-direction: column; gap: 1px; }
+
+.pick__opt {
+  display: flex; align-items: center; gap: var(--s2);
+  width: 100%;
+  padding: 7px var(--s2);
+  border-radius: var(--r-sm);
+  font-size: var(--fs-meta);
+  color: var(--ink-2);
+  text-align: left;
+  min-height: 34px;
+  transition: background var(--t), color var(--t);
+}
+.pick__opt:hover { background: var(--surface-2); color: var(--ink); }
+
+/* The swatch carries the hue; the label stays readable ink until
+   it is chosen. Fourteen lines of coloured text is a rainbow. */
+.pick__swatch {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: var(--oc, var(--ink-4));
+  opacity: 0.45;
+  flex: none;
+  transition: opacity var(--t);
+}
+.pick__swatch--none { background: transparent; border: 1px dashed var(--border-2); }
+
+.pick__label { flex: 1; min-width: 0; }
+.pick__label--none { color: var(--ink-4); font-style: italic; }
+
+.pick__tick { color: var(--gold-deep); font-size: 12px; flex: none; }
+
+.pick__opt--on { color: var(--oc, var(--ink)); font-weight: var(--w-medium); }
+.pick__opt--on .pick__swatch { opacity: 1; }
+
+/* ---- Ordinal tones — importance shares the urgency ramp ------ */
+.tone-crit { --oc: var(--u-overdue-fg); }
+.tone-high { --oc: var(--u-today-fg); }
+.tone-norm { --oc: var(--ink-2); }
+.tone-low  { --oc: var(--ink-4); }
+
+/* ---- Mobile: a sheet, not a menu ----------------------------- */
+.pick__sheet {
+  position: fixed; inset: 0;
+  background: rgba(34, 33, 31, .28);
+  z-index: 80;
+  display: flex; align-items: flex-end;
+}
+.pick__sheetbox {
+  width: 100%;
+  max-height: 76dvh;
+  overflow-y: auto;
+  background: var(--surface);
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  padding: 0 var(--s4) calc(var(--s4) + env(safe-area-inset-bottom));
+  box-shadow: var(--shadow-float);
+  animation: pickUp 150ms cubic-bezier(.2, 0, .2, 1) both;
+}
+@keyframes pickUp { from { transform: translateY(12px) } to { transform: none } }
+
+.pick__rule {
+  width: 34px; height: 3px;
+  border-radius: 2px;
+  background: var(--border-2);
+  margin: var(--s3) auto var(--s2);
+}
+.pick__sheeth {
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding: var(--s2) 0 var(--s3);
+}
+.pick__sheet .pick__opt { min-height: 48px; font-size: var(--fs-body); }
+.pick__sheet .pick__swatch { width: 11px; height: 11px; }
+.pick__done { width: 100%; margin-top: var(--s3); min-height: 44px; }
+
+@media (max-width: 760px) {
+  .pick { display: block; }
+  .pick__trigger { width: 100%; justify-content: space-between; min-height: 44px; }
+}

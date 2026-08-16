@@ -93,3 +93,15 @@
   .dgroup__body { padding: 0 var(--s4); }
   .dactions .act { flex: 1; min-height: 44px; }
 }
+
+/* The title is a control too — it just does not advertise it until
+   you are near it, because a heading with a box around it is a form. */
+.dhead__title--btn {
+  cursor: text;
+  border-radius: var(--r-sm);
+  padding: 2px 8px;
+  margin-left: -8px;
+  border: 1px solid transparent;
+  transition: background var(--t), border-color var(--t);
+}
+.dhead__title--btn:hover { background: var(--surface-2); border-color: var(--border); }

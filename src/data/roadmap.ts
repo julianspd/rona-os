@@ -102,7 +102,7 @@ export const ITEMS: BuildItem[] = [
   { id: 'undo', group: 'Foundations', status: 'built', title: 'Undo, and a way back',
     note: 'Every action can be reversed for a few seconds afterwards. Past that, nothing is gone either — anything dropped, archived or completed sits under Dropped & postponed and can be brought back.' },
   { id: 'edit', group: 'Foundations', status: 'built', title: 'Viewing and editing an item',
-    note: 'Opening anything shows a clean record grouped into essentials, context and people. Edit turns the same rows into controls in the same places, so nothing jumps. Dropdowns for status, importance and what it needs; tap-to-toggle chips for life areas; a real date picker. Changes save as they are made — no save button, because a save button implies a way to lose what you typed.' },
+    note: 'Opening anything shows a record grouped into essentials, context and people. Every field is its own control — click a status and the options appear where the status was, click a date and it becomes a calendar in place. No edit mode to enter. Options are colour coded: life areas and what an item needs get their own hues, importance shares the urgency ramp because it is the same question asked twice. On a phone the menus become bottom sheets. Changes save as they are made.' },
   { id: 'archive', group: 'Foundations', status: 'built', title: 'Dropped & postponed',
     note: 'Two lists that belong together. Everything dropped or finished, restorable. And everything currently being pushed down the road, with the count — the prompt on a card calls out one item, this is the habit seen whole.' },
   { id: 'mobile', group: 'Foundations', status: 'built', title: 'Phone experience',

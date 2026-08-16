@@ -11,9 +11,14 @@
    already the vocabulary the capture sheet uses.
    ============================================================ */
 
+import { useState } from 'react';
 import type { ReactNode } from 'react';
 import type { LifeArea } from '../types';
-import { ALL_LIFE_AREAS, LIFE_AREA_COLOR } from '../lib/fields';
+import {
+  ALL_LIFE_AREAS, ATTENTION_COLOR, IMPORTANCE_TONE, LIFE_AREA_COLOR, statusTone,
+} from '../lib/fields';
+import { Picker } from './Picker';
+import type { Option } from './Picker';
 import { absoluteLabel, relativeLabel, urgencyOf } from '../lib/dates';
 import './fields.css';
 
@@ -30,84 +35,104 @@ export function Empty({ text = 'Not set' }: { text?: string }) {
   return <span className="fempty">{text}</span>;
 }
 
-/* ---- Single select ------------------------------------------ */
-export function SelectField({ value, options, onChange, editing, placeholder }: {
+/* ---- Single select ------------------------------------------
+   Always live. The value is the trigger, so there is no mode to
+   enter — you click the thing you want to change. */
+export function SelectField({ value, options, onChange, label, field }: {
   value?: string;
   options: readonly string[];
-  onChange: (v: string) => void;
-  editing: boolean;
-  placeholder?: string;
+  onChange: (v: string | undefined) => void;
+  label: string;
+  /** Decides how the options are coloured. */
+  field?: 'status' | 'importance' | 'attention' | 'plain';
 }) {
-  if (!editing) return value ? <span className="fval">{value}</span> : <Empty text={placeholder} />;
+  const opts: Option[] = options.map(o => {
+    if (field === 'importance') return { value: o, tone: IMPORTANCE_TONE[o as keyof typeof IMPORTANCE_TONE] };
+    if (field === 'attention') return { value: o, color: ATTENTION_COLOR[o as keyof typeof ATTENTION_COLOR] };
+    if (field === 'status') return { value: o, tone: `st-${statusTone(o)}` };
+    return { value: o };
+  });
+  const chosen = opts.find(o => o.value === value);
+
   return (
-    <div className="fselect">
-      <select value={value ?? ''} onChange={e => onChange(e.target.value)}>
-        <option value="">— not set —</option>
-        {options.map(o => <option key={o} value={o}>{o}</option>)}
-      </select>
-      <span className="fselect__mark" aria-hidden="true">⌄</span>
-    </div>
+    <Picker
+      label={label}
+      options={opts}
+      selected={value ? [value] : []}
+      onSelect={v => onChange(v)}
+      allowClear
+      onClear={() => onChange(undefined)}
+      trigger={
+        value ? (
+          <span
+            className={`fpill ${chosen?.tone ? `tone-${chosen.tone}` : ''}`}
+            style={chosen?.color ? ({ '--oc': chosen.color } as React.CSSProperties) : undefined}
+          >
+            <span className="fpill__dot" aria-hidden="true" />{value}
+          </span>
+        ) : <Empty />
+      }
+    />
   );
 }
 
 /* ---- Life areas ---------------------------------------------
    The one categorical dimension in the product, so the one place
    categorical colour is spent. Colour identifies; it never ranks. */
-export function AreaField({ value, onChange, editing }: {
+export function AreaField({ value, onChange }: {
   value: LifeArea[];
   onChange: (v: LifeArea[]) => void;
-  editing: boolean;
 }) {
-  const toggle = (a: LifeArea) =>
-    onChange(value.includes(a) ? value.filter(x => x !== a) : [...value, a]);
-
-  if (!editing) {
-    if (!value.length) return <Empty />;
-    return (
-      <span className="areas">
-        {value.map(a => (
-          <span key={a} className="area area--on" style={{ '--la': LIFE_AREA_COLOR[a] } as React.CSSProperties}>
-            <span className="area__dot" aria-hidden="true" />{a}
-          </span>
-        ))}
-      </span>
-    );
-  }
+  const toggle = (a: string) =>
+    onChange(value.includes(a as LifeArea)
+      ? value.filter(x => x !== a)
+      : [...value, a as LifeArea]);
 
   return (
-    <span className="areas areas--edit">
-      {ALL_LIFE_AREAS.map(a => {
-        const on = value.includes(a);
-        return (
-          <button
-            key={a}
-            type="button"
-            className={`area ${on ? 'area--on' : ''}`}
-            style={{ '--la': LIFE_AREA_COLOR[a] } as React.CSSProperties}
-            aria-pressed={on}
-            onClick={() => toggle(a)}
-          >
-            <span className="area__dot" aria-hidden="true" />{a}
-          </button>
-        );
-      })}
-    </span>
+    <Picker
+      label="Life areas"
+      multi
+      options={ALL_LIFE_AREAS.map(a => ({ value: a, color: LIFE_AREA_COLOR[a] }))}
+      selected={value}
+      onSelect={toggle}
+      trigger={
+        value.length ? (
+          <span className="areas">
+            {value.map(a => (
+              <span key={a} className="area area--on"
+                style={{ '--la': LIFE_AREA_COLOR[a] } as React.CSSProperties}>
+                <span className="area__dot" aria-hidden="true" />{a}
+              </span>
+            ))}
+          </span>
+        ) : <Empty />
+      }
+    />
   );
 }
 
 /* ---- Free tags ----------------------------------------------- */
-export function TagField({ value, onChange, editing }: {
-  value: string[]; onChange: (v: string[]) => void; editing: boolean;
+export function TagField({ value, onChange }: {
+  value: string[]; onChange: (v: string[]) => void;
 }) {
-  if (!editing) {
-    if (!value.length) return <Empty />;
-    return <span className="areas">{value.map(t => <span key={t} className="ftag">{t}</span>)}</span>;
+  const [open, setOpen] = useState(false);
+  if (!open) {
+    return (
+      <Editable onEdit={() => setOpen(true)}>
+        {value.length
+          ? <span className="areas">{value.map(t => <span key={t} className="ftag">{t}</span>)}</span>
+          : <Empty />}
+      </Editable>
+    );
   }
   return (
     <input
       className="finput"
+      autoFocus
       value={value.join(', ')}
       placeholder="Comma separated"
+      onBlur={() => setOpen(false)}
+      onKeyDown={e => e.key === 'Enter' && setOpen(false)}
       onChange={e => onChange(e.target.value.split(',').map(t => t.trim()).filter(Boolean))}
     />
   );
@@ -116,51 +141,82 @@ export function TagField({ value, onChange, editing }: {
 /* ---- Dates ---------------------------------------------------
    Read as relative, edited as absolute. "In three days" is what
    she needs to know; a calendar is what she needs to change it. */
-export function DateField({ value, onChange, editing }: {
-  value?: string; onChange: (v: string | undefined) => void; editing: boolean;
+export function DateField({ value, onChange }: {
+  value?: string; onChange: (v: string | undefined) => void;
 }) {
-  if (!editing) {
-    if (!value) return <Empty text="No date" />;
+  const [open, setOpen] = useState(false);
+  if (!open) {
     return (
-      <span className={`fdate u-${urgencyOf(value)}`}>
-        {relativeLabel(value)}
-        <span className="fdate__abs">{absoluteLabel(value)}</span>
-      </span>
+      <Editable onEdit={() => setOpen(true)}>
+        {value ? (
+          <span className={`fdate u-${urgencyOf(value)}`}>
+            {relativeLabel(value)}
+            <span className="fdate__abs">{absoluteLabel(value)}</span>
+          </span>
+        ) : <Empty text="No date" />}
+      </Editable>
     );
   }
   return (
     <input
       type="date"
       className="finput finput--date"
+      autoFocus
       value={value ?? ''}
+      onBlur={() => setOpen(false)}
       onChange={e => onChange(e.target.value || undefined)}
     />
   );
 }
 
 /* ---- Text ---------------------------------------------------- */
-export function TextField({ value, onChange, editing, placeholder, long }: {
+export function TextField({ value, onChange, placeholder, long }: {
   value?: string;
   onChange: (v: string | undefined) => void;
-  editing: boolean;
   placeholder?: string;
   long?: boolean;
 }) {
-  if (!editing) return value ? <span className="fval">{value}</span> : <Empty text={placeholder} />;
+  const [open, setOpen] = useState(false);
+  if (!open) {
+    return (
+      <Editable onEdit={() => setOpen(true)}>
+        {value ? <span className="fval">{value}</span> : <Empty text={placeholder} />}
+      </Editable>
+    );
+  }
   return long ? (
     <textarea
       className="finput finput--long"
       rows={3}
+      autoFocus
       value={value ?? ''}
       placeholder={placeholder}
+      onBlur={() => setOpen(false)}
       onChange={e => onChange(e.target.value || undefined)}
     />
   ) : (
     <input
       className="finput"
+      autoFocus
       value={value ?? ''}
       placeholder={placeholder}
+      onBlur={() => setOpen(false)}
+      onKeyDown={e => e.key === 'Enter' && setOpen(false)}
       onChange={e => onChange(e.target.value || undefined)}
     />
+  );
+}
+
+
+/* ---- Click to edit ------------------------------------------
+   Text and dates have no option list, so they get the same
+   affordance a different way: the value is a button, and clicking
+   it becomes the input, in place. */
+export function Editable({ children, onEdit }: { children: ReactNode; onEdit: () => void }) {
+  return (
+    <button className="fedit" onClick={onEdit}>
+      {children}
+      <span className="fedit__pen" aria-hidden="true">✎</span>
+    </button>
   );
 }
