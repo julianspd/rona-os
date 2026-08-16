@@ -259,8 +259,16 @@
   .rail {
     order: 2;
     position: fixed;
+    /* top:auto is the whole fix. The desktop rail is sticky with
+       top:0, and that declaration survives into this block. A fixed
+       element with BOTH top:0 and bottom:0 stretches to fill the
+       viewport — so the bar was an opaque full-screen panel with its
+       items centred, sitting on top of a page that had rendered
+       perfectly the entire time. */
+    top: auto;
     bottom: 0; left: 0; right: 0;
     width: auto;
+    height: auto;
     flex-direction: row;
     align-items: center;
     justify-content: space-around;
