@@ -84,6 +84,8 @@ export const ENTITY_CONFIG: Record<EntityType, EntityTypeConfig> = {
 };
 
 /** A.1 — the Spheres grid. Entity-backed spheres plus the rest. */
+export type SphereGroup = 'work' | 'due' | 'view' | 'meta';
+
 export interface Sphere {
   key: string;
   label: string;
@@ -91,25 +93,51 @@ export interface Sphere {
   entityType?: EntityType;
   view?: string;
   blurb: string;
+  category: SphereGroup;
 }
 
+/* Three groups, cut by what kind of attention each needs rather than
+   by what type of record it is. "Properties" and "Bills" are different
+   objects but the same question: what is coming at me and when.
+
+   The fourth is not one of Rona's life areas and is not presented as
+   one — it is where the work on the product itself lives, kept
+   deliberately subordinate at the foot of the page. */
+export const SPHERE_GROUPS: { key: SphereGroup; title: string; blurb: string }[] = [
+  { key: 'work', title: 'Where the work is',
+    blurb: 'The spheres that generate commitments, opportunities and people.' },
+  { key: 'due', title: 'What comes due',
+    blurb: 'Everything with a date attached, whether or not you put it there.' },
+  { key: 'view', title: 'The longer view',
+    blurb: 'Stepping back — what you decided, what you are aiming at, what you let go.' },
+  { key: 'meta', title: 'Building this',
+    blurb: 'Not part of Rona’s system. Where the work on the product is tracked.' },
+];
+
 export const SPHERES: Sphere[] = [
-  { key: 'projects',   label: 'Work & projects',       kind: 'view',   view: 'projects',   blurb: 'Initiatives, milestones, risk' },
-  { key: 'opps',       label: 'Opportunities',          kind: 'view',   view: 'opportunities', blurb: 'The growth pipeline' },
-  { key: 'ventures',   label: 'Ventures',               kind: 'entity', entityType: 'venture',    blurb: 'Owned businesses' },
-  { key: 'consulting', label: 'Consulting & advisory',  kind: 'entity', entityType: 'consulting', blurb: 'Clients and the practice' },
-  { key: 'nonprofit',  label: 'Nonprofit & community',  kind: 'entity', entityType: 'nonprofit',  blurb: 'Board and community work' },
-  { key: 'properties', label: 'Properties',             kind: 'entity', entityType: 'property',   blurb: 'Aliases only' },
-  { key: 'vehicles',   label: 'Vehicles',               kind: 'entity', entityType: 'vehicle',    blurb: 'Renewals and service' },
-  { key: 'travel',     label: 'Travel',                 kind: 'entity', entityType: 'trip',       blurb: 'Trips and what to combine' },
-  { key: 'bills',      label: 'Bills & obligations',    kind: 'view',   view: 'bills',      blurb: 'Nothing missed' },
-  { key: 'renewals',   label: 'Renewals & life admin',  kind: 'view',   view: 'renewals',   blurb: 'The next 90 days' },
-  { key: 'review',     label: 'Weekly review',          kind: 'view',   view: 'review',     blurb: 'Where the week actually went' },
-  { key: 'dates',      label: 'Birthdays & dates',      kind: 'view',   view: 'dates',      blurb: 'Everything that comes round yearly' },
-  { key: 'goals',      label: 'Goals',                  kind: 'view',   view: 'goals',      blurb: 'Stated, and staffed or not' },
-  { key: 'documents',  label: 'Documents',              kind: 'view',   view: 'documents',  blurb: 'Links, held by the thing they belong to' },
-  { key: 'decisions',  label: 'Decision log',           kind: 'view',   view: 'decisions',  blurb: 'What was decided, and why' },
-  { key: 'archive',    label: 'Dropped & postponed',    kind: 'view',   view: 'archive',    blurb: 'Nothing is destroyed; bring it back' },
-  { key: 'build',      label: 'Build status',           kind: 'view',   view: 'build',      blurb: 'What works, what is next, what we need' },
-  { key: 'styleguide', label: 'Design system',          kind: 'view',   view: 'styleguide', blurb: 'Tokens, components, states' },
+  /* ---- Where the work is ---- */
+  { key: 'projects',   label: 'Work & projects',       kind: 'view',   view: 'projects',   blurb: 'Initiatives, milestones, risk', category: 'work' },
+  { key: 'opps',       label: 'Opportunities',          kind: 'view',   view: 'opportunities', blurb: 'The growth pipeline', category: 'work' },
+  { key: 'ventures',   label: 'Ventures',               kind: 'entity', entityType: 'venture',    blurb: 'Owned businesses', category: 'work' },
+  { key: 'consulting', label: 'Consulting & advisory',  kind: 'entity', entityType: 'consulting', blurb: 'Clients and the practice', category: 'work' },
+  { key: 'nonprofit',  label: 'Nonprofit & community',  kind: 'entity', entityType: 'nonprofit',  blurb: 'Board and community work', category: 'work' },
+
+  /* ---- What comes due ---- */
+  { key: 'bills',      label: 'Bills & obligations',    kind: 'view',   view: 'bills',      blurb: 'Nothing missed', category: 'due' },
+  { key: 'renewals',   label: 'Renewals & life admin',  kind: 'view',   view: 'renewals',   blurb: 'The next 90 days', category: 'due' },
+  { key: 'dates',      label: 'Birthdays & dates',      kind: 'view',   view: 'dates',      blurb: 'Everything that comes round yearly', category: 'due' },
+  { key: 'properties', label: 'Properties',             kind: 'entity', entityType: 'property',   blurb: 'Aliases only', category: 'due' },
+  { key: 'vehicles',   label: 'Vehicles',               kind: 'entity', entityType: 'vehicle',    blurb: 'Renewals and service', category: 'due' },
+  { key: 'travel',     label: 'Travel',                 kind: 'entity', entityType: 'trip',       blurb: 'Trips and what to combine', category: 'due' },
+
+  /* ---- The longer view ---- */
+  { key: 'review',     label: 'Weekly review',          kind: 'view',   view: 'review',     blurb: 'Where the week actually went', category: 'view' },
+  { key: 'goals',      label: 'Goals',                  kind: 'view',   view: 'goals',      blurb: 'Stated, and staffed or not', category: 'view' },
+  { key: 'decisions',  label: 'Decision log',           kind: 'view',   view: 'decisions',  blurb: 'What was decided, and why', category: 'view' },
+  { key: 'documents',  label: 'Documents',              kind: 'view',   view: 'documents',  blurb: 'Links, held by the thing they belong to', category: 'view' },
+  { key: 'archive',    label: 'Dropped & postponed',    kind: 'view',   view: 'archive',    blurb: 'Nothing is destroyed; bring it back', category: 'view' },
+
+  /* ---- Building this ---- */
+  { key: 'build',      label: 'Build status',           kind: 'view',   view: 'build',      blurb: 'What works, what is next, what we need', category: 'meta' },
+  { key: 'styleguide', label: 'Design system',          kind: 'view',   view: 'styleguide', blurb: 'Tokens, components, states', category: 'meta' },
 ];

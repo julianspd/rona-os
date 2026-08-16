@@ -197,3 +197,53 @@
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
+
+/* ============================================================
+   Grouped spheres
+   Three groups cut by what kind of attention each needs, and a
+   fourth that is ours rather than hers — so it sits at the foot,
+   quieter, and does not pretend to be one of her life areas.
+   ============================================================ */
+
+.spheres { max-width: var(--col-work); }
+
+.sphgroup { margin-bottom: var(--s8); }
+
+.sphgroup__head { margin-bottom: var(--s4); }
+
+.sphgroup__h {
+  font-family: var(--font-serif);
+  font-size: var(--fs-serif-sm);
+  font-weight: var(--w-regular);
+  letter-spacing: var(--ls-serif);
+  color: var(--ink);
+}
+
+.sphgroup__p {
+  font-size: var(--fs-meta);
+  color: var(--ink-3);
+  line-height: var(--lh-read);
+  margin-top: 3px;
+  max-width: 60ch;
+}
+
+/* Ours, not hers. Same components, deliberately less presence. */
+.sphgroup--meta {
+  margin-top: var(--s6);
+  padding-top: var(--s6);
+  border-top: var(--hairline);
+}
+.sphgroup--meta .sphgroup__h {
+  font-family: var(--font-sans);
+  font-size: var(--fs-meta);
+  font-weight: var(--w-semi);
+  color: var(--ink-3);
+}
+.sphgroup--meta .tile { background: var(--surface-2); }
+.sphgroup--meta .tile__label { color: var(--ink-2); font-size: var(--fs-meta); }
+
+@media (max-width: 760px) {
+  .sphgroup { margin-bottom: var(--s6); }
+  .grid { grid-template-columns: 1fr; }
+  .tile { padding: var(--s4); }
+}

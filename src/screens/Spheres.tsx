@@ -6,7 +6,7 @@
 
 import { useStore } from '../store';
 import { Card } from '../components/Card';
-import { ENTITY_CONFIG, SPHERES } from '../lib/entityConfig';
+import { ENTITY_CONFIG, SPHERE_GROUPS, SPHERES } from '../lib/entityConfig';
 import type { AnyCard, Commitment, Contact, Delegation, Entity, EntityType, Reminder } from '../types';
 import { DateLabel, NextActionLine, PersonChip, StatusBadge } from '../components/primitives';
 import { longLabel } from '../lib/dates';
@@ -39,28 +39,42 @@ export function SphereGrid({ go }: { go: Go }) {
   };
 
   return (
-    <div className="page">
+    <div className="page spheres">
       <header className="page__head">
         <h1 className="page__title">Spheres</h1>
         <p className="page__sub">
-          Everything outside the daily loop. Nothing here is a separate system —
-          each is a view over the same cards.
+          Everything outside the daily loop. Nothing here is a separate
+          system — each is a view over the same records.
         </p>
       </header>
 
-      <div className="grid">
-        {SPHERES.map(s => (
-          <button
-            key={s.key}
-            className="tile"
-            onClick={() => go(s.kind === 'entity' ? `entity:${s.entityType}` : s.view!)}
-          >
-            <span className="tile__label">{s.label}</span>
-            <span className="tile__blurb">{s.blurb}</span>
-            {count(s) > 0 && <span className="tile__n tnum">{count(s)}</span>}
-          </button>
-        ))}
-      </div>
+      {SPHERE_GROUPS.map(g => {
+        const items = SPHERES.filter(x => x.category === g.key);
+        if (!items.length) return null;
+        const meta = g.key === 'meta';
+        return (
+          <section className={`sphgroup ${meta ? 'sphgroup--meta' : ''}`} key={g.key}>
+            <div className="sphgroup__head">
+              <h2 className="sphgroup__h">{g.title}</h2>
+              <p className="sphgroup__p">{g.blurb}</p>
+            </div>
+
+            <div className="grid">
+              {items.map(sph => (
+                <button
+                  key={sph.key}
+                  className="tile"
+                  onClick={() => go(sph.kind === 'entity' ? `entity:${sph.entityType}` : sph.view!)}
+                >
+                  <span className="tile__label">{sph.label}</span>
+                  <span className="tile__blurb">{sph.blurb}</span>
+                  {count(sph) > 0 && <span className="tile__n tnum">{count(sph)}</span>}
+                </button>
+              ))}
+            </div>
+          </section>
+        );
+      })}
     </div>
   );
 }
