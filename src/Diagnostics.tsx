@@ -54,7 +54,11 @@ export class ErrorTrap extends Component<{ children: ReactNode }, State> {
 
 /* ---- What the device actually thinks ------------------------ */
 export function DebugPanel() {
-  if (!window.location.hash.includes('debug')) return null;
+  /* Accept every form of it. A hash gets dropped by some keyboards and
+     autocompletes, and a wrong guess costs another round trip. */
+  const { hash, search, pathname } = window.location;
+  const on = /debug/.test(hash) || /debug/.test(search) || /debug/.test(pathname);
+  if (!on) return null;
 
   const mq = (q: string) => {
     try { return window.matchMedia(q).matches ? 'yes' : 'no'; }
