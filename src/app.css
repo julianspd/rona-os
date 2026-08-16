@@ -326,9 +326,43 @@
 
   .toast { bottom: 92px; left: var(--s4); right: var(--s4); transform: none; }
 
-  .sheet { padding: 0; align-items: flex-end; }
-  .sheet__box { max-width: none; border-radius: var(--r-lg) var(--r-lg) 0 0; }
-  .sheet__input { font-size: var(--fs-serif-sm); }
+  /* dvh, not vh — with the keyboard up, vh still reports the full
+     screen and the Capture button ends up underneath it */
+  .sheet {
+    padding: 0;
+    align-items: flex-end;
+    height: 100dvh;
+  }
+  .sheet__box {
+    max-width: none;
+    border-radius: var(--r-lg) var(--r-lg) 0 0;
+    max-height: 92dvh;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .sheet__main { overflow-y: auto; padding: var(--s4) var(--s4) var(--s3); }
+  .sheet__input { font-size: 20px; }
+  .sheet__hints {
+    margin-top: var(--s4);
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin-inline: calc(var(--s4) * -1);
+    padding-inline: var(--s4);
+  }
+  .sheet__hints::-webkit-scrollbar { display: none; }
+  .sheet__hints .hint { flex: none; }
+  .sheet__foot { padding: var(--s3) var(--s4); flex: none; }
+  .sheet__foot .act { min-height: 44px; padding-inline: var(--s5); }
+  .sheet__note { flex: 1; }
+
+  /* The demo strip is chrome. It should not cost a line of the
+     briefing on a phone. */
+  .env { padding: 5px var(--s4); gap: var(--s2) var(--s3); }
+  .env__detail { padding-top: var(--s1); }
+
+  .more__item { min-height: 48px; display: flex; align-items: center; }
 }
 
 /* ---- Mobile "More" sheet ------------------------------------ */

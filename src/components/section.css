@@ -182,3 +182,53 @@
 }
 .postponed__acts { display: flex; gap: var(--s1); flex-wrap: wrap; }
 .postponed__acts .act { background: var(--surface); }
+
+/* ============================================================
+   TOUCH
+   On a phone the actions stop competing with the title for
+   horizontal space and take a row of their own. A 44px target
+   is the point of the exercise; a 30px one designed for a
+   mouse is not a button on a handset.
+   ============================================================ */
+
+/* An empty action column should not draw a divider for nothing */
+.card__right:empty { display: none; }
+
+@media (max-width: 760px) {
+  .card {
+    flex-wrap: wrap;
+    padding: var(--s4);
+    align-items: flex-start;
+  }
+
+  .card__right {
+    flex-basis: 100%;
+    align-self: stretch;
+    justify-content: flex-start;
+    margin-top: var(--s3);
+    padding-top: var(--s3);
+    border-top: 1px solid var(--border);
+  }
+
+  .card .acts { width: 100%; }
+  .card .acts .act { flex: 1; min-height: 44px; }
+
+  /* Supplementary tags are the first thing to go when width is short */
+  .card__meta .la-row { display: none; }
+
+  .sec { margin-bottom: var(--s7); }
+  .sec__list { gap: var(--s2); }
+
+  .postponed { flex-direction: column; align-items: stretch; gap: var(--s3); }
+  .postponed__q { min-width: 0; }
+  .postponed__acts .act { flex: 1; min-height: 44px; }
+
+  .inboxrow__pick { gap: var(--s2) var(--s1); }
+  .inboxrow__pick .hint { min-height: 40px; }
+}
+
+/* Touch has no hover, so the press itself has to answer back */
+@media (hover: none) {
+  .card:active { background: var(--surface-2); }
+  .act:active { background: var(--surface-3); transform: translateY(0.5px); }
+}

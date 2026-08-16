@@ -246,3 +246,15 @@ button.chip:hover { border-color: var(--border-2); background: var(--surface-2);
 .clock--asleep { color: var(--u-today-fg); }
 .clock--asleep .clock__dot { background: var(--u-today-fg); }
 .clock--asleep .clock__off { color: var(--u-today-fg); }
+
+/* ---- Touch ------------------------------------------------- */
+@media (max-width: 760px) {
+  .act { min-height: 44px; padding: 10px 14px; }
+  .hint { min-height: 40px; padding: 8px 14px; }
+  .chip { min-height: 34px; }
+}
+
+/* The grey flash on tap reads as a bug, not as feedback */
+.act, .hint, .chip, .tab, .card, .rail__item {
+  -webkit-tap-highlight-color: transparent;
+}

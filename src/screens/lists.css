@@ -227,3 +227,35 @@
   color: var(--ink-4);
   font-style: italic;
 }
+
+/* ============================================================
+   TOUCH
+   ============================================================ */
+@media (max-width: 760px) {
+  /* One scrolling row beats three wrapped ones — the first tab
+     stays put and the rest are a thumb-flick away */
+  .tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    margin-inline: calc(var(--s4) * -1);
+    padding-inline: var(--s4);
+    scroll-padding-inline: var(--s4);
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab { flex: none; min-height: 40px; }
+
+  /* Anything under 16px makes iOS zoom the page on focus */
+  .filterfield { font-size: 16px; min-height: 48px; }
+  .search { font-size: var(--fs-serif-sm); }
+
+  .controls { gap: var(--s1); }
+  .controls__select { min-height: 40px; font-size: 16px; }
+  .controls__count { flex-basis: 100%; margin-left: 0; }
+
+  .res { padding: var(--s4); }
+  .page__head { margin-bottom: var(--s5); }
+  .channels { flex-direction: column; align-items: flex-start; }
+  .channels__note { margin-left: 0; }
+}

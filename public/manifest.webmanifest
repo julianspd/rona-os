@@ -1,0 +1,13 @@
+{
+  "name": "Rona OS",
+  "short_name": "Rona OS",
+  "description": "A calm view of what deserves attention today.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FAF8F3",
+  "theme_color": "#FAF8F3",
+  "icons": [
+    { "src": "/app-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

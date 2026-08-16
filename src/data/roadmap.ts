@@ -102,7 +102,7 @@ export const ITEMS: BuildItem[] = [
   { id: 'undo', group: 'Foundations', status: 'built', title: 'Undo on every change',
     note: 'Nothing is ever hard-deleted. Every action can be reversed for a few seconds after it happens.' },
   { id: 'mobile', group: 'Foundations', status: 'built', title: 'Phone experience',
-    note: 'A genuine phone layout with capture at the centre of the bar. Confirmed as the primary way she will use this, so the phone view leads and the desktop follows.' },
+    note: 'Now built for the phone first. Actions take their own row rather than fighting the title for width, every target is at least 44px, filters scroll in one row instead of wrapping into three, and the capture sheet stays above the keyboard. Add it to your home screen and it opens without Safari around it.' },
   { id: 'design', group: 'Foundations', status: 'built', title: 'Visual system',
     note: 'Editorial and restrained. Gold means importance and ownership; a separate, quieter scale carries urgency.' },
   { id: 'ai', group: 'Foundations', status: 'partial', title: 'Suggestions',

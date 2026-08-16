@@ -312,3 +312,15 @@ a.act {
   text-decoration: none;
 }
 a.act:hover { text-decoration: none; }
+
+/* ---- Touch --------------------------------------------------- */
+@media (max-width: 760px) {
+  /* Under 16px iOS zooms the page the moment she taps in */
+  .dq__input { font-size: 16px; min-height: 84px; }
+  .dq { padding: var(--s4); }
+  .answers__acts { width: 100%; }
+  .answers__acts .act { flex: 1; min-height: 44px; }
+  .tally { grid-template-columns: 1fr 1fr; }
+  .tally__cell:nth-child(2n) { border-right: none; }
+  .tally__cell { border-bottom: var(--hairline); }
+}
