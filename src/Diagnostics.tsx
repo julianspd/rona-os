@@ -15,7 +15,7 @@
    shows up in a client demo.
    ============================================================ */
 
-import { Component } from 'react';
+import { Component, useEffect, useState } from 'react';
 import type { ErrorInfo, ReactNode } from 'react';
 
 /* ---- Error boundary ---------------------------------------- */
@@ -94,6 +94,67 @@ export function DebugPanel() {
           <div className="debug__row" key={k}><dt>{k}</dt><dd>{v}</dd></div>
         ))}
       </dl>
+      <LayoutReport />
     </div>
+  );
+}
+
+/* ---- Where things actually ended up -------------------------
+   Everything above says the device is capable. So the question is
+   no longer what it supports, but where it put things. Measured
+   after paint, on the device, because reading the stylesheet from
+   here has now been wrong three times.                           */
+function LayoutReport() {
+  const [rows, setRows] = useState<[string, string][]>([]);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      const box = (sel: string) => {
+        const el = document.querySelector(sel);
+        if (!el) return `${sel} — NOT IN DOM`;
+        const r = el.getBoundingClientRect();
+        const cs = getComputedStyle(el);
+        return `x${Math.round(r.x)} y${Math.round(r.y)} ${Math.round(r.width)}×${Math.round(r.height)} · ${cs.position} · ${cs.display}`;
+      };
+      const kids = (sel: string) => {
+        const el = document.querySelector(sel);
+        return el ? String(el.childElementCount) : 'absent';
+      };
+      const flex = (sel: string) => {
+        const el = document.querySelector(sel);
+        if (!el) return 'absent';
+        const cs = getComputedStyle(el);
+        return `${cs.flexDirection} / align:${cs.alignItems} / order:${cs.order}`;
+      };
+
+      setRows([
+        ['.env', box('.env')],
+        ['.shell__body', box('.shell__body')],
+        ['.shell__body flex', flex('.shell__body')],
+        ['.main', box('.main')],
+        ['.main children', kids('.main')],
+        ['.home', box('.home')],
+        ['.home children', kids('.home')],
+        ['.greet', box('.greet')],
+        ['.greet__line', box('.greet__line')],
+        ['.rail', box('.rail')],
+        ['.rail flex', flex('.rail')],
+        ['doc scrollHeight', String(document.documentElement.scrollHeight)],
+        ['body scrollHeight', String(document.body.scrollHeight)],
+      ]);
+    }, 300);
+    return () => clearTimeout(t);
+  }, []);
+
+  if (!rows.length) return null;
+  return (
+    <>
+      <p className="debug__h" style={{ marginTop: 10 }}>Layout</p>
+      <dl className="debug__list">
+        {rows.map(([k, v]) => (
+          <div className="debug__row" key={k}><dt>{k}</dt><dd>{v}</dd></div>
+        ))}
+      </dl>
+    </>
   );
 }
