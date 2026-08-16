@@ -454,3 +454,44 @@
   color: var(--gold-deep);
   margin-right: 7px;
 }
+
+/* ---- Diagnostics -------------------------------------------
+   Only ever seen when something has already gone wrong, or when
+   #debug is in the URL. Styled plainly and on purpose.         */
+.crash { padding: var(--s6) var(--s5); max-width: 62ch; }
+.crash__h {
+  font-family: var(--font-serif);
+  font-size: var(--fs-serif-md);
+  margin-bottom: var(--s3);
+}
+.crash__p { font-size: var(--fs-meta); color: var(--ink-2); margin-bottom: var(--s4); }
+.crash__pre {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: var(--surface-2);
+  border: var(--hairline);
+  border-left: 2px solid var(--u-overdue-fg);
+  border-radius: var(--r-sm);
+  padding: var(--s3);
+  margin-bottom: var(--s3);
+}
+.crash__pre--dim { color: var(--ink-3); border-left-color: var(--border-2); }
+
+.debug {
+  position: relative;
+  z-index: 100;
+  background: #22211F;
+  color: #FAF8F3;
+  padding: var(--s3) var(--s4);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11px;
+  line-height: 1.6;
+}
+.debug__h { color: #F2C94C; margin-bottom: var(--s2); letter-spacing: 0.08em; text-transform: uppercase; }
+.debug__list { display: grid; grid-template-columns: max-content 1fr; gap: 2px var(--s3); }
+.debug__row { display: contents; }
+.debug dt { color: #B4AEA1; }
+.debug dd { margin: 0; word-break: break-all; }

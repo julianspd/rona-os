@@ -1,0 +1,95 @@
+/* ============================================================
+   Diagnostics
+
+   A blank screen tells you nothing, and I cannot open a browser on
+   the device where it happens. This makes the failure legible from
+   the phone itself.
+
+   Two parts:
+     - an error boundary, so a thrown component paints the error
+       instead of leaving white space
+     - a panel at #debug reporting what the device actually thinks,
+       which is the information I keep having to guess at
+
+   The panel only appears with #debug in the URL, so nothing here
+   shows up in a client demo.
+   ============================================================ */
+
+import { Component } from 'react';
+import type { ErrorInfo, ReactNode } from 'react';
+
+/* ---- Error boundary ---------------------------------------- */
+interface State { error: Error | null; stack: string }
+
+export class ErrorTrap extends Component<{ children: ReactNode }, State> {
+  state: State = { error: null, stack: '' };
+
+  static getDerivedStateFromError(error: Error): Partial<State> {
+    return { error };
+  }
+
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    this.setState({ stack: info.componentStack ?? '' });
+    // Also to the console, for anyone with a laptop attached.
+    console.error('Rona OS crashed:', error, info);
+  }
+
+  render() {
+    if (!this.state.error) return this.props.children;
+    return (
+      <div className="crash">
+        <h1 className="crash__h">Something broke.</h1>
+        <p className="crash__p">
+          This is a real error, not a blank page. Send this screen on and it
+          can be fixed properly.
+        </p>
+        <pre className="crash__pre">{String(this.state.error?.message ?? this.state.error)}</pre>
+        {!!this.state.stack && (
+          <pre className="crash__pre crash__pre--dim">{this.state.stack.trim().slice(0, 900)}</pre>
+        )}
+      </div>
+    );
+  }
+}
+
+/* ---- What the device actually thinks ------------------------ */
+export function DebugPanel() {
+  if (!window.location.hash.includes('debug')) return null;
+
+  const mq = (q: string) => {
+    try { return window.matchMedia(q).matches ? 'yes' : 'no'; }
+    catch { return 'unsupported'; }
+  };
+
+  const supports = (prop: string, val: string) => {
+    try { return CSS.supports(prop, val) ? 'yes' : 'no'; }
+    catch { return 'unsupported'; }
+  };
+
+  const rows: [string, string][] = [
+    ['viewport', `${window.innerWidth} × ${window.innerHeight}`],
+    ['screen', `${window.screen.width} × ${window.screen.height}`],
+    ['pixel ratio', String(window.devicePixelRatio)],
+    ['mobile query matches', mq('(max-width: 760px)')],
+    ['range syntax works', mq('(width <= 760px)')],
+    ['supports dvh', supports('height', '100dvh')],
+    ['supports env()', supports('padding', 'env(safe-area-inset-bottom)')],
+    ['supports :has', supports('selector(:has(a))', '') === 'unsupported' ? 'n/a' : 'checked'],
+    ['localStorage', (() => {
+      try { window.localStorage.setItem('_p', '1'); window.localStorage.removeItem('_p'); return 'available'; }
+      catch { return 'blocked'; }
+    })()],
+    ['user agent', navigator.userAgent],
+  ];
+
+  return (
+    <div className="debug">
+      <p className="debug__h">Diagnostics</p>
+      <dl className="debug__list">
+        {rows.map(([k, v]) => (
+          <div className="debug__row" key={k}><dt>{k}</dt><dd>{v}</dd></div>
+        ))}
+      </dl>
+    </div>
+  );
+}

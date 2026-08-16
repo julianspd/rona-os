@@ -27,5 +27,45 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+
+    <!-- Last resort. If the module above fails to parse or run, React
+         never mounts and the error boundary never gets a chance. This
+         is deliberately old-fashioned JavaScript so it survives on a
+         browser that just rejected the modern bundle. -->
+    <script>
+      (function () {
+        var shown = false;
+        function paint(what) {
+          if (shown) return;
+          shown = true;
+          var r = document.getElementById('root');
+          if (!r) return;
+          r.innerHTML =
+            '<div style="padding:28px 20px;font:15px/1.5 -apple-system,sans-serif;color:#22211F">' +
+            '<p style="font-size:20px;margin:0 0 10px">This did not load.</p>' +
+            '<p style="color:#6B675F;margin:0 0 16px">The page failed before it could start. ' +
+            'Send this screen on and it can be fixed properly.</p>' +
+            '<pre style="white-space:pre-wrap;word-break:break-word;font:12px/1.5 ui-monospace,Menlo,monospace;' +
+            'background:#F4F1E8;border-left:2px solid #9E2B20;border-radius:5px;padding:12px;margin:0 0 12px">' +
+            String(what).slice(0, 600) + '</pre>' +
+            '<pre style="white-space:pre-wrap;word-break:break-word;font:11px/1.5 ui-monospace,Menlo,monospace;' +
+            'color:#857F74;background:#F4F1E8;border-radius:5px;padding:12px;margin:0">' +
+            navigator.userAgent + '</pre></div>';
+        }
+        window.addEventListener('error', function (e) {
+          paint((e && e.message) || 'Script error');
+        });
+        window.addEventListener('unhandledrejection', function (e) {
+          paint((e && e.reason && e.reason.message) || e.reason || 'Promise rejected');
+        });
+        // Nothing thrown, but nothing rendered either — also a failure.
+        setTimeout(function () {
+          var r = document.getElementById('root');
+          if (r && r.children.length === 0) {
+            paint('The app loaded without error but rendered nothing.');
+          }
+        }, 4000);
+      })();
+    </script>
   </body>
 </html>

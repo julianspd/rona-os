@@ -11,6 +11,7 @@ import { Bills, Decisions, Documents, Goals, Opportunities, Projects, Renewals }
 import { Styleguide } from './screens/Styleguide';
 import { Build } from './screens/Build';
 import { Dates } from './screens/Dates';
+import { DebugPanel, ErrorTrap } from './Diagnostics';
 import type { EntityType } from './types';
 import { classify } from './lib/classify';
 import type { Hint } from './lib/classify';
@@ -294,8 +295,11 @@ function Shell() {
 
 export default function App() {
   return (
-    <StoreProvider>
-      <Shell />
-    </StoreProvider>
+    <ErrorTrap>
+      <DebugPanel />
+      <StoreProvider>
+        <Shell />
+      </StoreProvider>
+    </ErrorTrap>
   );
 }
