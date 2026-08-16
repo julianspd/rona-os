@@ -108,6 +108,7 @@ export const SPHERES: Sphere[] = [
   { key: 'goals',      label: 'Goals',                  kind: 'view',   view: 'goals',      blurb: 'Stated, and staffed or not' },
   { key: 'documents',  label: 'Documents',              kind: 'view',   view: 'documents',  blurb: 'Links, held by the thing they belong to' },
   { key: 'decisions',  label: 'Decision log',           kind: 'view',   view: 'decisions',  blurb: 'What was decided, and why' },
+  { key: 'archive',    label: 'Dropped & postponed',    kind: 'view',   view: 'archive',    blurb: 'Nothing is destroyed; bring it back' },
   { key: 'build',      label: 'Build status',           kind: 'view',   view: 'build',      blurb: 'What works, what is next, what we need' },
   { key: 'styleguide', label: 'Design system',          kind: 'view',   view: 'styleguide', blurb: 'Tokens, components, states' },
 ];

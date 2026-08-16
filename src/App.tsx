@@ -11,6 +11,7 @@ import { Bills, Decisions, Documents, Goals, Opportunities, Projects, Renewals }
 import { Styleguide } from './screens/Styleguide';
 import { Build } from './screens/Build';
 import { Dates } from './screens/Dates';
+import { Archive } from './screens/Archive';
 import { DebugPanel, ErrorTrap } from './Diagnostics';
 import type { EntityType } from './types';
 import { classify } from './lib/classify';
@@ -297,6 +298,7 @@ function Shell() {
           {view === 'documents' && <Documents go={go} />}
           {view === 'decisions' && <Decisions go={go} />}
           {view === 'dates' && <Dates go={go} />}
+          {view === 'archive' && <Archive go={go} />}
           {view === 'build' && <Build />}
           {view === 'styleguide' && <Styleguide />}
           {view.startsWith('entity:') && (

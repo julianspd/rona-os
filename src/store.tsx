@@ -46,6 +46,8 @@ interface Store {
   killItem: (id: string) => void;
   keepItem: (id: string) => void;
   handOff: (id: string) => void;
+  /** Back out of the archive. The counterpart to "nothing is deleted". */
+  restore: (id: string) => void;
   followUp: (id: string) => void;
   logInteraction: (id: string) => void;
   capture: (title: string, hint?: InboxItem['hint']) => void;
@@ -118,6 +120,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     patch(id, c => ({ ...c, snoozeCount: 0, importance: 'High', lastTouched: ANCHOR_ISO }) as AnyCard,
       'Kept, and raised'), [patch]);
 
+  /** A promise of "nothing is destroyed" is empty without a way back.
+      Returns the item to a live state appropriate to what it is. */
+  const restore = useCallback((id: string) =>
+    patch(id, c => ({
+      ...c,
+      status: c.kind === 'commitment' ? 'Open'
+        : c.kind === 'entity' || c.kind === 'project' ? 'Active'
+        : c.kind === 'inbox' ? 'Inbox'
+        : 'Next',
+      snoozeCount: 0,
+      lastTouched: ANCHOR_ISO,
+    }) as AnyCard, 'Brought back'), [patch]);
+
   /** Someone else's. Flagged rather than assigned — she picks who. */
   const handOff = useCallback((id: string) =>
     patch(id, c => ({
@@ -175,13 +190,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     nameOf: id => visible.find(c => c.id === id)?.title ?? 'Unknown',
     fixtureState, setFixtureState,
     top3, setTop3,
-    complete, archive, snooze, killItem, keepItem, handOff,
+    complete, archive, snooze, killItem, keepItem, handOff, restore,
     followUp, logInteraction, capture, convertInbox,
     markPaid, showAmounts, setShowAmounts,
     toast, clearToast: () => setToast(null),
   }), [visible, fixtureState, top3, complete, archive, snooze, followUp,
       logInteraction, capture, convertInbox, markPaid, showAmounts, toast,
-      killItem, keepItem, handOff]);
+      killItem, keepItem, handOff, restore]);
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

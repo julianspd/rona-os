@@ -30,6 +30,7 @@ export function SphereGrid({ go }: { go: Go }) {
       bills: c => c.kind === 'bill' && (c as { paymentStatus?: string }).paymentStatus !== 'Paid',
       renewals: c => c.kind === 'reminder',
       dates: c => c.kind === 'contact' && !!(c as { importantDates?: unknown[] }).importantDates?.length,
+      archive: c => c.status === 'Archived' || (c.snoozeCount ?? 0) > 0,
       goals: c => c.kind === 'goal',
       documents: c => c.kind === 'document',
       decisions: c => c.kind === 'decision',
