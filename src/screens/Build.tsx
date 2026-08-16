@@ -16,7 +16,23 @@ import type { Answers } from '../lib/answers';
 import { todayLabel } from '../lib/dates';
 import './build.css';
 
-const ORDER: BuildStatus[] = ['built', 'partial', 'next', 'blocked', 'later'];
+const ORDER: BuildStatus[] = ['built', 'partial', 'next', 'blocked', 'later', 'ruled-out'];
+
+/* ---- A decision already settled on a call -------------------
+   It keeps its place in the list so the record is complete, but it
+   stops asking. Being asked something you already answered is the
+   fastest way to make a system feel like it was not listening.   */
+function SettledCard({ d }: { d: Decision }) {
+  return (
+    <li className="dq dq--settled">
+      <div className="dq__head">
+        <span className="dq__settledflag">Settled {d.resolved!.on}</span>
+      </div>
+      <p className="dq__q">{d.question}</p>
+      <p className="dq__answer">{d.resolved!.answer}</p>
+    </li>
+  );
+}
 
 /* ---- One decision, with somewhere to answer it --------------- */
 function DecisionCard({ d, value, onChange }: {
@@ -59,17 +75,20 @@ export function Build() {
 
   const [sentAt, setSentAt] = useState<string | null>(() => lastSent());
 
-  const answeredCount = DECISIONS.filter(d => answers[d.id]?.trim()).length;
-  const unanswered = DECISIONS.length - answeredCount;
-  const plan = buildMailto(SEND_TO.email, DECISIONS, answers, todayLabel);
+  const settled = DECISIONS.filter(d => d.resolved);
+  const open = DECISIONS.filter(d => !d.resolved);
+  const gates = open.filter(d => d.gate);
+  const rest = open.filter(d => !d.gate);
 
-  const fullText = () => formatAnswers(DECISIONS, answers, todayLabel);
+  const answeredCount = open.filter(d => answers[d.id]?.trim()).length;
+  const unanswered = open.length - answeredCount;
+  const plan = buildMailto(SEND_TO.email, open, answers, todayLabel);
 
-  const send = () => {
-    window.location.href = plan.href;
-    markSent(todayLabel);
-    setSentAt(todayLabel);
-  };
+  const fullText = () => formatAnswers(open, answers, todayLabel);
+
+  /* Recorded on click; the anchor itself does the opening. Scripted
+     redirects to mailto are unreliable, especially on phones. */
+  const noteSent = () => { markSent(todayLabel); setSentAt(todayLabel); };
 
   const download = () => {
     downloadAnswers(fullText(), 'rona-os-decisions.md');
@@ -98,8 +117,6 @@ export function Build() {
     return acc;
   }, {});
 
-  const gates = DECISIONS.filter(d => d.gate);
-  const rest = DECISIONS.filter(d => !d.gate);
 
   return (
     <div className="page build">
@@ -166,7 +183,7 @@ export function Build() {
         <header className="sec__head">
           <h2 className="sec__title">
             Decisions we need
-            <span className="sec__count">{answeredCount} of {DECISIONS.length} answered</span>
+            <span className="sec__count">{answeredCount} of {open.length} answered</span>
           </h2>
         </header>
 
@@ -194,14 +211,15 @@ export function Build() {
           </div>
 
           <div className="answers__acts">
-            <button
-              className="act act--primary"
-              onClick={send}
-              disabled={!answeredCount || !plan.viable}
-              title={plan.viable ? undefined : 'Too long for email — use Download instead'}
-            >
-              Send to {SEND_TO.name}
-            </button>
+            {answeredCount && plan.viable ? (
+              <a className="act act--primary" href={plan.href} onClick={noteSent}>
+                Send to {SEND_TO.name}
+              </a>
+            ) : (
+              <button className="act act--primary" disabled>
+                Send to {SEND_TO.name}
+              </button>
+            )}
             <button className="act" onClick={download} disabled={!answeredCount}>
               Download
             </button>
@@ -244,6 +262,18 @@ export function Build() {
             />
           ))}
         </ul>
+
+        {!!settled.length && (
+          <>
+            <p className="build__lead build__settledhead">
+              Already settled — {settled.length} answered on the last call, kept
+              here as a record.
+            </p>
+            <ul className="build__list">
+              {settled.map(d => <SettledCard key={d.id} d={d} />)}
+            </ul>
+          </>
+        )}
       </section>
 
       {/* ---- Agenda ---- */}

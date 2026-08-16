@@ -281,3 +281,34 @@
 @media (max-width: 760px) {
   .answers__bar .act { flex: 1; }
 }
+
+/* ---- A settled decision ------------------------------------- */
+.dq--settled { background: var(--surface-2); border-style: solid; }
+.dq--settled .dq__q { color: var(--ink-2); }
+
+.dq__settledflag {
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  font-weight: var(--w-semi);
+  color: var(--gold-deep);
+}
+
+.dq__answer {
+  font-size: var(--fs-meta);
+  color: var(--ink);
+  line-height: var(--lh-read);
+  margin-top: var(--s3);
+  padding-left: var(--s4);
+  border-left: 2px solid var(--gold);
+  max-width: 74ch;
+}
+
+.build__settledhead { margin-top: var(--s6); }
+
+/* Send is an anchor now, so it needs the button's own geometry */
+a.act {
+  display: inline-flex; align-items: center; justify-content: center;
+  text-decoration: none;
+}
+a.act:hover { text-decoration: none; }

@@ -7,7 +7,7 @@
    real?" never has to be asked twice.
    ============================================================ */
 
-export type BuildStatus = 'built' | 'partial' | 'next' | 'blocked' | 'later';
+export type BuildStatus = 'built' | 'partial' | 'next' | 'blocked' | 'later' | 'ruled-out';
 
 export const STATUS_LABEL: Record<BuildStatus, string> = {
   built: 'Working now',
@@ -15,6 +15,7 @@ export const STATUS_LABEL: Record<BuildStatus, string> = {
   next: 'Next up',
   blocked: 'Waiting on a decision',
   later: 'Deliberately later',
+  'ruled-out': 'Ruled out',
 };
 
 export interface BuildItem {
@@ -35,11 +36,13 @@ export interface Decision {
   /** Why it matters — what changes depending on the answer. */
   consequence: string;
   gate: boolean;
+  /** Settled on a call. Answered questions must stop being asked. */
+  resolved?: { answer: string; on: string };
 }
 
 /* ---- The last review this reflects ------------------------- */
 export const REVIEW = {
-  lastReview: '9 August 2026',
+  lastReview: '16 August 2026',
   prepared: 'Julian',
   stage: 'High-fidelity prototype on invented data',
 };
@@ -59,7 +62,7 @@ export const ITEMS: BuildItem[] = [
   { id: 'home', group: 'The daily loop', status: 'built', title: 'Home — the morning briefing',
     note: 'Greeting, anything overdue, top three, what needs deciding or reviewing, today’s schedule, what she owes and is owed. Everything else sits behind one line she can open.' },
   { id: 'capture', group: 'The daily loop', status: 'built', title: 'Capture',
-    note: 'One line of text from anywhere, on desktop or phone. Suggests a type and says why it suggested it. Files nothing on its own.' },
+    note: 'One line of text from anywhere, on desktop or phone. Suggests a type and says why. Files nothing on its own yet — the ambition is that it files correctly by itself, which comes after the suggestions have proved trustworthy.' },
   { id: 'inbox', group: 'The daily loop', status: 'built', title: 'Inbox',
     note: 'Holding area for captured thoughts. Each one files as the type it was marked, and can be redirected in one tap.' },
   { id: 'commitments', group: 'The daily loop', status: 'built', title: 'Commitments',
@@ -93,7 +96,7 @@ export const ITEMS: BuildItem[] = [
   { id: 'undo', group: 'Foundations', status: 'built', title: 'Undo on every change',
     note: 'Nothing is ever hard-deleted. Every action can be reversed for a few seconds after it happens.' },
   { id: 'mobile', group: 'Foundations', status: 'built', title: 'Phone experience',
-    note: 'A genuine phone layout with capture at the centre of the bar, not a squeezed desktop screen.' },
+    note: 'A genuine phone layout with capture at the centre of the bar. Confirmed as the primary way she will use this, so the phone view leads and the desktop follows.' },
   { id: 'design', group: 'Foundations', status: 'built', title: 'Visual system',
     note: 'Editorial and restrained. Gold means importance and ownership; a separate, quieter scale carries urgency.' },
   { id: 'ai', group: 'Foundations', status: 'partial', title: 'Suggestions',
@@ -109,25 +112,32 @@ export const ITEMS: BuildItem[] = [
   { id: 'brief', group: 'Next', status: 'next', title: 'Meeting briefs',
     note: 'Before a meeting: who this person is, what you owe each other, what is open between you.' },
 
+  { id: 'snooze', group: 'Next', status: 'next', title: 'Being told when you keep postponing something',
+    note: 'After the third snooze the item stops going quiet and asks directly: kill it, keep it, or hand it to someone. Rona named this as the habit she wants the system to call out, so it should be blunt rather than gentle.' },
+  { id: 'timezones', group: 'Next', status: 'next', title: 'The other person’s local time',
+    note: 'On contacts, and on anything with someone waiting at the other end, so a follow-up is not sent at their 3am.' },
+  { id: 'birthdays', group: 'Next', status: 'next', title: 'Birthdays and important dates in one place',
+    note: 'Replaces checking Instagram stories, Facebook and two calendars every morning. One view, one list, gift ideas alongside.' },
+
   /* ---- Blocked on a decision ---- */
   { id: 'data', group: 'Real data', status: 'blocked', blockedBy: 'accounts', title: 'Saved data',
-    note: 'Right now nothing persists — refreshing resets everything. Needs the database set up under her ownership.' },
+    note: 'Right now nothing persists — refreshing resets everything. Supabase, owned by Rona, roughly $10–15 a month, with two-factor set up alongside Jonathan.' },
   { id: 'submit', group: 'Real data', status: 'blocked', blockedBy: 'accounts', title: 'Answers arriving on their own',
     note: 'Sending your answers currently opens your email with everything filled in — you still press send. Having them land straight in an inbox, with no step in between, needs the database set up first.' },
   { id: 'login', group: 'Real data', status: 'blocked', blockedBy: 'accounts', title: 'Login',
     note: 'No accounts exist yet. Required before any real information goes in.' },
   { id: 'gcal', group: 'Real data', status: 'blocked', blockedBy: 'employer', title: 'Google Calendar',
-    note: 'The single most valuable connection — it is where she actually lives, and it is currently doing a task manager’s job.' },
+    note: 'The single most valuable connection — it is where she actually lives, and it is currently doing a task manager’s job. Four calendars to pull from, either merged or kept as separate layers.' },
   { id: 'gmail', group: 'Real data', status: 'blocked', blockedBy: 'employer', title: 'Gmail',
-    note: 'Read-only, and only messages she selects. Nothing sent, deleted or reorganised during the pilot.' },
+    note: 'Read-only on the existing inbox — no new account. Surfaces what needs a reply without sending, deleting or reorganising anything.' },
   { id: 'drive', group: 'Real data', status: 'blocked', blockedBy: 'employer', title: 'Drive & Docs',
     note: 'Attach files and meeting transcripts to the right people and meetings without copying anything.' },
 
   /* ---- Deliberately later ---- */
-  { id: 'slack', group: 'Deliberately later', status: 'later', title: 'Slack',
-    note: 'Straightforward technically, but likely needs her employer’s approval to install anything.' },
+  { id: 'slack', group: 'Ruled out', status: 'ruled-out', title: 'Slack',
+    note: 'Her company IT will not permit an outside app. This is settled rather than postponed — anything arriving from Slack will have to be shared in by hand.' },
   { id: 'messaging', group: 'Deliberately later', status: 'later', title: 'WhatsApp & iMessage',
-    note: 'Neither can genuinely be connected — Apple offers no way in, and WhatsApp’s business tools do not reach a personal account. The realistic path is sharing a message into the system by hand.' },
+    note: 'Her personal accounts still cannot be read directly. But a separate number dedicated to the system can receive messages properly, which is a real route rather than a workaround — worth trying once the database exists.' },
   { id: 'meetings', group: 'Deliberately later', status: 'later', title: 'Zoom & transcripts',
     note: 'Transcripts already land in Google Docs, so connecting Drive covers most of this.' },
   { id: 'family', group: 'Deliberately later', status: 'later', title: 'Family calendar & Telegram assistant',
@@ -145,13 +155,14 @@ export const ITEMS: BuildItem[] = [
 export const DECISIONS: Decision[] = [
   {
     id: 'employer', gate: true, owner: 'Rona',
-    question: 'Does her employer allow outside apps to connect to Google Workspace?',
-    consequence: 'If not, the Google-first plan does not work and the whole approach needs rethinking. Worth answering before any development time goes into it.',
+    question: 'Are her Gmail and Calendar personal accounts, or managed by her employer?',
+    consequence: 'This is now the question everything rests on. Her company has already refused Slack, so if Google is company-managed too, the same answer likely applies and the whole connected plan needs rethinking. If those accounts are personal, none of that applies and we can proceed.',
   },
   {
     id: 'slack-control', gate: true, owner: 'Rona',
     question: 'Is the Slack workspace controlled by her company?',
     consequence: 'If it is, Slack becomes an approval process rather than a piece of work we can schedule.',
+    resolved: { on: '16 August 2026', answer: 'Yes, and her company IT will not permit an outside app. Slack is out of scope — not deferred, closed.' },
   },
   {
     id: 'top3', gate: false, owner: 'Rona',
@@ -167,16 +178,18 @@ export const DECISIONS: Decision[] = [
     id: 'accounts', gate: false, owner: 'Rona & Kavas',
     question: 'Who owns the database, hosting and code accounts?',
     consequence: 'These should be in her name or her organisation’s, with the development team invited in. Nothing real should be stored until this is settled.',
+    resolved: { on: '16 August 2026', answer: 'Rona owns the Supabase account and server, roughly $10–15 a month. Security and two-factor setup to be done with Jonathan.' },
   },
   {
     id: 'gmail-fresh', gate: false, owner: 'Rona',
     question: 'Start a fresh Gmail inbox, or connect the existing one?',
     consequence: 'A fresh inbox is a separate migration project with its own plan, not a setting we switch on.',
+    resolved: { on: '16 August 2026', answer: 'No new account. Connect the existing inbox, read-only, so notifications surface without anything being sent, moved or reorganised.' },
   },
   {
     id: 'calendar-truth', gate: false, owner: 'Rona',
-    question: 'Which calendar is the authoritative one?',
-    consequence: 'Determines what Today and the calendar view treat as the truth when they disagree.',
+    question: 'Of the four calendars, which is the authoritative one?',
+    consequence: 'We know there are four and that we can either consolidate them or read all four. Still open is which one wins when they disagree, and which should stay out of the work view entirely.',
   },
   {
     id: 'amounts', gate: false, owner: 'Rona',
