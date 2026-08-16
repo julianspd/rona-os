@@ -1,0 +1,74 @@
+/* Birthdays & important dates */
+
+.datelede {
+  font-size: var(--fs-meta);
+  color: var(--ink-2);
+  padding: var(--s3) var(--s4);
+  border-left: 2px solid var(--gold);
+  margin-bottom: var(--s6);
+}
+.datelede strong { color: var(--ink); font-weight: var(--w-semi); }
+
+.dcard {
+  display: flex; align-items: flex-start; gap: var(--s4);
+  padding: var(--s4);
+  background: var(--surface);
+  border: var(--hairline);
+  border-radius: var(--r);
+  transition: border-color var(--t);
+}
+.dcard:hover { border-color: var(--border-2); }
+
+/* Gold, not red — a birthday is an opportunity, not an alarm */
+.dcard--soon { border-color: var(--gold-line); }
+
+.dcard__when {
+  flex: none;
+  width: 104px;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.dcard__until {
+  font-size: var(--fs-meta);
+  font-weight: var(--w-medium);
+  color: var(--ink);
+}
+.dcard--soon .dcard__until { color: var(--gold-deep); }
+.dcard__date { font-size: var(--fs-micro); color: var(--ink-3); }
+
+.dcard__body { flex: 1; min-width: 0; }
+.dcard__label {
+  font-family: var(--font-serif);
+  font-size: var(--fs-serif-sm);
+  letter-spacing: var(--ls-serif);
+  line-height: var(--lh-tight);
+}
+.dcard__who {
+  display: flex; align-items: center; gap: var(--s2);
+  flex-wrap: wrap;
+  margin-top: var(--s2);
+}
+
+.dcard__gift {
+  font-size: var(--fs-meta);
+  color: var(--ink-2);
+  line-height: var(--lh-read);
+  margin-top: var(--s3);
+  max-width: 62ch;
+}
+.dcard__gifttag {
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  font-weight: var(--w-semi);
+  color: var(--gold-deep);
+  margin-right: 7px;
+}
+
+.dcard > .act { flex: none; align-self: center; }
+
+@media (max-width: 760px) {
+  .dcard { flex-wrap: wrap; gap: var(--s2); }
+  .dcard__when { width: auto; flex-direction: row; gap: var(--s2); align-items: baseline; }
+  .dcard__body { flex-basis: 100%; }
+  .dcard > .act { width: 100%; }
+}

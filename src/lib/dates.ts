@@ -131,3 +131,31 @@ export function shiftDate(iso: string, days: number): string {
   const d = addDays(parseDate(iso), days);
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
+
+/* ============================================================
+   Anniversaries
+
+   Birthdays are calendar facts, not demo content, so they are
+   measured against the real today rather than the fixture anchor.
+   Only the month and day matter; the year in the data is ignored.
+   ============================================================ */
+
+export function daysUntilAnnual(iso: string, from: Date = TODAY): number {
+  const [, m, d] = iso.split('-').map(Number);
+  let next = new Date(from.getFullYear(), m - 1, d);
+  if (next.getTime() < from.getTime()) next = new Date(from.getFullYear() + 1, m - 1, d);
+  return Math.round((next.getTime() - from.getTime()) / DAY);
+}
+
+export function annualLabel(iso: string): string {
+  const [, m, d] = iso.split('-').map(Number);
+  return new Date(2000, m - 1, d).toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+}
+
+export function untilLabel(days: number): string {
+  if (days === 0) return 'today';
+  if (days === 1) return 'tomorrow';
+  if (days <= 30) return `in ${days} days`;
+  if (days <= 60) return 'next month';
+  return `in ${Math.round(days / 30)} months`;
+}

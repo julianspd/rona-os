@@ -104,6 +104,7 @@ export const SPHERES: Sphere[] = [
   { key: 'travel',     label: 'Travel',                 kind: 'entity', entityType: 'trip',       blurb: 'Trips and what to combine' },
   { key: 'bills',      label: 'Bills & obligations',    kind: 'view',   view: 'bills',      blurb: 'Nothing missed' },
   { key: 'renewals',   label: 'Renewals & life admin',  kind: 'view',   view: 'renewals',   blurb: 'The next 90 days' },
+  { key: 'dates',      label: 'Birthdays & dates',      kind: 'view',   view: 'dates',      blurb: 'Everything that comes round yearly' },
   { key: 'goals',      label: 'Goals',                  kind: 'view',   view: 'goals',      blurb: 'Stated, and staffed or not' },
   { key: 'documents',  label: 'Documents',              kind: 'view',   view: 'documents',  blurb: 'Links, held by the thing they belong to' },
   { key: 'decisions',  label: 'Decision log',           kind: 'view',   view: 'decisions',  blurb: 'What was decided, and why' },

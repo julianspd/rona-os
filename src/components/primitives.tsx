@@ -2,9 +2,11 @@
    Primitives — PRD Appendix B.1
    ============================================================ */
 
+import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { Flag, LifeArea, Status, Urgency } from '../types';
 import { relativeLabel, absoluteLabel, urgencyOf } from '../lib/dates';
+import { localClock, offsetLabel, zoneFor } from '../lib/timezones';
 import './primitives.css';
 
 /* ---- UrgencyDot — D.1 -------------------------------------- */
@@ -129,6 +131,35 @@ export function AILabel({ reason, children }: { reason: string; children: ReactN
       <div>{children}</div>
       <div className="ai__why">Why: {reason}</div>
     </div>
+  );
+}
+
+/* ---- LocalTime ---------------------------------------------
+   Their clock, not yours. Flagged when they are unlikely to be
+   awake, because that is the only reason to show it.            */
+export function LocalTime({ city, timezone, showOffset = false }: {
+  city?: string; timezone?: string; showOffset?: boolean;
+}) {
+  const zone = zoneFor(city, timezone);
+  // Ticks so a page left open does not keep insisting it is 9am.
+  const [, tick] = useState(0);
+  useEffect(() => {
+    if (!zone) return;
+    const t = setInterval(() => tick(n => n + 1), 60_000);
+    return () => clearInterval(t);
+  }, [zone]);
+
+  if (!zone) return null;
+  const c = localClock(zone);
+  const off = offsetLabel(c);
+
+  return (
+    <span className={`clock ${c.awake ? '' : 'clock--asleep'}`}>
+      <span className="clock__dot" aria-hidden="true" />
+      {c.label} their time
+      {showOffset && off && <span className="clock__off">· {off}</span>}
+      {!c.awake && <span className="clock__off">· likely asleep</span>}
+    </span>
   );
 }
 

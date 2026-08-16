@@ -37,6 +37,7 @@ export const contacts: Contact[] = [
     workingOn: 'Halden’s DTC relaunch',
     channels: ['Gmail', 'WhatsApp', 'Zoom'],
     waysICanHelp: 'Intro to a fractional creative director',
+    importantDates: [{ label: 'Birthday', date: '2026-08-22' }, { label: 'Daughter starts school', date: '2026-09-01' }],
     flags: [], attentionType: 'Connect',
   },
   {
@@ -49,6 +50,7 @@ export const contacts: Contact[] = [
     theyCareAbout: 'Getting the collective to a sustainable funding base',
     workingOn: 'The autumn fundraising push',
     channels: ['Gmail', 'Google Meet'],
+    importantDates: [{ label: 'Birthday', date: '2026-11-04' }],
     flags: [],
   },
   {
@@ -61,6 +63,7 @@ export const contacts: Contact[] = [
     theyCareAbout: 'Wants a VP track conversation this year',
     workingOn: 'Q4 launch analytics + the competitive scan',
     channels: ['Slack', 'Gmail', 'Google Meet'],
+    importantDates: [{ label: 'Two years at Meridian Grove', date: '2026-09-15' }],
     flags: [],
   },
   {
@@ -73,6 +76,8 @@ export const contacts: Contact[] = [
     theyCareAbout: 'Keeping production small enough to stay good',
     workingOn: 'The packaging decision and the autumn wholesale push',
     channels: ['WhatsApp', 'Gmail'],
+    importantDates: [{ label: 'Birthday', date: '2026-08-28' }, { label: 'Coastline founded', date: '2026-10-02' }],
+    giftIdeas: 'The Japanese knife she keeps mentioning. Not wine — she makes her own.',
     flags: [],
   },
   {
@@ -83,6 +88,7 @@ export const contacts: Contact[] = [
     city: 'New York', lifeAreas: ['Career', 'Relationships'],
     howWeMet: 'Cold outreach in 2024 that turned into a real relationship',
     theyCareAbout: 'Placing operators, not résumés',
+    importantDates: [{ label: 'Birthday', date: '2026-08-18' }],
     flags: [],
   },
   {
@@ -96,6 +102,8 @@ export const contacts: Contact[] = [
     waysICanHelp: 'Two introductions I have been meaning to make',
     channels: ['iMessage', 'WhatsApp'],
     /* E.3 — the dormant inner-circle contact. 147 days. */
+    importantDates: [{ label: 'Birthday', date: '2026-10-12' }],
+    giftIdeas: 'Something for the new flat. She left most of her things behind.',
     flags: ['dormant'], attentionType: 'Connect', importance: 'High',
   },
   {
@@ -116,6 +124,7 @@ export const contacts: Contact[] = [
     city: 'Chicago', lifeAreas: ['Consulting', 'Relationships'],
     howWeMet: 'Client-side counterpart on a 2023 engagement',
     theyCareAbout: 'Wants to bring an advisor onto two of his portfolio brands',
+    importantDates: [{ label: 'Birthday', date: '2026-09-03' }],
     flags: [],
   },
   {
@@ -126,6 +135,7 @@ export const contacts: Contact[] = [
     city: 'Chicago', lifeAreas: ['Brand', 'Career'],
     howWeMet: 'She invited me to speak in 2025',
     theyCareAbout: 'Programming operators rather than pundits',
+    importantDates: [{ label: 'Birthday', date: '2027-01-20' }],
     flags: [],
   },
   {
@@ -135,6 +145,7 @@ export const contacts: Contact[] = [
     lastInteraction: '2026-07-25', lastTouched: '2026-07-25',
     city: 'Oakland', lifeAreas: ['Property'],
     howWeMet: 'Did the Lakeside Unit bathroom in 2024',
+    importantDates: [{ label: 'Birthday', date: '2026-09-27' }],
     flags: [],
   },
   {
@@ -145,6 +156,7 @@ export const contacts: Contact[] = [
     city: 'Oakland', lifeAreas: ['Nonprofit', 'Relationships'],
     howWeMet: 'Mentorship match through the collective',
     theyCareAbout: 'Deciding between graduate school and a first operating role',
+    importantDates: [{ label: 'Birthday', date: '2026-12-02' }, { label: 'Graduates', date: '2027-05-18' }],
     flags: ['dormant'], attentionType: 'Connect',
   },
   {
@@ -156,6 +168,7 @@ export const contacts: Contact[] = [
     theyCareAbout: 'Her garden, and being told things in person rather than by text',
     channels: ['iMessage'],
     importantDates: [{ label: 'Birthday', date: '2026-08-19' }],
+    giftIdeas: 'The garden book she mentioned at Easter. Posted, with a note — not a text.',
     flags: [],
   },
 

@@ -156,3 +156,29 @@
 }
 .inboxrow__picklabel { font-size: var(--fs-micro); color: var(--ink-3); letter-spacing: var(--ls-eyebrow); text-transform: uppercase; }
 .inboxrow__pick .hint { background: var(--surface); }
+
+/* ---- Postponed three times ---------------------------------
+   Attached to the item rather than floating beside it, so the
+   question cannot be scrolled past independently of its cause. */
+.postponed__wrap { display: flex; flex-direction: column; }
+.postponed__wrap > .card { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+
+.postponed {
+  display: flex; align-items: center; gap: var(--s3);
+  flex-wrap: wrap;
+  padding: var(--s3) var(--s4);
+  margin-top: -1px;
+  border: 1px solid var(--u-today-line);
+  border-top: none;
+  border-radius: 0 0 var(--r) var(--r);
+  background: var(--u-today-bg);
+}
+.postponed__q {
+  flex: 1;
+  min-width: 220px;
+  font-size: var(--fs-meta);
+  color: var(--u-today-fg);
+  line-height: var(--lh-read);
+}
+.postponed__acts { display: flex; gap: var(--s1); flex-wrap: wrap; }
+.postponed__acts .act { background: var(--surface); }

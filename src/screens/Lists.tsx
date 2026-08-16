@@ -8,6 +8,8 @@ import { useStore } from '../store';
 import { Card } from '../components/Card';
 import { daysFromToday, daysSince, todayLabel } from '../lib/dates';
 import { EntityDetail } from './Spheres';
+import { LocalTime } from '../components/primitives';
+import { annualLabel, daysUntilAnnual, untilLabel } from '../lib/dates';
 import type { AnyCard, Commitment, Contact } from '../types';
 import './lists.css';
 
@@ -338,12 +340,16 @@ export function Detail({ id, go }: { id: string; go: (v: string, id?: string) =>
     ] : []),
     ...(c.kind === 'contact' ? [
       ['Strength', (c as Contact).strength] as [string, string],
+      ['Their local time', (c as Contact).city ? '' : undefined] as [string, string | undefined],
       ['Cadence', `${(c as Contact).cadenceDays} days`] as [string, string],
       ['Last interaction', (c as Contact).lastInteraction] as [string, string],
       ['How we met', (c as Contact).howWeMet] as [string, string | undefined],
       ['They care about', (c as Contact).theyCareAbout] as [string, string | undefined],
       ['Working on', (c as Contact).workingOn] as [string, string | undefined],
       ['Ways I can help', (c as Contact).waysICanHelp] as [string, string | undefined],
+      ['Gift ideas', (c as Contact).giftIdeas] as [string, string | undefined],
+      ...((c as Contact).importantDates ?? []).map(d =>
+        [d.label, `${annualLabel(d.date)} · ${untilLabel(daysUntilAnnual(d.date))}`] as [string, string]),
     ] : []),
   ];
 
@@ -367,8 +373,15 @@ export function Detail({ id, go }: { id: string; go: (v: string, id?: string) =>
           </div>
         )}
         <dl className="fields">
-          {fields.filter(([, v]) => v).map(([k, v]) => (
-            <div className="field" key={k}><dt>{k}</dt><dd>{v}</dd></div>
+          {fields.filter(([k, v]) => v || k === 'Their local time').map(([k, v]) => (
+            <div className="field" key={k}>
+              <dt>{k}</dt>
+              <dd>
+                {k === 'Their local time'
+                  ? <LocalTime city={(c as Contact).city} timezone={(c as Contact).timezone} showOffset />
+                  : v}
+              </dd>
+            </div>
           ))}
         </dl>
 

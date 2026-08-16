@@ -10,6 +10,7 @@ import { EntityDetail, EntityList, SphereGrid } from './screens/Spheres';
 import { Bills, Decisions, Documents, Goals, Opportunities, Projects, Renewals } from './screens/Pipeline';
 import { Styleguide } from './screens/Styleguide';
 import { Build } from './screens/Build';
+import { Dates } from './screens/Dates';
 import type { EntityType } from './types';
 import { classify } from './lib/classify';
 import type { Hint } from './lib/classify';
@@ -259,6 +260,7 @@ function Shell() {
           {view === 'goals' && <Goals go={go} />}
           {view === 'documents' && <Documents go={go} />}
           {view === 'decisions' && <Decisions go={go} />}
+          {view === 'dates' && <Dates go={go} />}
           {view === 'build' && <Build />}
           {view === 'styleguide' && <Styleguide />}
           {view.startsWith('entity:') && (

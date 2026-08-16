@@ -225,3 +225,24 @@ button.chip:hover { border-color: var(--border-2); background: var(--surface-2);
 }
 
 .sep { color: var(--ink-4); }
+
+/* ---- LocalTime ---------------------------------------------
+   Neutral when they are reachable. Only speaks up when they
+   are not, because that is the moment it earns its space.     */
+.clock {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: var(--fs-meta);
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.clock__dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--ink-4);
+}
+.clock__off { color: var(--ink-3); font-size: var(--fs-micro); }
+
+.clock--asleep { color: var(--u-today-fg); }
+.clock--asleep .clock__dot { background: var(--u-today-fg); }
+.clock--asleep .clock__off { color: var(--u-today-fg); }

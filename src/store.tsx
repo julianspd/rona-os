@@ -42,6 +42,10 @@ interface Store {
   complete: (id: string) => void;
   archive: (id: string) => void;
   snooze: (id: string, days: number) => void;
+  /** The three ways out of a repeatedly postponed item. */
+  killItem: (id: string) => void;
+  keepItem: (id: string) => void;
+  handOff: (id: string) => void;
   followUp: (id: string) => void;
   logInteraction: (id: string) => void;
   capture: (title: string, hint?: InboxItem['hint']) => void;
@@ -94,12 +98,34 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const archive = useCallback((id: string) =>
     patch(id, c => ({ ...c, status: 'Archived' }) as AnyCard, 'Archived'), [patch]);
 
+  /* Every postponement is counted. Three is where the system stops
+     being polite about it — Rona asked to be called out on this. */
   const snooze = useCallback((id: string, days: number) =>
     patch(id, c => ({
       ...c,
       dueDate: c.dueDate ? shiftDate(c.dueDate, days) : undefined,
+      snoozeCount: (c.snoozeCount ?? 0) + 1,
       lastTouched: ANCHOR_ISO,
     }) as AnyCard, `Snoozed ${days} days`), [patch]);
+
+  /** Admit it is not going to happen. Archived, never destroyed. */
+  const killItem = useCallback((id: string) =>
+    patch(id, c => ({ ...c, status: 'Archived', snoozeCount: 0 }) as AnyCard,
+      'Dropped — it had been postponed three times'), [patch]);
+
+  /** Recommit. The count resets, so the question is earned again. */
+  const keepItem = useCallback((id: string) =>
+    patch(id, c => ({ ...c, snoozeCount: 0, importance: 'High', lastTouched: ANCHOR_ISO }) as AnyCard,
+      'Kept, and raised'), [patch]);
+
+  /** Someone else's. Flagged rather than assigned — she picks who. */
+  const handOff = useCallback((id: string) =>
+    patch(id, c => ({
+      ...c,
+      snoozeCount: 0,
+      attentionType: 'Delegate',
+      flags: c.flags.includes('delegatable') ? c.flags : [...c.flags, 'delegatable'],
+    }) as AnyCard, 'Marked to hand off'), [patch]);
 
   /** FR-COM-6 — for "They Owe" the move is to ask, not to do. */
   const followUp = useCallback((id: string) =>
@@ -149,11 +175,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     nameOf: id => visible.find(c => c.id === id)?.title ?? 'Unknown',
     fixtureState, setFixtureState,
     top3, setTop3,
-    complete, archive, snooze, followUp, logInteraction, capture, convertInbox,
+    complete, archive, snooze, killItem, keepItem, handOff,
+    followUp, logInteraction, capture, convertInbox,
     markPaid, showAmounts, setShowAmounts,
     toast, clearToast: () => setToast(null),
   }), [visible, fixtureState, top3, complete, archive, snooze, followUp,
-      logInteraction, capture, convertInbox, markPaid, showAmounts, toast]);
+      logInteraction, capture, convertInbox, markPaid, showAmounts, toast,
+      killItem, keepItem, handOff]);
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

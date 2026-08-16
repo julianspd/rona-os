@@ -13,7 +13,7 @@
 
 import type { AnyCard, AttentionType, Bill, Contact, Commitment, Delegation,
   Entity, EventCard, Opportunity, Project } from '../types';
-import { daysFromToday, daysSince } from './dates';
+import { daysFromToday, daysSince, daysUntilAnnual } from './dates';
 
 export interface HomeSection {
   key: string;
@@ -66,12 +66,14 @@ const isCheckInDue = (c: AnyCard) => {
   return d !== undefined && d <= 0;
 };
 
-/** FR-CRM-3 — past their cadence. Values live in the fixtures (H.6). */
+/** Past their cadence, or with a date coming up — both are reasons
+    to reach out, which is what this section is actually for. */
 const needsReconnect = (c: AnyCard) => {
   if (c.kind !== 'contact') return false;
   const k = c as Contact;
   const since = daysSince(k.lastInteraction);
-  return since !== undefined && since > k.cadenceDays;
+  if (since !== undefined && since > k.cadenceDays) return true;
+  return (k.importantDates ?? []).some(d => daysUntilAnnual(d.date) <= 7);
 };
 
 /** Reminders and bills share this section — from Rona's side they are

@@ -57,6 +57,9 @@ export interface BaseCard {
   lastTouched: string;
   flags: Flag[];
   notes?: string;
+  /** How many times this has been pushed down the road. Anything can be
+      postponed, so this belongs on every card, not just reminders. */
+  snoozeCount?: number;
 }
 
 /* ---- Tier 1 ------------------------------------------------ */
@@ -109,9 +112,13 @@ export interface Contact extends BaseCard {
   workingOn?: string;
   waysICanHelp?: string;
   importantDates?: { label: string; date: string }[];
+  /** Kept because remembering is the easy part; knowing what to send is not. */
+  giftIdeas?: string;
   /** How Rona actually reaches this person. Displayed as intent, not
       as a live connection — none of these are wired to anything. */
   channels?: Channel[];
+  /** Overrides the city lookup when someone is not where you think. */
+  timezone?: string;
 }
 
 export type ReminderKind =
@@ -123,7 +130,6 @@ export interface Reminder extends BaseCard {
   reminderKind: ReminderKind;
   parentId?: string;          // FR-REM-3 — vehicle / property / document
   recurrence?: string;
-  snoozeCount?: number;       // FR-REM-5 — "postponed 3x"
 }
 
 /* ---- Tier 2 ------------------------------------------------ */

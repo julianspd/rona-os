@@ -15,7 +15,7 @@ import type {
 import { urgencyOf, relativeLabel, daysSince, daysFromToday } from '../lib/dates';
 import {
   UrgencyDot, StatusBadge, DirectionMark, LifeAreas, PersonChip,
-  DateLabel, NextActionLine, FlagBadge, InlineActions,
+  DateLabel, NextActionLine, FlagBadge, InlineActions, LocalTime,
 } from './primitives';
 import type { Action } from './primitives';
 import { useStore } from '../store';
@@ -56,8 +56,49 @@ export function AttentionCard({
   );
 }
 
+/* ---- Postponed three times ---------------------------------
+   Rona named repeated postponement as the habit she wants called
+   out, so this does not hint. It stops the item going quiet and
+   asks the only three questions that resolve it.                */
+const KILL_THRESHOLD = 3;
+
+function PostponedPrompt({ id, count }: { id: string; count: number }) {
+  const { killItem, keepItem, handOff } = useStore();
+  return (
+    <div className="postponed">
+      <p className="postponed__q">
+        Postponed {count} times. It is not going to happen by accident —
+        what do you want to do with it?
+      </p>
+      <div className="postponed__acts">
+        <button className="act" onClick={() => killItem(id)}>Drop it</button>
+        <button className="act" onClick={() => keepItem(id)}>Keep, and mean it</button>
+        <button className="act act--primary" onClick={() => handOff(id)}>Hand it off</button>
+      </div>
+    </div>
+  );
+}
+
+const OPEN_ENOUGH = (c: AnyCard) =>
+  c.status !== 'Complete' && c.status !== 'Archived';
+
 /* ---- Dispatcher -------------------------------------------- */
 export function Card({ card, onOpen, marked }: {
+  card: AnyCard; onOpen?: (id: string) => void; marked?: boolean;
+}) {
+  const count = card.snoozeCount ?? 0;
+  if (count >= KILL_THRESHOLD && OPEN_ENOUGH(card)) {
+    return (
+      <div className="postponed__wrap">
+        <CardBody card={card} onOpen={onOpen} marked={marked} />
+        <PostponedPrompt id={card.id} count={count} />
+      </div>
+    );
+  }
+  return <CardBody card={card} onOpen={onOpen} marked={marked} />;
+}
+
+function CardBody({ card, onOpen, marked }: {
   card: AnyCard; onOpen?: (id: string) => void; marked?: boolean;
 }) {
   switch (card.kind) {
@@ -126,6 +167,7 @@ export function ContactCard({ c, onOpen }: { c: Contact; onOpen?: (id: string) =
         <span className={overdue ? 'date u-overdue' : 'date u-later'}>
           {since} days since contact
         </span>
+        <LocalTime city={c.city} timezone={c.timezone} />
       </>}
       right={c.flags.map(f => <FlagBadge key={f} flag={f} />)}
       actions={[{ label: 'Logged today', onClick: () => logInteraction(c.id), primary: overdue }]}

@@ -93,6 +93,12 @@ export const ITEMS: BuildItem[] = [
     note: 'Documents surface from the thing they belong to. Decisions record what was chosen, why, and when to revisit.' },
 
   /* ---- Foundations ---- */
+  { id: 'snooze', group: 'The daily loop', status: 'built', title: 'Being told when you keep postponing something',
+    note: 'Every postponement is counted. On the third the item stops going quiet and asks outright — drop it, keep it and mean it, or hand it off. Keeping it raises its importance, so recommitting costs something. Blunt on purpose.' },
+  { id: 'timezones', group: 'The daily loop', status: 'built', title: 'The other person’s local time',
+    note: 'On every contact, live, updating each minute. Turns amber and says “likely asleep” outside 8am to 9pm their time, so a follow-up never lands at their 3am. The hours difference shows on their full record.' },
+  { id: 'birthdays', group: 'Life areas', status: 'built', title: 'Birthdays and important dates',
+    note: 'One list, ordered by what is next, replacing the Instagram, Facebook and two-calendar morning check. Includes gift notes, because remembering the date is the easy half. Anyone with a date inside a week also surfaces on Home as worth reaching out to.' },
   { id: 'undo', group: 'Foundations', status: 'built', title: 'Undo on every change',
     note: 'Nothing is ever hard-deleted. Every action can be reversed for a few seconds after it happens.' },
   { id: 'mobile', group: 'Foundations', status: 'built', title: 'Phone experience',
@@ -111,13 +117,6 @@ export const ITEMS: BuildItem[] = [
     note: 'The Friday sit-down: wins, misses, what stalled, what she is owed, and next week’s big three. This is what turns the system into a habit.' },
   { id: 'brief', group: 'Next', status: 'next', title: 'Meeting briefs',
     note: 'Before a meeting: who this person is, what you owe each other, what is open between you.' },
-
-  { id: 'snooze', group: 'Next', status: 'next', title: 'Being told when you keep postponing something',
-    note: 'After the third snooze the item stops going quiet and asks directly: kill it, keep it, or hand it to someone. Rona named this as the habit she wants the system to call out, so it should be blunt rather than gentle.' },
-  { id: 'timezones', group: 'Next', status: 'next', title: 'The other person’s local time',
-    note: 'On contacts, and on anything with someone waiting at the other end, so a follow-up is not sent at their 3am.' },
-  { id: 'birthdays', group: 'Next', status: 'next', title: 'Birthdays and important dates in one place',
-    note: 'Replaces checking Instagram stories, Facebook and two calendars every morning. One view, one list, gift ideas alongside.' },
 
   /* ---- Blocked on a decision ---- */
   { id: 'data', group: 'Real data', status: 'blocked', blockedBy: 'accounts', title: 'Saved data',
