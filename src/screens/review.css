@@ -1,0 +1,170 @@
+/* ============================================================
+   The weekly review
+   A reflective screen, so the editorial voice is allowed out
+   more than anywhere else in the product.
+   ============================================================ */
+
+.review { max-width: 720px; }
+
+.rvhead { margin-bottom: var(--s6); }
+.rvhead__h {
+  font-family: var(--font-serif);
+  font-size: var(--fs-serif-lg);
+  font-weight: var(--w-regular);
+  letter-spacing: var(--ls-serif);
+  line-height: 1.15;
+  margin-top: var(--s3);
+}
+.rvhead__p {
+  font-size: var(--fs-meta);
+  color: var(--ink-2);
+  line-height: var(--lh-read);
+  margin-top: var(--s3);
+  max-width: 52ch;
+}
+.rvhead .rule-gold { margin-top: var(--s5); }
+
+/* The week as a sentence rather than a row of tiles. Numbers belong
+   in a review; a dashboard of them does not. */
+.rvlede {
+  font-family: var(--font-serif);
+  font-size: var(--fs-serif-sm);
+  line-height: var(--lh-read);
+  letter-spacing: var(--ls-serif);
+  color: var(--ink);
+  padding: var(--s4) 0 var(--s5);
+  margin-bottom: var(--s5);
+  border-bottom: var(--hairline);
+  max-width: 56ch;
+}
+.rvlede strong { font-weight: var(--w-semi); }
+.rvlede em { font-style: normal; color: var(--u-overdue-fg); }
+
+.rvsec { margin-bottom: var(--s7); }
+
+.rvsec__h {
+  display: flex; align-items: baseline; gap: var(--s2);
+  font-size: var(--fs-meta);
+  font-weight: var(--w-semi);
+  color: var(--ink);
+  padding-bottom: var(--s3);
+  margin-bottom: var(--s3);
+  border-bottom: var(--hairline);
+}
+.rvsec__n { font-size: var(--fs-micro); color: var(--ink-3); font-weight: var(--w-regular); }
+
+.rvsec__p {
+  font-size: var(--fs-meta);
+  color: var(--ink-2);
+  line-height: var(--lh-read);
+  margin-bottom: var(--s4);
+  max-width: 56ch;
+}
+
+/* An empty section here is good news, so it says so rather than hiding */
+.rvempty { font-size: var(--fs-meta); color: var(--ink-3); font-style: italic; }
+.rvmore { font-size: var(--fs-micro); color: var(--ink-3); padding: var(--s2) var(--s4); }
+
+.rvpeople { display: flex; gap: var(--s2); flex-wrap: wrap; }
+.rvperson { display: inline-flex; align-items: center; gap: 5px; }
+.rvperson__d { font-size: var(--fs-micro); color: var(--u-today-fg); font-variant-numeric: tabular-nums; }
+
+/* ---- The two questions --------------------------------------- */
+.rvsec--ask .rvsec__h--ask {
+  font-family: var(--font-serif);
+  font-size: var(--fs-serif-sm);
+  font-weight: var(--w-regular);
+  letter-spacing: var(--ls-serif);
+  border-bottom-color: var(--gold-line);
+}
+
+.rvpick { display: flex; flex-direction: column; gap: var(--s1); }
+
+.rvopt {
+  display: flex; align-items: center; gap: var(--s3);
+  width: 100%;
+  text-align: left;
+  padding: var(--s3) var(--s4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  font-size: var(--fs-meta);
+  color: var(--ink-2);
+  min-height: 44px;
+  transition: border-color var(--t), background var(--t), color var(--t);
+}
+.rvopt:hover:not(:disabled) { border-color: var(--border-2); background: var(--surface-2); }
+.rvopt:disabled { opacity: 0.4; cursor: default; }
+
+.rvopt__mark {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-2);
+  flex: none;
+  transition: border-color var(--t), background var(--t);
+}
+
+/* Chosen for next week — gold, because this is curation */
+.rvopt--on {
+  border-color: var(--gold-line);
+  background: var(--gold-surface);
+  color: var(--gold-deep);
+  font-weight: var(--w-medium);
+}
+.rvopt--on .rvopt__mark { background: var(--gold); border-color: var(--gold); }
+
+/* Chosen to drop — the urgency ramp, because this is a cost */
+.rvopt--drop.rvopt--on {
+  border-color: var(--u-overdue-line);
+  background: var(--u-overdue-bg);
+  color: var(--u-overdue-fg);
+}
+.rvopt--drop.rvopt--on .rvopt__mark { background: var(--u-overdue-fg); border-color: var(--u-overdue-fg); }
+
+.rvopt__n { margin-left: auto; font-size: var(--fs-micro); color: var(--ink-3); flex: none; }
+
+.rvnote { width: 100%; }
+
+.rvclose {
+  display: flex; align-items: center; gap: var(--s4);
+  flex-wrap: wrap;
+  padding-top: var(--s5);
+  border-top: var(--hairline);
+  margin-bottom: var(--s8);
+}
+.rvclose__btn { min-height: 44px; padding-inline: var(--s6); }
+.rvclose__note { font-size: var(--fs-micro); color: var(--ink-3); }
+
+.rvdone { padding: var(--s7) 0 var(--s8); border-bottom: var(--hairline); margin-bottom: var(--s7); }
+.rvdone__h {
+  font-family: var(--font-serif);
+  font-size: var(--fs-serif-lg);
+  font-weight: var(--w-regular);
+  letter-spacing: var(--ls-serif);
+  margin-top: var(--s3);
+}
+.rvdone__p { font-size: var(--fs-body); color: var(--ink-2); margin-top: var(--s3); max-width: 48ch; line-height: var(--lh-read); }
+.rvdone__acts { display: flex; gap: var(--s2); margin-top: var(--s5); flex-wrap: wrap; }
+
+.rvhist__list { display: flex; flex-direction: column; gap: var(--s2); }
+.rvhist__row {
+  padding: var(--s4);
+  background: var(--surface-2);
+  border: var(--hairline);
+  border-radius: var(--r-sm);
+}
+.rvhist__when { font-size: var(--fs-meta); font-weight: var(--w-medium); }
+.rvhist__counts { font-size: var(--fs-micro); color: var(--ink-3); margin-top: 3px; font-variant-numeric: tabular-nums; }
+.rvhist__three, .rvhist__dropped, .rvhist__note {
+  font-size: var(--fs-meta); color: var(--ink-2); margin-top: var(--s2); line-height: var(--lh-read);
+}
+.rvhist__three em, .rvhist__dropped em { font-style: normal; color: var(--ink-3); margin-right: 4px; }
+.rvhist__dropped { color: var(--ink-3); }
+.rvhist__note { font-family: var(--font-serif); font-size: var(--fs-serif-sm); color: var(--ink); }
+
+@media (max-width: 760px) {
+  .rvhead__h, .rvdone__h { font-size: var(--fs-serif-md); }
+  .rvlede { font-size: var(--fs-body); }
+  .rvclose__btn { width: 100%; }
+  .rvsec { margin-bottom: var(--s6); }
+}

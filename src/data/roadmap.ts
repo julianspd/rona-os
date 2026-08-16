@@ -89,6 +89,8 @@ export const ITEMS: BuildItem[] = [
     note: 'Everything coming due in the next ninety days, laid out by how close it is.' },
   { id: 'goals', group: 'Life areas', status: 'built', title: 'Goals',
     note: 'Flags any goal with no project attached — stated, but not actually being worked on.' },
+  { id: 'weekly', group: 'Life areas', status: 'built', title: 'Weekly review',
+    note: 'The Friday sit-down, already answered from your own data — what closed, what went late, what stopped moving, who has gone quiet, what is coming due. Then the two decisions a review exists to force: which three things next week, and what to stop carrying. Closing it sets your three on Home, drops what you chose, and keeps a record so you can see the line between weeks.' },
   { id: 'docs', group: 'Life areas', status: 'built', title: 'Documents & decision log',
     note: 'Documents surface from the thing they belong to. Decisions record what was chosen, why, and when to revisit.' },
 
@@ -117,8 +119,6 @@ export const ITEMS: BuildItem[] = [
     note: 'A read-only week and month so the shape of her time is visible, ahead of connecting the real one.' },
   { id: 'today-plus', group: 'Next', status: 'next', title: 'Today as a command centre',
     note: 'Meeting context, the people and documents attached to it, and somewhere for notes to land afterwards.' },
-  { id: 'weekly', group: 'Next', status: 'next', title: 'Weekly review',
-    note: 'The Friday sit-down: wins, misses, what stalled, what she is owed, and next week’s big three. This is what turns the system into a habit.' },
   { id: 'brief', group: 'Next', status: 'next', title: 'Meeting briefs',
     note: 'Before a meeting: who this person is, what you owe each other, what is open between you.' },
 

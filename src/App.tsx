@@ -13,6 +13,7 @@ import { Styleguide } from './screens/Styleguide';
 import { Build } from './screens/Build';
 import { Dates } from './screens/Dates';
 import { Archive } from './screens/Archive';
+import { Review } from './screens/Review';
 import { DebugPanel, ErrorTrap } from './Diagnostics';
 import type { EntityType } from './types';
 import { classify } from './lib/classify';
@@ -300,6 +301,7 @@ function Shell() {
           {view === 'decisions' && <Decisions go={go} />}
           {view === 'dates' && <Dates go={go} />}
           {view === 'archive' && <Archive go={go} />}
+          {view === 'review' && <Review go={go} />}
           {view === 'build' && <Build />}
           {view === 'styleguide' && <Styleguide />}
           {view.startsWith('entity:') && (
