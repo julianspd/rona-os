@@ -339,25 +339,46 @@
 
   .toast { bottom: 92px; left: var(--s4); right: var(--s4); transform: none; }
 
-  /* dvh, not vh — with the keyboard up, vh still reports the full
-     screen and the Capture button ends up underneath it */
+  /* The overlay is sized top:0 to bottom:<keyboard>, set inline from
+     the visual viewport. So flex-end lands the sheet directly on top
+     of the keyboard rather than behind it. */
   .sheet {
     padding: 0;
     align-items: flex-end;
-    height: 100dvh;
+    height: auto;
+    transition: bottom 150ms cubic-bezier(.2, 0, .2, 1);
   }
+
   .sheet__box {
     max-width: none;
+    max-height: 100%;
     border-radius: var(--r-lg) var(--r-lg) 0 0;
-    max-height: 92dvh;
     display: flex;
     flex-direction: column;
     padding-bottom: env(safe-area-inset-bottom);
   }
-  .sheet__main { overflow-y: auto; padding: var(--s4) var(--s4) var(--s3); }
-  .sheet__input { font-size: 20px; }
+
+  /* Sitting on the keyboard, it is part of the keyboard — square to
+     the join, no safe-area gap, and a shadow that reads as lifted. */
+  .sheet--lifted { background: rgba(34, 33, 31, .16); }
+  .sheet--lifted .sheet__box {
+    padding-bottom: 0;
+    box-shadow: 0 -10px 34px -14px rgba(34, 33, 31, .38);
+  }
+
+  /* Every line has to earn its height with a keyboard taking half
+     the screen. The eyebrow does not. */
+  .sheet__eyebrow { display: none; }
+
+  .sheet__main {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: var(--s4) var(--s4) var(--s3);
+  }
+  .sheet__input { font-size: 20px; line-height: 1.3; }
+
   .sheet__hints {
-    margin-top: var(--s4);
+    margin-top: var(--s3);
     flex-wrap: nowrap;
     overflow-x: auto;
     scrollbar-width: none;
@@ -366,9 +387,14 @@
   }
   .sheet__hints::-webkit-scrollbar { display: none; }
   .sheet__hints .hint { flex: none; }
-  .sheet__foot { padding: var(--s3) var(--s4); flex: none; }
+
+  .sheet__why { margin-top: var(--s3); font-size: var(--fs-micro); }
+
+  .sheet__foot { padding: var(--s3) var(--s4); flex: none; align-items: center; }
   .sheet__foot .act { min-height: 44px; padding-inline: var(--s5); }
-  .sheet__note { flex: 1; }
+  .sheet__note { flex: 1; min-width: 0; }
+
+  .more__item { min-height: 48px; display: flex; align-items: center; }
 
   /* The demo strip is chrome. It should not cost a line of the
      briefing on a phone. */

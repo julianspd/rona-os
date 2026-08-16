@@ -35,6 +35,34 @@ const NAV = [
 const MOBILE_PRIMARY = ['home', 'today'];
 const MOBILE_SECONDARY = ['commitments', 'search'];
 
+/* ---------------------------------------------------------------
+   How much of the screen the keyboard is covering.
+
+   iOS does not shrink the layout viewport when the keyboard opens,
+   so anything anchored to the bottom sits underneath it. dvh does
+   not help — that tracks browser chrome, not the keyboard. The
+   visual viewport is the only thing that actually knows.
+   --------------------------------------------------------------- */
+function useKeyboardInset() {
+  const [inset, setInset] = useState(0);
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const update = () => {
+      const hidden = window.innerHeight - vv.height - vv.offsetTop;
+      setInset(Math.max(0, Math.round(hidden)));
+    };
+    update();
+    vv.addEventListener('resize', update);
+    vv.addEventListener('scroll', update);
+    return () => {
+      vv.removeEventListener('resize', update);
+      vv.removeEventListener('scroll', update);
+    };
+  }, []);
+  return inset;
+}
+
 function useIsMobile() {
   const [m, setM] = useState(() => window.matchMedia('(max-width: 760px)').matches);
   useEffect(() => {
@@ -86,6 +114,7 @@ function EnvironmentLabel({ go }: { go: (v: string) => void }) {
 /* ---- Quick Capture — a signature moment ---------------------- */
 function QuickCapture({ onClose }: { onClose: () => void }) {
   const { capture } = useStore();
+  const keyboard = useKeyboardInset();
   const [text, setText] = useState('');
   const [hint, setHint] = useState<Hint | undefined>();
   const [overridden, setOverridden] = useState(false);
@@ -108,7 +137,13 @@ function QuickCapture({ onClose }: { onClose: () => void }) {
   }, [onClose]);
 
   return (
-    <div className="sheet" onClick={onClose} role="dialog" aria-label="Capture">
+    <div
+      className={`sheet ${keyboard > 0 ? 'sheet--lifted' : ''}`}
+      style={{ bottom: keyboard }}
+      onClick={onClose}
+      role="dialog"
+      aria-label="Capture"
+    >
       <div className="sheet__box" onClick={e => e.stopPropagation()}>
         <div className="sheet__rule" />
         <div className="sheet__main">
