@@ -1,0 +1,134 @@
+/* ============================================================
+   Field controls
+   The row is the same shape reading or editing, so nothing
+   jumps when the mode changes.
+   ============================================================ */
+
+.frow {
+  display: grid;
+  grid-template-columns: 152px 1fr;
+  gap: var(--s4);
+  align-items: start;
+  padding: var(--s3) 0;
+  border-bottom: 1px solid var(--border);
+}
+.frow:last-child { border-bottom: none; }
+
+.frow__label {
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding-top: 7px;
+}
+
+.frow__value { min-width: 0; font-size: var(--fs-meta); color: var(--ink); }
+
+.fval { line-height: var(--lh-read); }
+.fempty { color: var(--ink-4); font-style: italic; }
+
+/* ---- Inputs -------------------------------------------------- */
+.finput {
+  width: 100%;
+  font-family: var(--font-sans);
+  font-size: var(--fs-meta);
+  line-height: var(--lh-read);
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-sm);
+  padding: 8px 10px;
+  min-height: 38px;
+  transition: border-color var(--t), background var(--t);
+}
+.finput::placeholder { color: var(--ink-4); }
+.finput:focus { outline: none; border-color: var(--gold); }
+.finput--long { resize: vertical; min-height: 76px; }
+.finput--date { font-variant-numeric: tabular-nums; }
+
+/* ---- Select -------------------------------------------------- */
+.fselect { position: relative; display: inline-block; min-width: 190px; max-width: 100%; }
+.fselect select {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  font-family: var(--font-sans);
+  font-size: var(--fs-meta);
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-sm);
+  padding: 8px 30px 8px 10px;
+  min-height: 38px;
+  transition: border-color var(--t);
+}
+.fselect select:focus { outline: none; border-color: var(--gold); }
+.fselect__mark {
+  position: absolute;
+  right: 10px; top: 50%;
+  transform: translateY(-55%);
+  font-size: 13px;
+  color: var(--ink-3);
+  pointer-events: none;
+}
+
+/* ---- Life areas ---------------------------------------------
+   The dot carries the colour; the label stays readable ink. A
+   wall of coloured text would be a rainbow, which is the thing
+   the rest of the system is built to avoid.                     */
+.areas { display: flex; gap: var(--s1); flex-wrap: wrap; }
+.areas--edit { gap: 6px; }
+
+.area {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: var(--fs-action);
+  color: var(--ink-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  padding: 5px 11px 5px 9px;
+  min-height: 30px;
+  transition: border-color var(--t), color var(--t), background var(--t);
+}
+.area__dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--la);
+  opacity: 0.35;
+  transition: opacity var(--t);
+  flex: none;
+}
+button.area:hover { border-color: var(--border-2); background: var(--surface-2); }
+
+.area--on {
+  color: var(--la);
+  border-color: var(--la);
+  background: var(--surface);
+  font-weight: var(--w-medium);
+}
+.area--on .area__dot { opacity: 1; }
+
+.ftag {
+  font-size: var(--fs-action);
+  color: var(--ink-2);
+  background: var(--surface-2);
+  border-radius: var(--r-xs);
+  padding: 4px 8px;
+}
+
+/* ---- Dates --------------------------------------------------- */
+.fdate {
+  display: inline-flex; align-items: baseline; gap: var(--s2);
+  color: var(--u-fg, var(--ink));
+  font-variant-numeric: tabular-nums;
+}
+.fdate.u-overdue { font-weight: var(--w-semi); }
+.fdate__abs { font-size: var(--fs-micro); color: var(--ink-3); }
+
+@media (max-width: 760px) {
+  .frow { grid-template-columns: 1fr; gap: var(--s1); padding: var(--s3) 0; }
+  .frow__label { padding-top: 0; }
+  .finput, .fselect select { font-size: 16px; min-height: 44px; }
+  .fselect { min-width: 0; width: 100%; }
+  .area { min-height: 36px; }
+}

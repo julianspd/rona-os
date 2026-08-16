@@ -7,9 +7,6 @@ import { useMemo, useState } from 'react';
 import { useStore } from '../store';
 import { Card } from '../components/Card';
 import { daysFromToday, daysSince, todayLabel } from '../lib/dates';
-import { EntityDetail } from './Spheres';
-import { LocalTime } from '../components/primitives';
-import { annualLabel, daysUntilAnnual, untilLabel } from '../lib/dates';
 import type { AnyCard, Commitment, Contact } from '../types';
 import './lists.css';
 
@@ -310,90 +307,6 @@ export function Search({ go }: { go: (v: string, id?: string) => void }) {
           </li>
         ))}
       </ul>
-    </Page>
-  );
-}
-
-/* ---- Detail — DetailShell (B.3) ----------------------------- */
-export function Detail({ id, go }: { id: string; go: (v: string, id?: string) => void }) {
-  const { byId, cards, nameOf } = useStore();
-  const c = byId(id);
-  if (!c) return <Page title="Not found"><p className="empty">That item is no longer here.</p></Page>;
-
-  // Entities get the configured detail layout wherever they are opened from.
-  if (c.kind === 'entity') return <EntityDetail id={id} go={go} />;
-
-  const related = c.relatedIds.map(r => cards.find(x => x.id === r)).filter(Boolean) as AnyCard[];
-
-  const fields: [string, string | undefined][] = [
-    ['Status', c.status],
-    ['Importance', c.importance],
-    ['Attention', c.attentionType],
-    ['Owner', c.owner],
-    ['Due', c.dueDate],
-    ['Next action', c.nextAction],
-    ['Life areas', c.lifeAreas.join(', ') || undefined],
-    ...(c.kind === 'commitment' ? [
-      ['Direction', (c as Commitment).direction] as [string, string],
-      ['Person', nameOf((c as Commitment).personId)] as [string, string],
-      ['Created', (c as Commitment).createdDate] as [string, string],
-    ] : []),
-    ...(c.kind === 'contact' ? [
-      ['Strength', (c as Contact).strength] as [string, string],
-      ['Their local time', (c as Contact).city ? '' : undefined] as [string, string | undefined],
-      ['Cadence', `${(c as Contact).cadenceDays} days`] as [string, string],
-      ['Last interaction', (c as Contact).lastInteraction] as [string, string],
-      ['How we met', (c as Contact).howWeMet] as [string, string | undefined],
-      ['They care about', (c as Contact).theyCareAbout] as [string, string | undefined],
-      ['Working on', (c as Contact).workingOn] as [string, string | undefined],
-      ['Ways I can help', (c as Contact).waysICanHelp] as [string, string | undefined],
-      ['Gift ideas', (c as Contact).giftIdeas] as [string, string | undefined],
-      ...((c as Contact).importantDates ?? []).map(d =>
-        [d.label, `${annualLabel(d.date)} · ${untilLabel(daysUntilAnnual(d.date))}`] as [string, string]),
-    ] : []),
-  ];
-
-  const channels = c.kind === 'contact' ? (c as Contact).channels : undefined;
-
-  return (
-    <Page title={c.title} sub={c.kind}>
-      <div className="detail">
-        {/* The channels Rona actually uses for this person. Shown as
-            intent, and plainly marked as not connected — a button that
-            looks live but does nothing is worse than no button. */}
-        {!!channels?.length && (
-          <div className="channels">
-            <span className="channels__label">Reaches them by</span>
-            {channels.map(ch => (
-              <button key={ch} className="channel" disabled title="Not connected in this demo">
-                {ch}
-              </button>
-            ))}
-            <span className="channels__note">Not connected yet</span>
-          </div>
-        )}
-        <dl className="fields">
-          {fields.filter(([k, v]) => v || k === 'Their local time').map(([k, v]) => (
-            <div className="field" key={k}>
-              <dt>{k}</dt>
-              <dd>
-                {k === 'Their local time'
-                  ? <LocalTime city={(c as Contact).city} timezone={(c as Contact).timezone} showOffset />
-                  : v}
-              </dd>
-            </div>
-          ))}
-        </dl>
-
-        {!!related.length && (
-          <section className="sec">
-            <header className="sec__head"><h2 className="sec__title">Related</h2></header>
-            <ul className="list list-dense">
-              {related.map(r => <li key={r.id}><Card card={r} onOpen={rid => go('detail', rid)} /></li>)}
-            </ul>
-          </section>
-        )}
-      </div>
     </Page>
   );
 }

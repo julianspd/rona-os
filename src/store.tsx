@@ -48,6 +48,8 @@ interface Store {
   handOff: (id: string) => void;
   /** Back out of the archive. The counterpart to "nothing is deleted". */
   restore: (id: string) => void;
+  /** Edit any field on any card. */
+  update: (id: string, patch: Partial<AnyCard>) => void;
   followUp: (id: string) => void;
   logInteraction: (id: string) => void;
   capture: (title: string, hint?: InboxItem['hint']) => void;
@@ -120,6 +122,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     patch(id, c => ({ ...c, snoozeCount: 0, importance: 'High', lastTouched: ANCHOR_ISO }) as AnyCard,
       'Kept, and raised'), [patch]);
 
+  /** Editing is silent by design — no toast per keystroke. The card
+      itself shows the new value, which is the confirmation. */
+  const update = useCallback((id: string, patch: Partial<AnyCard>) =>
+    setCards(prev => prev.map(c =>
+      c.id === id ? ({ ...c, ...patch, lastTouched: ANCHOR_ISO } as AnyCard) : c)), []);
+
   /** A promise of "nothing is destroyed" is empty without a way back.
       Returns the item to a live state appropriate to what it is. */
   const restore = useCallback((id: string) =>
@@ -190,13 +198,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     nameOf: id => visible.find(c => c.id === id)?.title ?? 'Unknown',
     fixtureState, setFixtureState,
     top3, setTop3,
-    complete, archive, snooze, killItem, keepItem, handOff, restore,
+    complete, archive, snooze, killItem, keepItem, handOff, restore, update,
     followUp, logInteraction, capture, convertInbox,
     markPaid, showAmounts, setShowAmounts,
     toast, clearToast: () => setToast(null),
   }), [visible, fixtureState, top3, complete, archive, snooze, followUp,
       logInteraction, capture, convertInbox, markPaid, showAmounts, toast,
-      killItem, keepItem, handOff, restore]);
+      killItem, keepItem, handOff, restore, update]);
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

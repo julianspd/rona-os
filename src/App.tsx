@@ -5,7 +5,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { StoreProvider, useStore } from './store';
 import { Home } from './screens/Home';
-import { Commitments, Detail, Inbox, People, Search, Tasks, Today } from './screens/Lists';
+import { Commitments, Inbox, People, Search, Tasks, Today } from './screens/Lists';
+import { Detail } from './screens/Detail';
 import { EntityDetail, EntityList, SphereGrid } from './screens/Spheres';
 import { Bills, Decisions, Documents, Goals, Opportunities, Projects, Renewals } from './screens/Pipeline';
 import { Styleguide } from './screens/Styleguide';
