@@ -324,3 +324,77 @@ a.act:hover { text-decoration: none; }
   .tally__cell:nth-child(2n) { border-right: none; }
   .tally__cell { border-bottom: var(--hairline); }
 }
+
+/* ---- The standing paragraph, for anyone reading nothing else -- */
+.build__standing {
+  font-family: var(--font-serif);
+  font-size: var(--fs-serif-sm);
+  line-height: var(--lh-read);
+  letter-spacing: var(--ls-serif);
+  color: var(--ink);
+  margin-top: var(--s4);
+  max-width: 60ch;
+}
+
+.build__lead--sub { margin-top: var(--s5); }
+
+/* ---- What changed ------------------------------------------- */
+.newitem {
+  padding: var(--s4);
+  background: var(--surface);
+  border: var(--hairline);
+  border-radius: var(--r);
+}
+/* Things she asked for carry the gold edge — this is ownership,
+   not urgency: it is hers, and it arrived. */
+.newitem--asked { border-left: 2px solid var(--gold); }
+
+.newitem__tag {
+  display: inline-block;
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  font-weight: var(--w-semi);
+  color: var(--gold-deep);
+  margin-bottom: var(--s2);
+}
+.newitem__t { font-size: var(--fs-body); letter-spacing: var(--ls-tight); }
+.newitem__n {
+  font-size: var(--fs-meta);
+  color: var(--ink-2);
+  line-height: var(--lh-read);
+  margin-top: 4px;
+  max-width: 74ch;
+}
+
+/* ---- The fold ------------------------------------------------ */
+.fold {
+  display: flex; align-items: baseline; gap: var(--s3);
+  width: 100%;
+  padding: var(--s4) 0;
+  border-top: var(--hairline);
+  border-bottom: var(--hairline);
+  text-align: left;
+  transition: border-color var(--t);
+}
+.fold:hover { border-color: var(--border-2); }
+.fold__label { font-size: var(--fs-meta); font-weight: var(--w-semi); color: var(--ink); white-space: nowrap; }
+.fold__n { font-size: var(--fs-micro); color: var(--ink-3); flex: 1; }
+.fold__body { padding-top: var(--s6); }
+
+.foldgroup { margin-bottom: var(--s6); }
+.foldgroup__head { margin-bottom: var(--s3); }
+.foldgroup__h {
+  display: flex; align-items: baseline; gap: var(--s2);
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  font-weight: var(--w-semi);
+  color: var(--ink-3);
+}
+
+@media (max-width: 760px) {
+  .fold { flex-wrap: wrap; gap: var(--s1) var(--s2); }
+  .fold__n { flex-basis: 100%; }
+  .build__standing { font-size: var(--fs-body); }
+}

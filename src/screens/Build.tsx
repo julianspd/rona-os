@@ -1,12 +1,23 @@
 /* ============================================================
-   Build status — the development tracker, inside the product.
+   Build status
 
-   Deliberately plain-language. This screen gets read aloud on a
-   review call by people who did not write the code.
+   Ordered by what someone opening it actually wants, which is not
+   the same as what there is most of:
+
+     what changed → what we need from you → what is next →
+     what already works (folded away) → what is waiting or closed
+
+   The inventory of everything built is the bulk of the page and
+   the least urgent part of it, so it stays folded until asked for.
+
+   Plain language throughout. This gets read aloud on calls by
+   people who did not write the code.
    ============================================================ */
 
 import { useEffect, useState } from 'react';
-import { AGENDA, DECISIONS, ITEMS, REVIEW, SEND_TO, STATUS_LABEL } from '../data/roadmap';
+import {
+  AGENDA, DECISIONS, ITEMS, RECENT, REVIEW, SEND_TO, STANDING, STATUS_LABEL,
+} from '../data/roadmap';
 import type { BuildStatus, Decision } from '../data/roadmap';
 import {
   buildMailto, canPersist, clearAnswers, downloadAnswers, formatAnswers,
@@ -16,12 +27,7 @@ import type { Answers } from '../lib/answers';
 import { todayLabel } from '../lib/dates';
 import './build.css';
 
-const ORDER: BuildStatus[] = ['built', 'partial', 'next', 'blocked', 'later', 'ruled-out'];
-
-/* ---- A decision already settled on a call -------------------
-   It keeps its place in the list so the record is complete, but it
-   stops asking. Being asked something you already answered is the
-   fastest way to make a system feel like it was not listening.   */
+/* ---- A settled decision ------------------------------------- */
 function SettledCard({ d }: { d: Decision }) {
   return (
     <li className="dq dq--settled">
@@ -57,23 +63,18 @@ function DecisionCard({ d, value, onChange }: {
         placeholder="Type here — including “not sure yet, ask me again”"
         onChange={e => onChange(e.target.value)}
       />
-
       <p className="dq__owner">{d.owner}</p>
     </li>
   );
 }
 
 export function Build() {
-  const [filter, setFilter] = useState<BuildStatus | 'all'>('all');
   const [answers, setAnswers] = useState<Answers>(() => loadAnswers());
   const [copied, setCopied] = useState(false);
+  const [sentAt, setSentAt] = useState<string | null>(() => lastSent());
+  const [showBuilt, setShowBuilt] = useState(false);
 
   useEffect(() => { saveAnswers(answers); }, [answers]);
-
-  const setAnswer = (id: string, v: string) =>
-    setAnswers(prev => ({ ...prev, [id]: v }));
-
-  const [sentAt, setSentAt] = useState<string | null>(() => lastSent());
 
   const settled = DECISIONS.filter(d => d.resolved);
   const open = DECISIONS.filter(d => !d.resolved);
@@ -81,127 +82,84 @@ export function Build() {
   const rest = open.filter(d => !d.gate);
 
   const answeredCount = open.filter(d => answers[d.id]?.trim()).length;
-  const unanswered = open.length - answeredCount;
   const plan = buildMailto(SEND_TO.email, open, answers, todayLabel);
-
   const fullText = () => formatAnswers(open, answers, todayLabel);
 
-  /* Recorded on click; the anchor itself does the opening. Scripted
-     redirects to mailto are unreliable, especially on phones. */
   const noteSent = () => { markSent(todayLabel); setSentAt(todayLabel); };
-
-  const download = () => {
-    downloadAnswers(fullText(), 'rona-os-decisions.md');
-    markSent(todayLabel);
-    setSentAt(todayLabel);
-  };
-
+  const download = () => { downloadAnswers(fullText(), 'rona-os-decisions.md'); noteSent(); };
   const copyOut = async () => {
     try {
       await navigator.clipboard.writeText(fullText());
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
-    } catch {
-      // Clipboard blocked — put it on screen so it can still be selected.
-      window.prompt('Copy your answers:', fullText());
-    }
+      setCopied(true); setTimeout(() => setCopied(false), 2500);
+    } catch { window.prompt('Copy your answers:', fullText()); }
   };
 
-  const count = (s: BuildStatus) => ITEMS.filter(i => i.status === s).length;
-  const shown = filter === 'all' ? ITEMS : ITEMS.filter(i => i.status === filter);
+  const of = (s: BuildStatus) => ITEMS.filter(i => i.status === s);
+  const built = of('built');
+  const partial = of('partial');
 
-  /* Group in the order the groups first appear, so the daily loop
-     leads and the deferred work sits at the bottom. */
-  const groups = shown.reduce<Record<string, typeof ITEMS>>((acc, i) => {
-    (acc[i.group] ??= []).push(i);
-    return acc;
-  }, {});
-
+  const asked = RECENT.filter(r => r.asked);
+  const extra = RECENT.filter(r => !r.asked);
 
   return (
     <div className="page build">
       <header className="page__head">
-        <p className="greet__date">Build status</p>
-        <h1 className="page__title">What is working, and what is next</h1>
-        <p className="page__sub">
-          {REVIEW.stage}. Reflects the review of {REVIEW.lastReview}.
-        </p>
+        <p className="greet__date">Build status · updated {REVIEW.updated}</p>
+        <h1 className="page__title">Where things stand</h1>
+        <p className="build__standing">{STANDING}</p>
         <hr className="rule-gold" style={{ marginTop: 'var(--s5)' }} />
       </header>
 
-      {/* ---- The count, in one line ---- */}
-      <div className="tally">
-        {ORDER.map(s => (
-          <button
-            key={s}
-            className={`tally__cell ${filter === s ? 'tally__cell--on' : ''}`}
-            onClick={() => setFilter(filter === s ? 'all' : s)}
-            aria-pressed={filter === s}
-          >
-            <span className={`tally__n tnum st-${s}`}>{count(s)}</span>
-            <span className="tally__label">{STATUS_LABEL[s]}</span>
-          </button>
-        ))}
-      </div>
-
-      {filter !== 'all' && (
-        <button className="build__clear" onClick={() => setFilter('all')}>
-          Showing {STATUS_LABEL[filter].toLowerCase()} only — show everything
-        </button>
-      )}
-
-      {/* ---- Features ---- */}
-      {Object.entries(groups).map(([group, items]) => (
-        <section className="sec" key={group}>
-          <header className="sec__head">
-            <h2 className="sec__title">
-              {group}
-              <span className="sec__count">{items.length}</span>
-            </h2>
-          </header>
-          <ul className="build__list">
-            {items.map(i => (
-              <li key={i.id} className="bitem">
-                <span className={`chipst st-${i.status}`}>{STATUS_LABEL[i.status]}</span>
-                <div className="bitem__body">
-                  <p className="bitem__title">{i.title}</p>
-                  <p className="bitem__note">{i.note}</p>
-                  {i.blockedBy && (
-                    <p className="bitem__blocked">
-                      Waiting on: {DECISIONS.find(d => d.id === i.blockedBy)?.question}
-                    </p>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))}
-
-      {/* ---- Decisions ---- */}
+      {/* ---- 1. What changed ---- */}
       <section className="sec">
         <header className="sec__head">
           <h2 className="sec__title">
-            Decisions we need
+            Since the last call
+            <span className="sec__count">{RECENT.length}</span>
+          </h2>
+        </header>
+
+        <p className="build__lead">
+          Everything asked for on {REVIEW.lastReview} is built.
+        </p>
+        <ul className="build__list">
+          {asked.map(r => (
+            <li key={r.title} className="newitem newitem--asked">
+              <span className="newitem__tag">You asked</span>
+              <p className="newitem__t">{r.title}</p>
+              <p className="newitem__n">{r.note}</p>
+            </li>
+          ))}
+        </ul>
+
+        <p className="build__lead build__lead--sub">And beyond that.</p>
+        <ul className="build__list">
+          {extra.map(r => (
+            <li key={r.title} className="newitem">
+              <p className="newitem__t">{r.title}</p>
+              <p className="newitem__n">{r.note}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* ---- 2. What we need ---- */}
+      <section className="sec">
+        <header className="sec__head">
+          <h2 className="sec__title">
+            What we need from you
             <span className="sec__count">{answeredCount} of {open.length} answered</span>
           </h2>
         </header>
 
         <p className="build__lead">
           Two of these gate everything else, and neither is a technical
-          question. Answer what you can — “not sure yet” is a useful answer,
-          and so is “ask me again after the next call”.
+          question. “Not sure yet” is a useful answer, and so is “ask me again
+          after the next call”.
         </p>
 
-        {/* The send is honest about what it does: it hands the answers to
-            her mail client. Nothing leaves the page by itself. */}
         <div className="answers__bar">
           <div className="answers__status">
-            <p className="answers__count">
-              {answeredCount
-                ? <>{answeredCount} answered{unanswered ? `, ${unanswered} still open` : ' — all of them'}</>
-                : 'Nothing answered yet'}
-            </p>
             <p className="answers__note">
               {canPersist
                 ? `Saved in this browser as you type. Sending opens your email to ${SEND_TO.name} — nothing leaves this page until you press send there.`
@@ -209,65 +167,46 @@ export function Build() {
             </p>
             {sentAt && <p className="answers__sent">Last sent {sentAt}</p>}
           </div>
-
           <div className="answers__acts">
             {answeredCount && plan.viable ? (
               <a className="act act--primary" href={plan.href} onClick={noteSent}>
                 Send to {SEND_TO.name}
               </a>
             ) : (
-              <button className="act act--primary" disabled>
-                Send to {SEND_TO.name}
-              </button>
+              <button className="act act--primary" disabled>Send to {SEND_TO.name}</button>
             )}
-            <button className="act" onClick={download} disabled={!answeredCount}>
-              Download
-            </button>
+            <button className="act" onClick={download} disabled={!answeredCount}>Download</button>
             <button className="act" onClick={copyOut} disabled={!answeredCount}>
               {copied ? 'Copied' : 'Copy'}
             </button>
             {!!answeredCount && (
-              <button
-                className="act"
-                onClick={() => {
-                  if (window.confirm('Clear every answer on this page? This cannot be undone.')) {
-                    clearAnswers();
-                    setAnswers({});
-                  }
-                }}
-              >
-                Clear
-              </button>
+              <button className="act" onClick={() => {
+                if (window.confirm('Clear every answer on this page? This cannot be undone.')) {
+                  clearAnswers(); setAnswers({});
+                }
+              }}>Clear</button>
             )}
           </div>
-
-          {/* Mail clients truncate long links. Better to say so than to
-              let a long answer arrive silently cut in half. */}
           {!!answeredCount && !plan.viable && (
             <p className="answers__warn">
-              These answers are longer than an email link can carry safely.
-              Use <strong>Download</strong> or <strong>Copy</strong> instead, so
-              nothing arrives cut short.
+              These answers are longer than an email link can carry safely. Use
+              <strong> Download</strong> or <strong>Copy</strong> instead, so nothing
+              arrives cut short.
             </p>
           )}
         </div>
 
         <ul className="build__list">
           {[...gates, ...rest].map(d => (
-            <DecisionCard
-              key={d.id}
-              d={d}
-              value={answers[d.id] ?? ''}
-              onChange={v => setAnswer(d.id, v)}
-            />
+            <DecisionCard key={d.id} d={d} value={answers[d.id] ?? ''}
+              onChange={v => setAnswers(p => ({ ...p, [d.id]: v }))} />
           ))}
         </ul>
 
         {!!settled.length && (
           <>
             <p className="build__lead build__settledhead">
-              Already settled — {settled.length} answered on the last call, kept
-              here as a record.
+              Already settled — {settled.length} answered on the last call.
             </p>
             <ul className="build__list">
               {settled.map(d => <SettledCard key={d.id} d={d} />)}
@@ -276,7 +215,35 @@ export function Build() {
         )}
       </section>
 
-      {/* ---- Agenda ---- */}
+      {/* ---- 3. What is next ---- */}
+      <Group title="Next up" note="Buildable now, nothing blocking them."
+        items={of('next')} tone="next" />
+
+      {/* ---- 4. What already works — folded, because it is the bulk
+             of the page and the least urgent part of it ---- */}
+      <section className="sec">
+        <button className="fold" onClick={() => setShowBuilt(!showBuilt)} aria-expanded={showBuilt}>
+          <span className="fold__label">
+            {showBuilt ? 'Hide what already works' : 'Everything that already works'}
+          </span>
+          <span className="fold__n">{built.length} working · {partial.length} partly there</span>
+          <span className={`rest__chev ${showBuilt ? 'rest__chev--up' : ''}`} aria-hidden="true">⌄</span>
+        </button>
+        {showBuilt && (
+          <div className="fold__body">
+            <Group title="Working now" items={built} tone="built" bare />
+            <Group title="Partly there" items={partial} tone="partial" bare />
+          </div>
+        )}
+      </section>
+
+      {/* ---- 5. Waiting and closed ---- */}
+      <Group title="Waiting on a decision" note="Each names the question holding it up."
+        items={of('blocked')} tone="blocked" showBlocker />
+      <Group title="Deliberately later" items={of('later')} tone="later" />
+      <Group title="Ruled out" note="Closed, not postponed." items={of('ruled-out')} tone="ruled-out" />
+
+      {/* ---- 6. The call ---- */}
       <section className="sec">
         <header className="sec__head">
           <h2 className="sec__title">Suggested shape for the review</h2>
@@ -293,12 +260,50 @@ export function Build() {
           ))}
         </ul>
         <p className="build__footnote">
-          Dates run on the real Pacific calendar. The demo content keeps its
-          own internal spacing, so the story stays the same however long the
-          site sits unopened — “eleven days overdue” does not quietly become
-          forty.
+          Dates run on the real calendar, but the demo content keeps its own
+          spacing — so the story stays the same however long the site sits
+          unopened. “Eleven days overdue” does not quietly become forty.
         </p>
       </section>
     </div>
+  );
+}
+
+/* ---- A status group ------------------------------------------ */
+function Group({ title, note, items, tone, showBlocker, bare }: {
+  title: string;
+  note?: string;
+  items: typeof ITEMS;
+  tone: BuildStatus;
+  showBlocker?: boolean;
+  bare?: boolean;
+}) {
+  if (!items.length) return null;
+  return (
+    <section className={bare ? 'foldgroup' : 'sec'}>
+      <header className={bare ? 'foldgroup__head' : 'sec__head'}>
+        <h2 className={bare ? 'foldgroup__h' : 'sec__title'}>
+          {title}
+          <span className="sec__count">{items.length}</span>
+        </h2>
+      </header>
+      {note && <p className="build__lead">{note}</p>}
+      <ul className="build__list">
+        {items.map(i => (
+          <li key={i.id} className="bitem">
+            <span className={`chipst st-${tone}`}>{STATUS_LABEL[tone]}</span>
+            <div className="bitem__body">
+              <p className="bitem__title">{i.title}</p>
+              <p className="bitem__note">{i.note}</p>
+              {showBlocker && i.blockedBy && (
+                <p className="bitem__blocked">
+                  Waiting on: {DECISIONS.find(d => d.id === i.blockedBy)?.question}
+                </p>
+              )}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }

@@ -43,9 +43,43 @@ export interface Decision {
 /* ---- The last review this reflects ------------------------- */
 export const REVIEW = {
   lastReview: '16 August 2026',
+  updated: '17 August 2026',
   prepared: 'Julian',
   stage: 'High-fidelity prototype on invented data',
 };
+
+/** One paragraph, for anyone who reads nothing else on this page. */
+export const STANDING = `Everything asked for on the last call is built, along
+with the weekly review, an archive, editing, and addresses for every screen.
+Three things remain that we could build now, and I would hold all three until
+one question is answered. Six decisions are open; one of them gates a third of
+what is left.`;
+
+/* ---- What changed since the last call ------------------------
+   Put first because it is what anyone actually opens this page
+   for. The full inventory below is reference, not news. */
+export const RECENT: { title: string; note: string; asked: boolean }[] = [
+  { asked: true, title: 'Being told when you keep postponing something',
+    note: 'Every snooze is counted. On the third the item asks outright — drop it, keep it and mean it, or hand it off. Keeping raises its importance, so recommitting costs something.' },
+  { asked: true, title: 'The other person’s local time',
+    note: 'On every contact, live. Turns amber and says “likely asleep” outside their working hours, so a follow-up never lands at somebody’s 3am.' },
+  { asked: true, title: 'Birthdays and important dates',
+    note: 'Fourteen across the contacts, ordered by what is next, with gift notes. Anyone with a date inside a week also surfaces on Home.' },
+  { asked: true, title: 'Built for the phone first',
+    note: 'Confirmed as the primary surface, so the layout was rebuilt around it. This also took four rounds to get right — the page was blank on the handset because the navigation bar was covering the whole screen. One missing line; everything had been rendering underneath the entire time.' },
+  { asked: true, title: 'Capture floats above the keyboard',
+    note: 'It was sitting behind it. iOS does not shrink the page when the keyboard opens, so the sheet now measures the keyboard and sits on top of it.' },
+  { asked: false, title: 'The weekly review',
+    note: 'The Friday sit-down, already answered from your own data. Two decisions only: which three things next week, and what to stop carrying. Closing it sets your three, drops what you chose, and keeps a record. This is the one that turns the system into a habit.' },
+  { asked: false, title: 'Dropped & postponed',
+    note: 'There was no way to see anything dropped, which made “nothing is destroyed” an empty promise. Everything dropped can now be brought back, and everything being pushed is listed with its count.' },
+  { asked: false, title: 'Editing anything, in place',
+    note: 'Opening an item gives a proper record with every field clickable where it sits — colour-coded menus on a pointer, bottom sheets on a phone. No edit mode to enter, and changes save as you make them.' },
+  { asked: false, title: 'Every screen has an address',
+    note: 'The URL follows you. Back and forward work, a refresh lands where you were, and any screen can be sent as a link.' },
+  { asked: false, title: 'Spheres grouped',
+    note: 'Eighteen tiles became three groups — where the work is, what comes due, and the longer view. Build status and the design system moved to the foot of the page; they are ours, not Rona’s.' },
+];
 
 /** Where answered decisions are sent. Change this and nothing else. */
 export const SEND_TO = {
@@ -213,9 +247,9 @@ export const DECISIONS: Decision[] = [
    ============================================================ */
 
 export const AGENDA: { minutes: number; what: string; why: string }[] = [
-  { minutes: 10, what: 'Open Home cold', why: 'Can she say what her day looks like without being talked through it? That is the whole product test.' },
-  { minutes: 5, what: 'Commitments', why: 'Does owing someone versus waiting on someone match how she actually thinks about obligations?' },
+  { minutes: 10, what: 'Open Home on her own phone', why: 'Can she say what her day looks like without being talked through it? That is the whole product test, and the phone is where she will actually do it.' },
+  { minutes: 10, what: 'Walk a weekly review end to end', why: 'The newest thing here and the one most likely to decide whether this becomes a habit or a demo.' },
+  { minutes: 5, what: 'Snooze something three times', why: 'She asked to be called out on this. Worth seeing whether the way it asks lands as helpful or as nagging.' },
   { minutes: 5, what: 'Capture three real thoughts', why: 'Is it genuinely faster than her pen? That is the bar it has to clear.' },
-  { minutes: 10, what: 'Bills', why: 'Are these the right fields, and does she want the amounts stored at all?' },
-  { minutes: 20, what: 'The open decisions', why: 'Particularly the employer question — a no there changes everything downstream.' },
+  { minutes: 20, what: 'The open decisions', why: 'Above all whether her Gmail and Calendar are personal or managed. A third of what is left waits on that answer.' },
 ];
