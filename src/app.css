@@ -529,3 +529,14 @@
 .debug__row { display: contents; }
 .debug dt { color: #B4AEA1; }
 .debug dd { margin: 0; word-break: break-all; }
+
+/* A review is due — a gold dot, since this is ownership rather than
+   alarm. Only ever shown when a week has genuinely passed. */
+.rail__due {
+  display: inline-block;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--gold);
+  margin-left: 6px;
+  vertical-align: middle;
+}

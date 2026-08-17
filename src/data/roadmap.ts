@@ -70,7 +70,7 @@ export const RECENT: { title: string; note: string; asked: boolean }[] = [
   { asked: true, title: 'Capture floats above the keyboard',
     note: 'It was sitting behind it. iOS does not shrink the page when the keyboard opens, so the sheet now measures the keyboard and sits on top of it.' },
   { asked: false, title: 'The weekly review',
-    note: 'The Friday sit-down, already answered from your own data. Two decisions only: which three things next week, and what to stop carrying. Closing it sets your three, drops what you chose, and keeps a record. This is the one that turns the system into a habit.' },
+    note: 'In the sidebar, with a gold dot once a week has passed without one — a review that has to be found does not get done. The Friday sit-down, already answered from your own data. Two decisions only: which three things next week, and what to stop carrying. Closing it sets your three, drops what you chose, and keeps a record. This is the one that turns the system into a habit.' },
   { asked: false, title: 'Dropped & postponed',
     note: 'There was no way to see anything dropped, which made “nothing is destroyed” an empty promise. Everything dropped can now be brought back, and everything being pushed is listed with its count.' },
   { asked: false, title: 'Editing anything, in place',
@@ -124,7 +124,7 @@ export const ITEMS: BuildItem[] = [
   { id: 'goals', group: 'Life areas', status: 'built', title: 'Goals',
     note: 'Flags any goal with no project attached — stated, but not actually being worked on.' },
   { id: 'weekly', group: 'Life areas', status: 'built', title: 'Weekly review',
-    note: 'The Friday sit-down, already answered from your own data — what closed, what went late, what stopped moving, who has gone quiet, what is coming due. Then the two decisions a review exists to force: which three things next week, and what to stop carrying. Closing it sets your three on Home, drops what you chose, and keeps a record so you can see the line between weeks.' },
+    note: 'In the sidebar, with a gold dot once a week has passed without one — a review that has to be found does not get done. The Friday sit-down, already answered from your own data — what closed, what went late, what stopped moving, who has gone quiet, what is coming due. Then the two decisions a review exists to force: which three things next week, and what to stop carrying. Closing it sets your three on Home, drops what you chose, and keeps a record so you can see the line between weeks.' },
   { id: 'docs', group: 'Life areas', status: 'built', title: 'Documents & decision log',
     note: 'Documents surface from the thing they belong to. Decisions record what was chosen, why, and when to revisit.' },
 

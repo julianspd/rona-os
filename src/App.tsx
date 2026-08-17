@@ -18,7 +18,8 @@ import { DebugPanel, ErrorTrap } from './Diagnostics';
 import type { EntityType } from './types';
 import { classify } from './lib/classify';
 import type { Hint } from './lib/classify';
-import { todayLabel } from './lib/dates';
+import { todayISO, todayLabel } from './lib/dates';
+import { reviewDue } from './lib/reviews';
 import { fromPath, titleFor, toPath } from './lib/router';
 import './styles/tokens.css';
 import './app.css';
@@ -32,6 +33,10 @@ const NAV = [
   { key: 'people', label: 'People' },
   { key: 'tasks', label: 'Tasks' },
   { key: 'search', label: 'Search' },
+  /* A weekly rhythm rather than a daily one, so it sits after the
+     divider with the wider surfaces. It is in the rail at all
+     because a review that has to be found does not get done. */
+  { key: 'review', label: 'Weekly review' },
   { key: 'spheres', label: 'Spheres' },
 ];
 
@@ -268,17 +273,25 @@ function Shell() {
     return () => window.removeEventListener('keydown', h);
   }, []);
 
-  const item = (key: string, label: string) => (
-    <li key={key}>
-      <button
-        className={`rail__item ${view === key ? 'rail__item--on' : ''}`}
-        onClick={() => go(key)}
-        aria-current={view === key ? 'page' : undefined}
-      >
-        {label}
-      </button>
-    </li>
-  );
+  /* Only ever true when a week has actually gone by without one. A
+     permanent badge is decoration; this is a prompt. */
+  const dueNow = reviewDue(todayISO());
+
+  const item = (key: string, label: string) => {
+    const flag = key === 'review' && dueNow && view !== 'review';
+    return (
+      <li key={key}>
+        <button
+          className={`rail__item ${view === key ? 'rail__item--on' : ''}`}
+          onClick={() => go(key)}
+          aria-current={view === key ? 'page' : undefined}
+        >
+          {label}
+          {flag && <span className="rail__due" title="A week since the last one" aria-label="due" />}
+        </button>
+      </li>
+    );
+  };
 
   const nav = (key: string) => NAV.find(n => n.key === key)!;
 
@@ -304,16 +317,19 @@ function Shell() {
               <ul className="rail__list">
                 {MOBILE_SECONDARY.map(k => item(k, nav(k).label))}
                 <li className="rail__more">
-                  <button className="rail__item" onClick={() => setMore(true)}>More</button>
+                  <button className="rail__item" onClick={() => setMore(true)}>
+                    More
+                    {dueNow && <span className="rail__due" aria-label="something needs attention" />}
+                  </button>
                 </li>
               </ul>
             </>
           ) : (
             <>
               <ul className="rail__list">
-                {NAV.slice(0, 5).map(n => item(n.key, n.label))}
+                {NAV.slice(0, 6).map(n => item(n.key, n.label))}
                 <li className="rail__div" aria-hidden="true" />
-                {NAV.slice(5).map(n => item(n.key, n.label))}
+                {NAV.slice(6).map(n => item(n.key, n.label))}
               </ul>
               <button className="rail__capture" onClick={() => setCapturing(true)}>
                 Capture <span className="rail__kbd">⌘K</span>

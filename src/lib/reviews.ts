@@ -14,8 +14,11 @@
 const KEY = 'rona-os.reviews.v1';
 
 export interface SavedReview {
-  /** The real date it was closed. */
+  /** The real date it was closed, as written. */
   closedOn: string;
+  /** The same date, sortable — so "how long since the last one" is
+      a question the product can answer rather than guess at. */
+  closedISO?: string;
   /** Titles, not ids — a record should still read after the data moves. */
   bigThree: string[];
   dropped: string[];
@@ -54,4 +57,18 @@ export function saveReview(r: SavedReview): SavedReview[] {
 
 export function clearReviews(): void {
   storage()?.removeItem(KEY);
+}
+
+/** Days since the last review, or null if there has never been one. */
+export function daysSinceLastReview(todayIso: string): number | null {
+  const [last] = loadReviews();
+  if (!last?.closedISO) return null;
+  const d = (a: string) => { const [y, m, dd] = a.split('-').map(Number); return new Date(y, m - 1, dd).getTime(); };
+  return Math.round((d(todayIso) - d(last.closedISO)) / 86_400_000);
+}
+
+/** A review is due if none has been done, or the last was a week ago. */
+export function reviewDue(todayIso: string): boolean {
+  const since = daysSinceLastReview(todayIso);
+  return since === null || since >= 7;
 }

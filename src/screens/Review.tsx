@@ -16,7 +16,7 @@ import { useMemo, useState } from 'react';
 import { useStore } from '../store';
 import { Card } from '../components/Card';
 import { PersonChip } from '../components/primitives';
-import { daysFromToday, daysSince, todayLabel } from '../lib/dates';
+import { daysFromToday, daysSince, todayISO, todayLabel } from '../lib/dates';
 import { loadReviews, saveReview } from '../lib/reviews';
 import type { SavedReview } from '../lib/reviews';
 import type { AnyCard, Bill, Commitment, Contact, Opportunity } from '../types';
@@ -74,6 +74,7 @@ export function Review({ go }: { go: Go }) {
     setTop3(picked);
     setHistory(saveReview({
       closedOn: todayLabel,
+      closedISO: todayISO(),
       bigThree: picked.map(nameOf),
       dropped: dropped.map(nameOf),
       note,

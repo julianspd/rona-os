@@ -159,3 +159,9 @@ export function untilLabel(days: number): string {
   if (days <= 60) return 'next month';
   return `in ${Math.round(days / 30)} months`;
 }
+
+/** Today as YYYY-MM-DD in Rona's timezone. */
+export function todayISO(): string {
+  const d = todayInZone();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
