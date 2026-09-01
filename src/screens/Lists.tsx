@@ -150,9 +150,17 @@ export function People({ go }: { go: (v: string, id?: string) => void }) {
   const inner = all.filter(c => c.strength === 'Inner Circle');
   const dormant = all.filter(c => c.flags.includes('dormant'));
   const fresh = all.filter(c => c.strength === 'New');
+  const accounts = all.filter(c => c.keyAccount);
+
+  /* The gap worth surfacing: a top account whose profile is thin.
+     Being asked to name the decision maker's pressures and having
+     nothing to say is the finding, not the percentage. */
+  const thin = accounts
+    .filter(c => completeness(c).percent < 50)
+    .sort((a, b) => completeness(a).percent - completeness(b).percent);
 
   const base: Record<string, Contact[]> = {
-    priority: needsAttention, inner, dormant, fresh, all,
+    priority: needsAttention, inner, dormant, fresh, all, accounts,
   };
 
   const shown = useMemo(() => {
@@ -199,9 +207,19 @@ export function People({ go }: { go: (v: string, id?: string) => void }) {
           { key: 'inner', label: 'Inner circle', count: inner.length },
           { key: 'dormant', label: 'Dormant', count: dormant.length },
           { key: 'fresh', label: 'New', count: fresh.length },
+          { key: 'accounts', label: 'Key accounts', count: accounts.length },
           { key: 'all', label: 'Everyone', count: all.length },
         ]}
       />
+
+      {tab === 'accounts' && !!thin.length && (
+        <div className="warnbox">
+          <strong>{thin.length} of {accounts.length} key accounts are under half complete.</strong>{' '}
+          {thin.slice(0, 3).map(c => c.title).join(', ')}
+          {thin.length > 3 ? ` and ${thin.length - 3} more` : ''}. Open one to see
+          exactly what is missing.
+        </div>
+      )}
 
       <div className="controls">
         <span className="controls__label">Sort</span>

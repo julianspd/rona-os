@@ -23,6 +23,8 @@ import {
 } from '../components/primitives';
 import { EntityDetail } from './Spheres';
 import { annualLabel, daysUntilAnnual, untilLabel } from '../lib/dates';
+import { PROFILE, SCORE_MEANING, completeness } from '../lib/profile';
+import type { ClientProfile } from '../types';
 import type { AnyCard, Commitment, Contact, LifeArea } from '../types';
 import './detail.css';
 
@@ -152,6 +154,93 @@ export function Detail({ id, go }: { id: string; go: Go }) {
   );
 }
 
+/* ---- The client profile ------------------------------------
+   Her template, section for section, editable in place like
+   everything else. Only rendered for a key account, because
+   thirty empty fields on an aunt is a form, not a record.      */
+function ProfileBlock({ c }: { c: Contact }) {
+  const { update } = useStore();
+  const p: ClientProfile = c.profile ?? {};
+  const score = completeness(c);
+
+  const set = (k: keyof ClientProfile, v: unknown) =>
+    update(c.id, { profile: { ...p, [k]: v } } as never);
+
+  return (
+    <>
+      {/* Her document is called CLIENT PROFILE COMPLETION, so the
+          product measures exactly that — and names what is missing,
+          because a percentage on its own is not actionable. */}
+      <section className="sec">
+        <header className="sec__head">
+          <h2 className="sec__title">
+            Profile
+            <span className="sec__count">{score.filled} of {score.total}</span>
+          </h2>
+        </header>
+
+        <div className={`pcomplete ${score.percent < 50 ? 'pcomplete--thin' : ''}`}>
+          <div className="pcomplete__bar">
+            <span className="pcomplete__fill" style={{ width: `${score.percent}%` }} />
+          </div>
+          <p className="pcomplete__n">{score.percent}% complete</p>
+          {!!score.missing.length && (
+            <p className="pcomplete__missing">
+              <span className="pcomplete__mlabel">Still unknown</span>
+              {score.missing.map(f => f.label.toLowerCase()).join(' · ')}
+            </p>
+          )}
+        </div>
+      </section>
+
+      {PROFILE.map(sec => (
+        <section className="sec" key={sec.key}>
+          <header className="sec__head">
+            <h2 className="sec__title">{sec.title}</h2>
+          </header>
+          {sec.note && <p className="psec__note">{sec.note}</p>}
+          <div className="dgroup__body">
+            {sec.fields.map(f => (
+              <FieldRow key={f.key} label={f.label}>
+                {f.type === 'select' ? (
+                  <SelectField label={f.label} value={p[f.key] as string}
+                    options={f.options ?? []} onChange={v => set(f.key, v)} />
+                ) : f.type === 'score' ? (
+                  <ScoreField value={p.strengthScore} onChange={v => set('strengthScore', v)} />
+                ) : (
+                  <TextField long={f.type === 'longtext'} value={p[f.key] as string}
+                    placeholder={f.hint} onChange={v => set(f.key, v)} />
+                )}
+              </FieldRow>
+            ))}
+          </div>
+        </section>
+      ))}
+    </>
+  );
+}
+
+/* Her 1–5, with what each number actually means attached — a bare
+   number invites everybody to score it differently. */
+function ScoreField({ value, onChange }: {
+  value?: number; onChange: (v: number) => void;
+}) {
+  return (
+    <span className="score">
+      {[1, 2, 3, 4, 5].map(n => (
+        <button
+          key={n}
+          className={`score__dot ${value && n <= value ? 'score__dot--on' : ''}`}
+          onClick={() => onChange(n)}
+          title={SCORE_MEANING[n]}
+          aria-label={`${n} — ${SCORE_MEANING[n]}`}
+        >{n}</button>
+      ))}
+      {value && <span className="score__meaning">{SCORE_MEANING[value]}</span>}
+    </span>
+  );
+}
+
 /* ---- Contacts keep their own shape --------------------------- */
 function ContactDetail({ c, go }: { c: Contact; go: Go }) {
   const { cards, logInteraction } = useStore();
@@ -172,6 +261,7 @@ function ContactDetail({ c, go }: { c: Contact; go: Go }) {
           <StatusBadge status={c.strength as never} />
           {c.role && <span>{c.role}{c.organization ? `, ${c.organization}` : ''}</span>}
           <LocalTime city={c.city} timezone={c.timezone} showOffset />
+          {c.keyAccount && <span className="keytag">Key account</span>}
           {c.flags.map(f => <FlagBadge key={f} flag={f} />)}
         </div>
       </header>
@@ -202,6 +292,8 @@ function ContactDetail({ c, go }: { c: Contact; go: Go }) {
           <span className="channels__note">Not connected yet</span>
         </div>
       )}
+
+      {c.keyAccount && <ProfileBlock c={c} />}
 
       {!!theirs.length && (
         <section className="dgroup">

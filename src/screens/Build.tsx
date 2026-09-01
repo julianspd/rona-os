@@ -114,13 +114,13 @@ export function Build() {
       <section className="sec">
         <header className="sec__head">
           <h2 className="sec__title">
-            Since the last call
+            Recently built
             <span className="sec__count">{RECENT.length}</span>
           </h2>
         </header>
 
         <p className="build__lead">
-          Everything asked for on {REVIEW.lastReview} is built.
+          Everything asked for on {REVIEW.lastReview} is built. Last call was {REVIEW.lastCall}.
         </p>
         <ul className="build__list">
           {asked.map(r => (

@@ -99,6 +99,58 @@ export type Strength = 'Inner Circle' | 'Active' | 'Warm' | 'New' | 'Dormant';
 
 export type Channel = 'Gmail' | 'Slack' | 'WhatsApp' | 'iMessage' | 'Zoom' | 'Google Meet';
 
+/* ---- The client profile ------------------------------------
+   Rona's own template, built in. Her heading is the important
+   part: "Required for Every Top Account + Growth Target" — so
+   this is a layer that switches ON per contact, not thirty new
+   fields on every person she knows. Decision power and reporting
+   lines mean nothing for an aunt or a contractor.              */
+
+export type DecisionPower = 'Decision Maker' | 'Influencer' | 'Champion';
+export type CommStyle = 'Direct' | 'Collaborative' | 'Vision-led';
+
+export interface ClientProfile {
+  /* 1 — Core */
+  team?: string;
+  decisionPower?: DecisionPower;
+  reportsTo?: string;
+  phone?: string;
+  email?: string;
+  /** Deliberately unset in demo data. Real addresses stay out (§13). */
+  mailingAddress?: string;
+
+  /* 2 — Personal context. Her note: "this is where deals are
+     actually unlocked", which is why it sits high rather than last. */
+  hometown?: string;
+  family?: string;
+  interests?: string;
+  commStyle?: CommStyle;
+
+  /* 3 — Cultural & values. By her own note these inform gifting,
+     invitations, partnership ideas and the timing of an ask — so
+     the product surfaces those actions, not just the text. */
+  causes?: string;
+  boards?: string;
+  community?: string;
+  passionProjects?: string;
+
+  /* 4 — Professional motivators */
+  successLooksLike?: string;
+  pressures?: string;
+  knownFor?: string;
+  keepsThemUp?: string;
+
+  /* 5 — Relationship status */
+  strengthScore?: 1 | 2 | 3 | 4 | 5;
+  relationshipOwner?: string;
+  gaps?: string;
+
+  /* 6 — Strategic opportunities */
+  trustedWith?: string;
+  adjacentTeams?: string;
+  upcomingMoments?: string;
+}
+
 export interface Contact extends BaseCard {
   kind: 'contact';
   organization?: string;
@@ -119,6 +171,9 @@ export interface Contact extends BaseCard {
   channels?: Channel[];
   /** Overrides the city lookup when someone is not where you think. */
   timezone?: string;
+  /** Top account or growth target — switches the full profile on. */
+  keyAccount?: boolean;
+  profile?: ClientProfile;
 }
 
 export type ReminderKind =

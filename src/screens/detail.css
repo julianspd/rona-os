@@ -105,3 +105,110 @@
   transition: background var(--t), border-color var(--t);
 }
 .dhead__title--btn:hover { background: var(--surface-2); border-color: var(--border); }
+
+/* ============================================================
+   Client profile
+   ============================================================ */
+
+.keytag {
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  font-weight: var(--w-semi);
+  color: var(--gold-deep);
+  background: var(--gold-surface);
+  border: 1px solid var(--gold-line);
+  border-radius: var(--r-xs);
+  padding: 3px 7px;
+}
+
+/* Completeness. Gold when it is filling up, because a well-known
+   account is ownership; the urgency ramp when it is thin, because
+   not knowing your decision maker is a real gap. */
+.pcomplete {
+  padding: var(--s4);
+  background: var(--surface);
+  border: var(--hairline);
+  border-radius: var(--r);
+}
+
+.pcomplete__bar {
+  height: 3px;
+  background: var(--surface-3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.pcomplete__fill {
+  display: block;
+  height: 100%;
+  background: var(--gold);
+  transition: width var(--t);
+}
+.pcomplete--thin .pcomplete__fill { background: var(--u-overdue-fg); }
+
+.pcomplete__n {
+  font-size: var(--fs-meta);
+  font-weight: var(--w-medium);
+  color: var(--ink);
+  margin-top: var(--s3);
+}
+.pcomplete--thin .pcomplete__n { color: var(--u-overdue-fg); }
+
+.pcomplete__missing {
+  font-size: var(--fs-meta);
+  color: var(--ink-2);
+  line-height: var(--lh-read);
+  margin-top: var(--s2);
+  max-width: 70ch;
+}
+.pcomplete__mlabel {
+  display: block;
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 3px;
+}
+
+/* Her annotations kept on the page — they explain why a section
+   exists, which is more useful than a heading alone. */
+.psec__note {
+  font-family: var(--font-serif);
+  font-size: var(--fs-serif-sm);
+  letter-spacing: var(--ls-serif);
+  color: var(--ink-2);
+  line-height: var(--lh-read);
+  padding-left: var(--s4);
+  border-left: 2px solid var(--gold);
+  margin-bottom: var(--s4);
+  max-width: 58ch;
+}
+
+/* ---- The 1–5 score ------------------------------------------ */
+.score { display: inline-flex; align-items: center; gap: var(--s2); flex-wrap: wrap; }
+
+.score__dot {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--border-2);
+  background: var(--surface);
+  font-size: var(--fs-action);
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+  transition: background var(--t), border-color var(--t), color var(--t);
+}
+.score__dot:hover { border-color: var(--gold); color: var(--ink); }
+.score__dot--on {
+  background: var(--gold-surface);
+  border-color: var(--gold-line);
+  color: var(--gold-deep);
+  font-weight: var(--w-semi);
+}
+
+/* A bare number invites everyone to score it differently */
+.score__meaning { font-size: var(--fs-meta); color: var(--ink-2); }
+
+@media (max-width: 760px) {
+  .score__dot { width: 40px; height: 40px; }
+  .score__meaning { flex-basis: 100%; }
+}

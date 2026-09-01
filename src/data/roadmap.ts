@@ -43,17 +43,18 @@ export interface Decision {
 /* ---- The last review this reflects ------------------------- */
 export const REVIEW = {
   lastReview: '16 August 2026',
-  updated: '17 August 2026',
+  lastCall: '30 August 2026',
+  updated: '2 September 2026',
   prepared: 'Julian',
   stage: 'High-fidelity prototype on invented data',
 };
 
 /** One paragraph, for anyone who reads nothing else on this page. */
-export const STANDING = `Everything asked for on the last call is built, along
-with the weekly review, an archive, editing, and addresses for every screen.
-Three things remain that we could build now, and I would hold all three until
-one question is answered. Six decisions are open; one of them gates a third of
-what is left.`;
+export const STANDING = `Supabase exists and Rona owns it, and her personal
+Gmail is confirmed personal — so the email track is unblocked and the ingestion
+pipeline can start now, before any credential arrives. What is still open is
+mostly consent rather than engineering: which inbox is home, whether the system
+may reply as well as read, and how far back the first sync should reach.`;
 
 /* ---- What changed since the last call ------------------------
    Put first because it is what anyone actually opens this page
@@ -158,18 +159,23 @@ export const ITEMS: BuildItem[] = [
   { id: 'brief', group: 'Next', status: 'next', title: 'Meeting briefs',
     note: 'Before a meeting: who this person is, what you owe each other, what is open between you.' },
 
+  { id: 'profiles', group: 'Life areas', status: 'built', title: 'Client profiles on contacts',
+    note: 'Her template, section for section, editable in place. It switches on per contact rather than applying to everyone, because her own heading says top accounts and growth targets — decision power and reporting lines mean nothing for an aunt. Her document is called profile COMPLETION, so the product measures exactly that and names what is missing rather than showing a bare percentage.' },
+
   /* ---- Blocked on a decision ---- */
   { id: 'data', group: 'Real data', status: 'blocked', blockedBy: 'accounts', title: 'Saved data',
-    note: 'Right now nothing persists — refreshing resets everything. Supabase, owned by Rona, roughly $10–15 a month, with two-factor set up alongside Jonathan.' },
+    note: 'The database now exists and Rona owns it. Free tier is roughly half a gigabyte, which is ample for recent mail and nowhere near enough for a 1999 archive — which is why the first sync should be date-bound rather than everything.' },
   { id: 'submit', group: 'Real data', status: 'blocked', blockedBy: 'accounts', title: 'Answers arriving on their own',
     note: 'Sending your answers currently opens your email with everything filled in — you still press send. Having them land straight in an inbox, with no step in between, needs the database set up first.' },
   { id: 'login', group: 'Real data', status: 'blocked', blockedBy: 'accounts', title: 'Login',
     note: 'No accounts exist yet. Required before any real information goes in.' },
-  { id: 'gcal', group: 'Real data', status: 'blocked', blockedBy: 'employer', title: 'Google Calendar',
+  { id: 'gcal', group: 'Real data', status: 'next', title: 'Google Calendar',
     note: 'The single most valuable connection — it is where she actually lives, and it is currently doing a task manager’s job. Four calendars to pull from, either merged or kept as separate layers.' },
-  { id: 'gmail', group: 'Real data', status: 'blocked', blockedBy: 'employer', title: 'Gmail',
-    note: 'Read-only on the existing inbox — no new account. Surfaces what needs a reply without sending, deleting or reorganising anything.' },
-  { id: 'drive', group: 'Real data', status: 'blocked', blockedBy: 'employer', title: 'Drive & Docs',
+  { id: 'ingest', group: 'Real data', status: 'next', title: 'Reading her email',
+    note: 'Three personal inboxes, read over a standard mail connection rather than a “Connect Google” button — one credential per inbox that she creates and can revoke herself, with no weekly re-approval and no Google review process. The pipeline can be built now: with no credential present it logs and exits cleanly, so none of the work waits on her.' },
+  { id: 'reply', group: 'Real data', status: 'blocked', blockedBy: 'reply-consent', title: 'Replying from inside the system',
+    note: 'Drafts a reply, threads it correctly so it does not detach in her Gmail, and sends only after she approves. The approval check sits in the sending code itself, so no screen or script can go around it.' },
+  { id: 'drive', group: 'Real data', status: 'later', title: 'Drive & Docs',
     note: 'Attach files and meeting transcripts to the right people and meetings without copying anything.' },
 
   /* ---- Deliberately later ---- */
@@ -195,13 +201,44 @@ export const DECISIONS: Decision[] = [
   {
     id: 'employer', gate: true, owner: 'Rona',
     question: 'Are her Gmail and Calendar personal accounts, or managed by her employer?',
-    consequence: 'This is now the question everything rests on. Her company has already refused Slack, so if Google is company-managed too, the same answer likely applies and the whole connected plan needs rethinking. If those accounts are personal, none of that applies and we can proceed.',
+    consequence: 'Everything rested on this. Her company had already refused Slack, so if Google were company-managed the same answer would likely have applied.',
+    resolved: { on: '30 August 2026', answer: 'Personal, and there are three of them — mercadoare (main contact and outreach), ronacado (recruiter and consulting offers, rarely read) and rona.mercado (preferred for scheduling and outbound). All personal Gmail, so no IT department can block them. Her work email is a separate matter and stays out; forwarding is the only route in, and that is a policy question rather than a technical one.' },
   },
   {
     id: 'slack-control', gate: true, owner: 'Rona',
     question: 'Is the Slack workspace controlled by her company?',
     consequence: 'If it is, Slack becomes an approval process rather than a piece of work we can schedule.',
     resolved: { on: '16 August 2026', answer: 'Yes, and her company IT will not permit an outside app. Slack is out of scope — not deferred, closed.' },
+  },
+  {
+    id: 'reply-consent', gate: true, owner: 'Rona',
+    question: 'May the system reply as you, or only read?',
+    consequence: 'The notes say read-only, but the credential we use grants sending too, and replying from inside the system is most of its value. Nothing would ever send without you pressing approve — and that check lives in the code that sends, not in a screen someone could route around. But it is a bigger permission than was agreed, so it needs a yes rather than an assumption.',
+  },
+  {
+    id: 'mailbox-home', gate: true, owner: 'Rona',
+    question: 'Which of the three inboxes is the system’s home, and which does it send from?',
+    consequence: 'All three can be read. Only one should be the address replies come from, or people end up with threads split across two of your accounts. The notes point at rona.mercado, since that is already the one you use for scheduling and outbound.',
+  },
+  {
+    id: 'work-forward', gate: true, owner: 'Rona',
+    question: 'Does forwarding work email to a personal account breach your employer’s policy?',
+    consequence: 'Technically it takes two minutes. But most IT policies prohibit it outright, and this is the department that just refused Slack. Worth knowing the answer before doing it rather than after — it is your call and your risk, and it should be a knowing one.',
+  },
+  {
+    id: 'sync-window', gate: false, owner: 'Rona & Julian',
+    question: 'How far back should the first sync reach?',
+    consequence: 'The archive runs to 1999. Reading all of it would blow past the free database tier and cost real money to classify, most of it spent on decade-old calendar invites. Suggest the last twelve to twenty-four months to start. The older mail is a search problem, not a working set, and deserves its own answer later.',
+  },
+  {
+    id: 'profile-depth', gate: false, owner: 'Rona',
+    question: 'Does the full client profile apply to every contact, or only key accounts?',
+    consequence: 'Your own template says “required for every top account and growth target”, which suggests the latter. Decision power and reporting lines mean nothing for your aunt or your contractor, and thirty empty fields on a personal contact make the record feel like a form. Suggest a base record for everyone, with the full profile switched on per contact.',
+  },
+  {
+    id: 'strength-scale', gate: false, owner: 'Rona',
+    question: 'Relationship strength — your 1 to 5, or the named tiers already built?',
+    consequence: 'The system currently uses Inner Circle, Active, Warm, New and Dormant, and those names drive how often it nudges you. A number is easier to score and harder to act on. They can coexist, but one of them has to be the one that sets the rhythm.',
   },
   {
     id: 'top3', gate: false, owner: 'Rona',
@@ -217,7 +254,7 @@ export const DECISIONS: Decision[] = [
     id: 'accounts', gate: false, owner: 'Rona & Kavas',
     question: 'Who owns the database, hosting and code accounts?',
     consequence: 'These should be in her name or her organisation’s, with the development team invited in. Nothing real should be stored until this is settled.',
-    resolved: { on: '16 August 2026', answer: 'Rona owns the Supabase account and server, roughly $10–15 a month. Security and two-factor setup to be done with Jonathan.' },
+    resolved: { on: '30 August 2026', answer: 'Done. Rona created the Supabase account herself — free tier, personal organisation, Americas region — renamed the project Rona OS, and invited Julian and Jonathan as developers. The free tier is enough until real volume arrives.' },
   },
   {
     id: 'gmail-fresh', gate: false, owner: 'Rona',

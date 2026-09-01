@@ -4,7 +4,7 @@
    Dated against FIXED_TODAY = 2026-07-31.
    ============================================================ */
 
-import type { Contact } from '../types';
+import type { ClientProfile, Contact } from '../types';
 
 const base = {
   kind: 'contact' as const,
@@ -24,7 +24,7 @@ export const CADENCE: Record<Contact['strength'], number> = {
   'Dormant': 365,
 };
 
-export const contacts: Contact[] = [
+const base_contacts: Contact[] = [
   /* ---- The recurring cast (E.2) — each appears in ≥2 modules (FX-1) ---- */
   {
     ...base, id: 'c1', title: 'Marisol Vega',
@@ -217,3 +217,99 @@ export const contacts: Contact[] = [
 
 export const contactName = (id: string) =>
   contacts.find(c => c.id === id)?.title ?? 'Unknown';
+
+
+/* ============================================================
+   Client profiles — the top accounts and growth targets
+
+   Deliberately uneven. Marisol is fully known because Rona has
+   worked with her for years; Lena is nearly empty and she is the
+   one who signs off the expansion. That gap is the whole point of
+   measuring completeness — the person who decides is the person
+   Rona knows least.
+   ============================================================ */
+
+const PROFILES: Record<string, ClientProfile> = {
+  /* The reference relationship — complete, and it shows. */
+  c1: {
+    team: 'Brand & Marketing', decisionPower: 'Champion', reportsTo: 'Lena Brandt, CFO',
+    hometown: 'Grew up outside Milwaukee; first agency job in Chicago and never left',
+    family: 'Married to Tobias, a architect. One daughter, Wren, starting school this autumn.',
+    interests: 'Distance running, half-marathons twice a year. Serious about coffee. Reads history.',
+    commStyle: 'Direct',
+    causes: 'Girls on the Run — coaches a chapter. Quietly funds two scholarships at her old school.',
+    boards: 'Advisory board, Chicago Youth Athletics',
+    community: 'Hosts a monthly dinner for women running brand teams',
+    passionProjects: 'Writing about what agencies get wrong about in-house teams. Half a book so far.',
+    successLooksLike: 'A brand team that does not need an agency for everything. She wants to have built something that outlasts her tenure.',
+    pressures: 'Hired to prove in-house works, on a budget that assumes it already does. Her CFO counts headcount, not output.',
+    knownFor: 'Being the one who made the in-house model actually work, rather than the one who cut agency spend.',
+    keepsThemUp: 'That the DTC relaunch lands flat and the in-house case dies with it.',
+    strengthScore: 5, relationshipOwner: 'Rona',
+    gaps: 'Have never met her Head of Retail properly, and Beatrix sees every brief before Marisol does.',
+    trustedWith: 'Brand architecture and the operating model. She defers to Rona on both.',
+    adjacentTeams: 'Retail (Beatrix Lowe), Finance (Lena Brandt)',
+    upcomingMoments: 'DTC relaunch in the autumn. Two years in the role in November.',
+  },
+
+  /* The decision maker Rona barely knows. Nearly empty on purpose. */
+  c15: {
+    team: 'Finance', decisionPower: 'Decision Maker', reportsTo: 'CEO',
+    commStyle: 'Direct',
+    pressures: 'Signing off spend in a year where every line is being questioned.',
+    strengthScore: 1, relationshipOwner: 'Rona',
+  },
+
+  /* Warm, real, and half-known — the ordinary middle. */
+  c8: {
+    team: 'Portfolio Operations', decisionPower: 'Decision Maker', reportsTo: 'Managing Partner',
+    hometown: 'Chicago, born and raised. Mentions it often.',
+    family: 'Two sons, both at university.',
+    interests: 'Architecture tours, jazz, and an unreasonable amount of golf.',
+    commStyle: 'Vision-led',
+    causes: 'Sits on a scholarship committee for first-generation students.',
+    boards: 'Two portfolio company boards',
+    successLooksLike: 'Portfolio brands that can be sold at a multiple because the brand is worth something, not just the revenue.',
+    pressures: 'Two portfolio brands underperforming and a fund cycle closing.',
+    knownFor: 'The partner who actually understands brand, in a firm that treats it as decoration.',
+    strengthScore: 3, relationshipOwner: 'Rona',
+    gaps: 'Have not met Rafael Ibarra, and he runs the two brands in question.',
+    trustedWith: 'Nothing formally yet — this is the first real conversation.',
+    adjacentTeams: 'The two portfolio brand teams',
+    upcomingMoments: 'Fund cycle closes in the spring. Chicago working session this month.',
+  },
+
+  /* Internal, and the profile is doing different work — she is not
+     a client, she is the person Rona has to persuade. */
+  c13: {
+    team: 'Marketing', decisionPower: 'Decision Maker', reportsTo: 'Hugh Ellery-Watts, CEO',
+    hometown: 'London originally; twelve years in the Bay Area.',
+    interests: 'Opera, and a well-known intolerance for long meetings.',
+    commStyle: 'Direct',
+    causes: 'Chairs the company giving committee',
+    successLooksLike: 'A brand portfolio that reads as one company rather than eleven acquisitions.',
+    pressures: 'Q4 launch is late and the board has noticed.',
+    knownFor: 'Bringing order to a portfolio that had none.',
+    strengthScore: 4, relationshipOwner: 'Rona',
+    gaps: 'Femi in Finance controls the budget and Rona has never had a direct conversation with him.',
+    trustedWith: 'Brand architecture. She asked for the point of view herself.',
+    adjacentTeams: 'Finance, Insights',
+    upcomingMoments: 'Q4 launch. Performance review window opens in September.',
+  },
+
+  /* A growth target rather than an account — barely started. */
+  c22: {
+    team: 'Retail', decisionPower: 'Influencer', reportsTo: 'Marisol Vega',
+    strengthScore: 1,
+    gaps: 'Everything. Have exchanged two emails.',
+  },
+};
+
+const KEY_ACCOUNTS = Object.keys(PROFILES);
+
+export const contacts: Contact[] = base_contacts.map(c =>
+  PROFILES[c.id]
+    ? { ...c, keyAccount: true, profile: PROFILES[c.id] }
+    : c);
+
+export const keyAccountIds = KEY_ACCOUNTS;
