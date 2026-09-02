@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Her actual mail. Never committed.
+ingest/data/
+.env.local
