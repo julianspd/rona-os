@@ -221,7 +221,16 @@ export function People({ go }: { go: (v: string, id?: string) => void }) {
       />
 
       <Tabs
-        active={tab} onChange={setTab}
+        active={tab}
+        onChange={k => {
+          setTab(k);
+          /* Everyone is a directory — you open it to find a person,
+             not to see who needs you. So it lands alphabetical, and
+             the A–Z appears without anyone having to discover a
+             sort control first. */
+          if (k === 'all' && sort === 'priority') setSort('surname');
+          if (k !== 'all' && sort === 'surname') setSort('priority');
+        }}
         tabs={[
           { key: 'priority', label: 'Needs you', count: needsAttention.length },
           { key: 'inner', label: 'Inner circle', count: inner.length },
