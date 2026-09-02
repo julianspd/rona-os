@@ -540,3 +540,17 @@
   margin-left: 6px;
   vertical-align: middle;
 }
+
+/* Held blank rather than flashing a sign-in screen at somebody who
+   is already signed in. */
+.booting { min-height: 100dvh; background: var(--bg); }
+
+.env__who { color: var(--ink-2); }
+
+/* Live data reads as hers rather than as a warning strip */
+.env--live { background: var(--surface); border-bottom-color: var(--border); }
+.env--live .env__tag {
+  color: var(--gold-deep);
+  background: var(--gold-surface);
+  border-color: var(--gold-line);
+}

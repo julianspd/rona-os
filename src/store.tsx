@@ -3,7 +3,7 @@
    No persistence. No server. Everything resets on reload (ST-4).
    ============================================================ */
 
-import { createContext, useContext, useMemo, useState, useCallback } from 'react';
+import { createContext, useContext, useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import type { AnyCard, CardKind, FixtureState, InboxItem } from './types';
 import { bills } from './fixtures/bills';
@@ -13,6 +13,8 @@ import {
   entities, goals, events, documents, decisions, inboxItems,
 } from './fixtures/data';
 import { shiftDate, ANCHOR_ISO } from './lib/dates';
+import { useAuth } from './lib/auth';
+import { fetchCards, fetchPrefs, isConnected, saveCards, savePrefs } from './lib/db';
 
 const ALL: AnyCard[] = [
   ...fxContacts, ...commitments, ...tasks, ...delegations, ...reminders,
@@ -64,14 +66,84 @@ interface Store {
 const Ctx = createContext<Store | null>(null);
 
 export function StoreProvider({ children }: { children: ReactNode }) {
-  const [cards, setCards] = useState<AnyCard[]>(ALL);
+  const { account } = useAuth();
+  const live = isConnected && !!account;
+
+  /* Fixtures when there is no database or nobody signed in — which is
+     the demo, and also what lets all of this ship before setup. */
+  const [cards, setCards] = useState<AnyCard[]>(live ? [] : ALL);
   const [fixtureState, setFixtureState] = useState<FixtureState>('primary');
-  const [top3, setTop3] = useState<string[]>(['t5', 't1', 't2']);
+  const [top3, setTop3] = useState<string[]>(live ? [] : ['t5', 't1', 't2']);
   const [toast, setToast] = useState<Toast | null>(null);
   const [seq, setSeq] = useState(0);
   /** Open question: does Rona want amounts stored at all? Built so
       either answer works, and she can decide by using it. */
   const [showAmounts, setShowAmounts] = useState(true);
+
+  /* Everything already written, by identity. Every mutation in this
+     file replaces the objects it changes and leaves the rest alone,
+     so reference inequality is an exact dirty check — no mutation
+     function needs to know persistence exists. */
+  const written = useRef(new Map<string, AnyCard>());
+  const firstLoad = useRef(false);
+
+  /* ---- Load ---- */
+  useEffect(() => {
+    if (!live || !account) {
+      setCards(ALL);
+      written.current.clear();
+      firstLoad.current = false;
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const [rows, prefs] = await Promise.all([
+          fetchCards(account.id),
+          fetchPrefs(account.id),
+        ]);
+        if (cancelled) return;
+        setCards(rows);
+        rows.forEach(c => written.current.set(c.id, c));
+        if (prefs) { setTop3(prefs.top3); setShowAmounts(prefs.showAmounts); }
+        firstLoad.current = true;
+      } catch {
+        if (!cancelled) {
+          setToast({ message: 'Could not reach your data — nothing has been lost', undo: () => {} });
+        }
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [live, account]);
+
+  /* ---- Save ----
+     Debounced, because editing a text field fires on every keystroke
+     and one write per character is absurd. The screen never waits on
+     this: local state has already changed. */
+  useEffect(() => {
+    if (!live || !account || !firstLoad.current) return;
+    const changed = cards.filter(c => written.current.get(c.id) !== c);
+    if (!changed.length) return;
+
+    const t = setTimeout(() => {
+      saveCards(changed, account.id)
+        .then(() => changed.forEach(c => written.current.set(c.id, c)))
+        .catch(() => setToast({
+          message: 'That did not save. It is still on screen — try again in a moment.',
+          undo: () => {},
+        }));
+    }, 600);
+    return () => clearTimeout(t);
+  }, [cards, live, account]);
+
+  /* ---- Preferences ---- */
+  useEffect(() => {
+    if (!live || !account || !firstLoad.current) return;
+    const t = setTimeout(() => {
+      savePrefs({ top3, showAmounts }, account.id).catch(() => { /* not worth a toast */ });
+    }, 600);
+    return () => clearTimeout(t);
+  }, [top3, showAmounts, live, account]);
 
   /** ST-3 — every mutation is undoable for a few seconds. */
   const patch = useCallback((id: string, fn: (c: AnyCard) => AnyCard, message: string) => {

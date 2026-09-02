@@ -15,6 +15,8 @@ import { Dates } from './screens/Dates';
 import { Archive } from './screens/Archive';
 import { Review } from './screens/Review';
 import { DebugPanel, ErrorTrap } from './Diagnostics';
+import { AuthProvider, useAuth } from './lib/auth';
+import { SignIn } from './screens/SignIn';
 import type { EntityType } from './types';
 import { classify } from './lib/classify';
 import type { Hint } from './lib/classify';
@@ -90,30 +92,55 @@ function useIsMobile() {
 function EnvironmentLabel({ go }: { go: (v: string) => void }) {
   const [detail, setDetail] = useState(false);
   const { fixtureState, setFixtureState } = useStore();
+  const { account, signOut, connected } = useAuth();
+
+  /* The strip has to tell the truth about which of the two this is.
+     Saying "resets on reload" to somebody whose data is being saved
+     is worse than saying nothing. */
+  const liveData = connected && !!account;
+
   return (
-    <div className="env">
-      <span className="env__tag">Demo</span>
+    <div className={`env ${liveData ? 'env--live' : ''}`}>
+      <span className="env__tag">{liveData ? 'Your data' : 'Demo'}</span>
       <span className="env__date">{todayLabel} · Pacific</span>
+
       <button className="env__more" onClick={() => setDetail(!detail)} aria-expanded={detail}>
         {detail ? 'Less' : 'What this means'}
       </button>
       <button className="env__more" onClick={() => go('build')}>Build status</button>
-      <button
-        className="env__toggle"
-        onClick={() => setFixtureState(fixtureState === 'primary' ? 'quiet' : 'primary')}
-      >
-        {fixtureState === 'primary' ? 'View a quiet day' : 'View a full day'}
-      </button>
+
+      {liveData ? (
+        <>
+          <span className="env__who">{account?.email ?? account?.name}</span>
+          <button className="env__toggle" onClick={signOut}>Sign out</button>
+        </>
+      ) : (
+        <button
+          className="env__toggle"
+          onClick={() => setFixtureState(fixtureState === 'primary' ? 'quiet' : 'primary')}
+        >
+          {fixtureState === 'primary' ? 'View a quiet day' : 'View a full day'}
+        </button>
+      )}
+
       {detail && (
         <p className="env__detail">
-          Every person, organisation, property and figure here is invented.
-          Changes are held in memory and reset on reload — with one exception:
-          answers typed into Build status are kept in this browser so a refresh
-          cannot lose them. Dates run on the real Pacific calendar, but the demo
-          content keeps its own spacing, so “eleven days overdue” stays eleven
-          days overdue rather than worsening each week the site sits unopened.
-          Stalled, at-risk and dormant flags are hand-authored — nothing is
-          detecting them yet.
+          {liveData ? (
+            <>
+              This is yours. Everything you type is saved to your own database
+              and is there when you come back, on any device you sign in from.
+              Nobody else can read it. Dates run on the real Pacific calendar.
+            </>
+          ) : (
+            <>
+              Every person, organisation, property and figure here is invented.
+              Changes are held in memory and reset on reload. Dates run on the
+              real Pacific calendar, but the demo content keeps its own spacing,
+              so “eleven days overdue” stays eleven days overdue rather than
+              worsening each week the site sits unopened. Stalled, at-risk and
+              dormant flags are hand-authored — nothing is detecting them yet.
+            </>
+          )}
         </p>
       )}
     </div>
@@ -388,13 +415,25 @@ function Shell() {
   );
 }
 
+/* With a database configured this is her private app and it asks who
+   she is. Without one it is the demo, and asking would be theatre. */
+function Gate() {
+  const { account, ready, connected } = useAuth();
+  if (!connected) return <Shell />;
+  if (!ready) return <div className="booting" aria-label="Loading" />;
+  if (!account) return <SignIn />;
+  return <Shell />;
+}
+
 export default function App() {
   return (
     <ErrorTrap>
       <DebugPanel />
-      <StoreProvider>
-        <Shell />
-      </StoreProvider>
+      <AuthProvider>
+        <StoreProvider>
+          <Gate />
+        </StoreProvider>
+      </AuthProvider>
     </ErrorTrap>
   );
 }

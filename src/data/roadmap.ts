@@ -163,12 +163,12 @@ export const ITEMS: BuildItem[] = [
     note: 'Her template, section for section, editable in place. It switches on per contact rather than applying to everyone, because her own heading says top accounts and growth targets — decision power and reporting lines mean nothing for an aunt. Her document is called profile COMPLETION, so the product measures exactly that and names what is missing rather than showing a bare percentage.' },
 
   /* ---- Blocked on a decision ---- */
-  { id: 'data', group: 'Real data', status: 'blocked', blockedBy: 'accounts', title: 'Saved data',
-    note: 'The database now exists and Rona owns it. Free tier is roughly half a gigabyte, which is ample for recent mail and nowhere near enough for a 1999 archive — which is why the first sync should be date-bound rather than everything.' },
+  { id: 'data', group: 'Real data', status: 'next', title: 'Saved data',
+    note: 'Built and waiting on the credential. The schema, sign-in and the whole save layer are written; with nothing configured the app runs on demo data exactly as it does now, and the moment the Supabase keys are set it becomes her private app. Free tier is roughly half a gigabyte — ample for what she types, nowhere near enough for a 1999 mail archive.' },
   { id: 'submit', group: 'Real data', status: 'blocked', blockedBy: 'accounts', title: 'Answers arriving on their own',
     note: 'Sending your answers currently opens your email with everything filled in — you still press send. Having them land straight in an inbox, with no step in between, needs the database set up first.' },
-  { id: 'login', group: 'Real data', status: 'blocked', blockedBy: 'accounts', title: 'Login',
-    note: 'No accounts exist yet. Required before any real information goes in.' },
+  { id: 'login', group: 'Real data', status: 'next', title: 'Login',
+    note: 'Google sign-in, built. One tap with the account she already uses. Worth being clear because the opposite was said about Gmail: signing in uses basic profile permissions, not the restricted mail ones that carry a long review. Every row is locked to her by the database itself, not by the app remembering to filter.' },
   { id: 'gcal', group: 'Real data', status: 'next', title: 'Google Calendar',
     note: 'The single most valuable connection — it is where she actually lives, and it is currently doing a task manager’s job. Four calendars to pull from, either merged or kept as separate layers.' },
   { id: 'ingest', group: 'Real data', status: 'next', title: 'Reading her email',

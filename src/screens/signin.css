@@ -1,0 +1,97 @@
+/* Sign in — the one screen with nothing to scan */
+
+.signin {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--s5);
+  background: var(--bg);
+}
+
+.signin__box {
+  width: 100%;
+  max-width: 420px;
+}
+
+.signin__brand {
+  display: flex; align-items: baseline; gap: var(--s2);
+  margin-bottom: var(--s8);
+}
+.signin__mono {
+  font-family: var(--font-serif);
+  font-size: var(--fs-serif-sm);
+  line-height: 1;
+  color: var(--ink);
+}
+.signin__mono::after {
+  content: '';
+  display: block;
+  width: 22px; height: 1px;
+  background: var(--gold);
+  margin-top: 7px;
+}
+.signin__name {
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.signin__date {
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: var(--s3);
+}
+
+.signin__h {
+  font-family: var(--font-serif);
+  font-size: var(--fs-serif-lg);
+  font-weight: var(--w-regular);
+  letter-spacing: var(--ls-serif);
+  line-height: 1.15;
+  color: var(--ink);
+}
+
+.signin__p {
+  font-size: var(--fs-body);
+  line-height: var(--lh-read);
+  color: var(--ink-2);
+  margin-top: var(--s4);
+  max-width: 38ch;
+}
+
+.signin__rule { margin: var(--s6) 0; }
+
+.signin__btn {
+  width: 100%;
+  min-height: 48px;
+  border-radius: var(--r-sm);
+  background: var(--ink);
+  color: #fff;
+  font-size: var(--fs-body);
+  font-weight: var(--w-medium);
+  transition: background var(--t);
+}
+.signin__btn:hover { background: #35332F; }
+
+.signin__err {
+  margin-top: var(--s3);
+  font-size: var(--fs-meta);
+  color: var(--u-overdue-fg);
+  line-height: var(--lh-read);
+}
+
+.signin__note {
+  margin-top: var(--s5);
+  font-size: var(--fs-micro);
+  color: var(--ink-3);
+  line-height: var(--lh-read);
+}
+
+@media (max-width: 760px) {
+  .signin__h { font-size: var(--fs-serif-md); }
+  .signin { align-items: flex-start; padding-top: 18vh; }
+}
