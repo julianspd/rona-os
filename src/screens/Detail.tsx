@@ -163,6 +163,26 @@ function ProfileBlock({ c }: { c: Contact }) {
   const p: ClientProfile = c.profile ?? {};
   const score = completeness(c);
 
+  /* Every contact can hold a profile. But a personal contact with
+     nothing in it opens folded rather than as twenty-five empty
+     rows — available on demand, not demanded on arrival. */
+  const started = score.filled > 0 || !!c.keyAccount;
+  const [open, setOpen] = useState(started);
+
+  if (!open) {
+    return (
+      <section className="sec">
+        <button className="fold" onClick={() => setOpen(true)}>
+          <span className="fold__label">Add a client profile</span>
+          <span className="fold__n">
+            Decision power, what drives them, where the gaps are — {score.total} fields
+          </span>
+          <span className="rest__chev" aria-hidden="true">⌄</span>
+        </button>
+      </section>
+    );
+  }
+
   const set = (k: keyof ClientProfile, v: unknown) =>
     update(c.id, { profile: { ...p, [k]: v } } as never);
 
@@ -190,9 +210,23 @@ function ProfileBlock({ c }: { c: Contact }) {
             Profile
             <span className="sec__count">{score.filled} of {score.total}</span>
           </h2>
+          {/* Whether somebody is a top account is a judgement she makes,
+              not something baked into the data. So it is a switch. */}
+          <button
+            className={`keytoggle ${c.keyAccount ? 'keytoggle--on' : ''}`}
+            onClick={() => update(c.id, { keyAccount: !c.keyAccount } as never)}
+            aria-pressed={!!c.keyAccount}
+          >
+            {c.keyAccount ? 'Key account' : 'Mark as key account'}
+          </button>
         </header>
 
-        <div className={`pcomplete ${score.percent < 50 ? 'pcomplete--thin' : ''}`}>
+        {/* A completion score on a contact nobody is working is just a
+            scold, so it only appears once the profile is being kept. */}
+        <div
+          className={`pcomplete ${score.percent < 50 && c.keyAccount ? 'pcomplete--thin' : ''}`}
+          hidden={!c.keyAccount && score.filled === 0}
+        >
           <div className="pcomplete__bar">
             <span className="pcomplete__fill" style={{ width: `${score.percent}%` }} />
           </div>
@@ -334,7 +368,7 @@ function ContactDetail({ c, go }: { c: Contact; go: Go }) {
         </div>
       )}
 
-      {c.keyAccount && <ProfileBlock c={c} />}
+      <ProfileBlock c={c} />
 
       {!!theirs.length && (
         <section className="dgroup">

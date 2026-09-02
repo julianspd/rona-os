@@ -280,3 +280,30 @@
   .pgrid { grid-template-columns: 1fr; padding: 0 var(--s4); }
   .pgap { min-height: 38px; }
 }
+
+/* Marking a top account is a judgement, so it reads as a switch
+   rather than a label. Gold when on — ownership, not urgency. */
+.keytoggle {
+  margin-left: auto;
+  font-size: var(--fs-micro);
+  letter-spacing: 0.02em;
+  color: var(--ink-3);
+  border: 1px dashed var(--border-2);
+  border-radius: var(--r-pill);
+  padding: 4px 11px;
+  min-height: 28px;
+  transition: color var(--t), border-color var(--t), background var(--t);
+}
+.keytoggle:hover { color: var(--ink); border-color: var(--ink-3); }
+.keytoggle--on {
+  color: var(--gold-deep);
+  background: var(--gold-surface);
+  border: 1px solid var(--gold-line);
+  font-weight: var(--w-semi);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-eyebrow);
+}
+
+@media (max-width: 760px) {
+  .keytoggle { margin-left: 0; min-height: 36px; }
+}
