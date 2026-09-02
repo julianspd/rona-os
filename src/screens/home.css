@@ -151,3 +151,70 @@
   .rest__toggle { flex-wrap: wrap; gap: var(--s1) var(--s2); }
   .rest__summary { flex-basis: 100%; white-space: normal; }
 }
+
+/* ---- First run ----------------------------------------------
+   Only ever seen once. Three things, in the order that makes the
+   product work, each explaining why rather than just instructing. */
+.firstrun {
+  padding: var(--s5);
+  border: 1px solid var(--gold-line);
+  border-radius: var(--r);
+  background: var(--gold-surface);
+  margin-bottom: var(--gap-section);
+}
+
+.firstrun__h {
+  font-family: var(--font-serif);
+  font-size: var(--fs-serif-sm);
+  letter-spacing: var(--ls-serif);
+  color: var(--ink);
+}
+.firstrun__p {
+  font-size: var(--fs-meta);
+  color: var(--ink-2);
+  line-height: var(--lh-read);
+  margin-top: var(--s2);
+  max-width: 56ch;
+}
+
+.firstrun__list {
+  display: flex; flex-direction: column; gap: var(--s4);
+  margin-top: var(--s5);
+}
+.firstrun__step { display: flex; align-items: flex-start; gap: var(--s3); }
+
+.firstrun__n {
+  flex: none;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: #fff;
+  font-size: var(--fs-micro);
+  font-weight: var(--w-semi);
+  display: grid; place-items: center;
+  margin-top: 1px;
+}
+
+.firstrun__do {
+  font-size: var(--fs-body);
+  color: var(--gold-deep);
+  font-weight: var(--w-medium);
+  text-align: left;
+  border-bottom: 1px solid var(--gold-line);
+  padding-bottom: 1px;
+  transition: border-color var(--t);
+}
+.firstrun__do:hover { border-color: var(--gold); }
+
+.firstrun__why {
+  font-size: var(--fs-meta);
+  color: var(--ink-2);
+  line-height: var(--lh-read);
+  margin-top: 4px;
+  max-width: 58ch;
+}
+
+@media (max-width: 760px) {
+  .firstrun { padding: var(--s4); }
+  .firstrun__do { min-height: 32px; }
+}

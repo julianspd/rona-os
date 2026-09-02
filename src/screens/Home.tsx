@@ -9,6 +9,7 @@ import { buildHome, inboxCount } from '../lib/home';
 import { SectionBlock } from '../components/SectionBlock';
 import { Card } from '../components/Card';
 import { todayLabel } from '../lib/dates';
+import { useAuth } from '../lib/auth';
 import type { AnyCard } from '../types';
 import './home.css';
 
@@ -37,8 +38,12 @@ const DEFERRED = ['opps', 'risk', 'delegation', 'reconnect', 'renewals', 'health
    the module, which is where working — as opposed to scanning — happens. */
 const CORE_CAP = 3;
 
-export function Home({ go }: { go: (view: string, id?: string) => void }) {
+export function Home({ go, onCapture }: {
+  go: (view: string, id?: string) => void;
+  onCapture?: () => void;
+}) {
   const { cards, top3 } = useStore();
+  const { account } = useAuth();
 
   const sections = useMemo(() => buildHome(cards), [cards]);
   const s = (key: string) => sections.find(x => x.key === key)!;
@@ -103,6 +108,51 @@ export function Home({ go }: { go: (view: string, id?: string) => void }) {
         )}
         <hr className="rule-gold greet__rule" />
       </header>
+
+      {/* Signed in with nothing in it, every section below hides
+          itself and the page reads as broken rather than calm. This
+          is what she meets on Monday morning, alone. */}
+      {account && cards.length === 0 && (
+        <section className="firstrun">
+          <p className="firstrun__h">Nothing here yet, and that is right.</p>
+          <p className="firstrun__p">
+            This fills up from what you put in it. Three things worth doing first —
+            it takes about ten minutes and then it starts working for you.
+          </p>
+          <ol className="firstrun__list">
+            <li className="firstrun__step">
+              <span className="firstrun__n">1</span>
+              <div>
+                <button className="firstrun__do" onClick={onCapture}>Capture a thought</button>
+                <p className="firstrun__why">
+                  Anything on your mind. It goes to your inbox and you decide what it
+                  is later — that is the whole point of it.
+                </p>
+              </div>
+            </li>
+            <li className="firstrun__step">
+              <span className="firstrun__n">2</span>
+              <div>
+                <button className="firstrun__do" onClick={() => go('people')}>Add someone who matters</button>
+                <p className="firstrun__why">
+                  Five or ten people you should not lose touch with. Tell it how often
+                  and it will tell you when it has been too long.
+                </p>
+              </div>
+            </li>
+            <li className="firstrun__step">
+              <span className="firstrun__n">3</span>
+              <div>
+                <button className="firstrun__do" onClick={() => go('commitments')}>Write down what you owe</button>
+                <p className="firstrun__why">
+                  One promise you have made and one you are waiting on. This is the part
+                  nothing else you use keeps track of.
+                </p>
+              </div>
+            </li>
+          </ol>
+        </section>
+      )}
 
       {/* ---- Overdue — outranks everything, by order not by volume ---- */}
       <SectionBlock

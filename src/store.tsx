@@ -56,6 +56,8 @@ interface Store {
   logInteraction: (id: string) => void;
   capture: (title: string, hint?: InboxItem['hint']) => void;
   convertInbox: (id: string, kind: CardKind) => void;
+  /** Create something directly, for when you already know what it is. */
+  addCard: (kind: CardKind, title: string, extra?: Partial<AnyCard>) => string;
   markPaid: (id: string) => void;
   showAmounts: boolean;
   setShowAmounts: (v: boolean) => void;
@@ -250,6 +252,40 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     });
   }, [seq]);
 
+  /* Capture is for when you do not want to decide yet. This is for
+     when you already have: adding ten people to seed the system
+     should not mean ten trips through the inbox. */
+  const addCard = useCallback((kind: CardKind, title: string, extra?: Partial<AnyCard>) => {
+    const id = `n${Date.now().toString(36)}${seq}`;
+    setSeq(s => s + 1);
+
+    const base = {
+      id, kind, title,
+      lifeAreas: [], importance: 'Normal', owner: 'Me',
+      relatedIds: [], tags: [], flags: [], lastTouched: ANCHOR_ISO,
+    };
+
+    const byKind: Record<string, object> = {
+      contact: {
+        status: 'Active', strength: 'New', cadenceDays: 45,
+        lastInteraction: ANCHOR_ISO,
+      },
+      commitment: {
+        status: 'Open', direction: 'I Owe', personId: '',
+        createdDate: ANCHOR_ISO, attentionType: 'Do',
+      },
+      task: { status: 'Next', attentionType: 'Do' },
+    };
+
+    const card = { ...base, ...(byKind[kind] ?? { status: 'Next' }), ...extra } as AnyCard;
+    setCards(prev => {
+      const next = [card, ...prev];
+      setToast({ message: `“${title}” added`, undo: () => setCards(prev) });
+      return next;
+    });
+    return id;
+  }, [seq]);
+
   const convertInbox = useCallback((id: string, kind: CardKind) =>
     patch(id, c => ({ ...c, kind, status: 'Next' }) as AnyCard, `Filed as ${kind}`), [patch]);
 
@@ -271,11 +307,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     fixtureState, setFixtureState,
     top3, setTop3,
     complete, archive, snooze, killItem, keepItem, handOff, restore, update,
-    followUp, logInteraction, capture, convertInbox,
+    followUp, logInteraction, capture, convertInbox, addCard,
     markPaid, showAmounts, setShowAmounts,
     toast, clearToast: () => setToast(null),
   }), [visible, fixtureState, top3, complete, archive, snooze, followUp,
-      logInteraction, capture, convertInbox, markPaid, showAmounts, toast,
+      logInteraction, capture, convertInbox, addCard, markPaid, showAmounts, toast,
       killItem, keepItem, handOff, restore, update]);
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

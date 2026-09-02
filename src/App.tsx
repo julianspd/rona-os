@@ -366,7 +366,7 @@ function Shell() {
         </nav>
 
         <main className="main">
-          {view === 'home' && <Home go={go} />}
+          {view === 'home' && <Home go={go} onCapture={() => setCapturing(true)} />}
           {view === 'today' && <Today go={go} />}
           {view === 'inbox' && <Inbox go={go} />}
           {view === 'commitments' && <Commitments go={go} />}

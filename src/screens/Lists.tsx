@@ -8,6 +8,7 @@ import { useStore } from '../store';
 import { Card } from '../components/Card';
 import { daysFromToday, daysSince, todayLabel } from '../lib/dates';
 import { completeness } from '../lib/profile';
+import type { CardKind } from '../types';
 import type { AnyCard, Commitment, Contact } from '../types';
 import './lists.css';
 
@@ -41,6 +42,52 @@ function Tabs({ tabs, active, onChange }: {
           {t.label}<span className="tab__n">{t.count}</span>
         </button>
       ))}
+    </div>
+  );
+}
+
+/* ---- Add one directly --------------------------------------
+   Capture is for when you do not want to decide yet. This is for
+   when you already have — seeding ten people should not mean ten
+   trips through the inbox. Type, enter, and it opens for details. */
+function AddRow({ kind, label, placeholder, go }: {
+  kind: CardKind; label: string; placeholder: string;
+  go: (v: string, id?: string) => void;
+}) {
+  const { addCard } = useStore();
+  const [open, setOpen] = useState(false);
+  const [text, setText] = useState('');
+
+  const submit = (thenOpen: boolean) => {
+    const t = text.trim();
+    if (!t) return;
+    const id = addCard(kind, t);
+    setText('');
+    if (thenOpen) { setOpen(false); go('detail', id); }
+  };
+
+  if (!open) {
+    return (
+      <button className="addrow__open" onClick={() => setOpen(true)}>+ {label}</button>
+    );
+  }
+
+  return (
+    <div className="addrow">
+      <input
+        className="addrow__input"
+        autoFocus
+        value={text}
+        placeholder={placeholder}
+        onChange={e => setText(e.target.value)}
+        onKeyDown={e => {
+          if (e.key === 'Enter') submit(false);   // keep going, for seeding a list
+          if (e.key === 'Escape') { setText(''); setOpen(false); }
+        }}
+      />
+      <button className="act act--primary" onClick={() => submit(true)}>Add & open</button>
+      <button className="act" onClick={() => { setText(''); setOpen(false); }}>Done</button>
+      <span className="addrow__hint">Enter adds another · Escape closes</span>
     </div>
   );
 }
@@ -100,6 +147,8 @@ export function Commitments({ go }: { go: (v: string, id?: string) => void }) {
 
   return (
     <Page title="Commitments" sub="A promise between two people. Different from a task.">
+      <AddRow kind="commitment" label="Add a commitment"
+        placeholder="What was promised — you can say who after" go={go} />
       <Tabs
         active={tab} onChange={setTab}
         tabs={[
@@ -219,6 +268,8 @@ export function People({ go }: { go: (v: string, id?: string) => void }) {
         value={q}
         onChange={e => setQ(e.target.value)}
       />
+
+      <AddRow kind="contact" label="Add someone" placeholder="Their name" go={go} />
 
       <Tabs
         active={tab}

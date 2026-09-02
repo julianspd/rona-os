@@ -71,9 +71,19 @@ export function Detail({ id, go }: { id: string; go: Go }) {
         return <AreaField value={(val(f.key) as LifeArea[]) ?? []} onChange={v => set(f.key, v)} />;
       case 'tags':
         return <TagField value={(val(f.key) as string[]) ?? []} onChange={v => set(f.key, v)} />;
-      case 'person':
-        return <PersonChip name={nameOf(val(f.key) as string)}
-          onClick={() => go('detail', val(f.key) as string)} />;
+      case 'person': {
+        const people = cards.filter(x => x.kind === 'contact');
+        const who = val(f.key) as string | undefined;
+        return (
+          <Picker
+            label={f.label}
+            options={people.map(x => ({ value: x.id, label: x.title }))}
+            selected={who ? [who] : []}
+            onSelect={v => set(f.key, v)}
+            trigger={who ? <PersonChip name={nameOf(who)} /> : <Empty text="Nobody yet" />}
+          />
+        );
+      }
       case 'longtext':
         return <TextField long value={val(f.key) as string} onChange={v => set(f.key, v)} />;
       default:

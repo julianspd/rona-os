@@ -320,3 +320,49 @@
   .alpha { gap: 1px; padding-bottom: var(--s3); }
   .alpha__l { min-width: 0; flex: 1; height: 34px; }
 }
+
+/* ---- Adding one directly ------------------------------------ */
+.addrow__open {
+  display: inline-flex; align-items: center;
+  font-size: var(--fs-meta);
+  color: var(--gold-deep);
+  padding: 7px 0;
+  margin-bottom: var(--s3);
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--t);
+}
+.addrow__open:hover { border-color: var(--gold-line); }
+
+.addrow {
+  display: flex; align-items: center; gap: var(--s2);
+  flex-wrap: wrap;
+  padding: var(--s3);
+  margin-bottom: var(--s4);
+  border: 1px solid var(--gold-line);
+  background: var(--gold-surface);
+  border-radius: var(--r);
+}
+.addrow__input {
+  flex: 1;
+  min-width: 200px;
+  font-size: var(--fs-body);
+  padding: 9px var(--s3);
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--ink);
+  min-height: 40px;
+}
+.addrow__input:focus { outline: none; border-color: var(--gold); }
+.addrow .act { background: var(--surface); }
+.addrow__hint {
+  flex-basis: 100%;
+  font-size: var(--fs-micro);
+  color: var(--gold-deep);
+  opacity: .75;
+}
+
+@media (max-width: 760px) {
+  .addrow__input { flex-basis: 100%; font-size: 16px; min-height: 44px; }
+  .addrow .act { flex: 1; min-height: 44px; }
+}
