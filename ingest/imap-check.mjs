@@ -67,9 +67,10 @@ try {
   const msg = String(e?.message ?? e);
   console.error(`\nFailed: ${msg}\n`);
   if (/AUTHENTICATIONFAILED/i.test(msg)) {
-    console.error('The app password is wrong, or IMAP is switched off for this mailbox.');
+    console.error('The app password is wrong, or has been revoked.');
     console.error('It does NOT mean the address is wrong.');
-    console.error('Gmail → Settings → Forwarding and POP/IMAP → enable IMAP.');
+    console.error('Since January 2025 IMAP is always on, so this is almost never');
+    console.error('a Gmail setting — create a fresh app password and try again.');
   } else if (/Application-specific password required/i.test(msg)) {
     console.error('That is the account password, not an app password.');
     console.error('Create one at myaccount.google.com/apppasswords (needs 2-Step Verification on).');
