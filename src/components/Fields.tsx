@@ -38,15 +38,20 @@ export function Empty({ text = 'Not set' }: { text?: string }) {
 /* ---- Single select ------------------------------------------
    Always live. The value is the trigger, so there is no mode to
    enter — you click the thing you want to change. */
-export function SelectField({ value, options, onChange, label, field }: {
+export function SelectField({ value, options, onChange, label, field, swatches }: {
   value?: string;
   options: readonly string[];
   onChange: (v: string | undefined) => void;
   label: string;
   /** Decides how the options are coloured. */
   field?: 'status' | 'importance' | 'attention' | 'plain';
+  /** An explicit colour per option, where the set has its own meaning
+      — decision power and communication style both change how you
+      approach somebody, so both are worth seeing at a glance. */
+  swatches?: Record<string, string>;
 }) {
   const opts: Option[] = options.map(o => {
+    if (swatches) return { value: o, color: swatches[o] };
     if (field === 'importance') return { value: o, tone: IMPORTANCE_TONE[o as keyof typeof IMPORTANCE_TONE] };
     if (field === 'attention') return { value: o, color: ATTENTION_COLOR[o as keyof typeof ATTENTION_COLOR] };
     if (field === 'status') return { value: o, tone: `st-${statusTone(o)}` };

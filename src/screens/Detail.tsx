@@ -23,7 +23,7 @@ import {
 } from '../components/primitives';
 import { EntityDetail } from './Spheres';
 import { annualLabel, daysUntilAnnual, untilLabel } from '../lib/dates';
-import { PROFILE, SCORE_MEANING, completeness } from '../lib/profile';
+import { DECISION_COLOR, PROFILE, SCORE_MEANING, STYLE_COLOR, completeness, sectionOf } from '../lib/profile';
 import type { ClientProfile } from '../types';
 import type { AnyCard, Commitment, Contact, LifeArea } from '../types';
 import './detail.css';
@@ -166,11 +166,24 @@ function ProfileBlock({ c }: { c: Contact }) {
   const set = (k: keyof ClientProfile, v: unknown) =>
     update(c.id, { profile: { ...p, [k]: v } } as never);
 
+  /* Clicking a gap takes you to it and opens it, rather than leaving
+     you to hunt down the page for the field it just named. */
+  const jump = (key: string) => {
+    const row = document.getElementById(`prof-${key}`);
+    if (!row) return;
+    row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    row.classList.add('frow--flash');
+    setTimeout(() => {
+      (row.querySelector('.fedit, .pick__trigger') as HTMLElement | null)?.click();
+      row.classList.remove('frow--flash');
+    }, 320);
+  };
+
   return (
     <>
       {/* Her document is called CLIENT PROFILE COMPLETION, so the
-          product measures exactly that — and names what is missing,
-          because a percentage on its own is not actionable. */}
+          product measures exactly that — and every gap is a button,
+          because naming a gap you cannot act on is just a scold. */}
       <section className="sec">
         <header className="sec__head">
           <h2 className="sec__title">
@@ -185,33 +198,61 @@ function ProfileBlock({ c }: { c: Contact }) {
           </div>
           <p className="pcomplete__n">{score.percent}% complete</p>
           {!!score.missing.length && (
-            <p className="pcomplete__missing">
-              <span className="pcomplete__mlabel">Still unknown</span>
-              {score.missing.map(f => f.label.toLowerCase()).join(' · ')}
-            </p>
+            <div className="pgaps">
+              <span className="pcomplete__mlabel">Still unknown — tap to fill</span>
+              <span className="pgaps__row">
+                {score.missing.map(f => {
+                  const sec = sectionOf(f.key);
+                  return (
+                    <button
+                      key={f.key}
+                      className="pgap"
+                      style={{ '--oc': sec?.color } as React.CSSProperties}
+                      onClick={() => jump(f.key)}
+                    >
+                      <span className="pgap__dot" aria-hidden="true" />
+                      {f.label.toLowerCase()}
+                    </button>
+                  );
+                })}
+              </span>
+            </div>
           )}
         </div>
       </section>
 
       {PROFILE.map(sec => (
-        <section className="sec" key={sec.key}>
-          <header className="sec__head">
-            <h2 className="sec__title">{sec.title}</h2>
+        <section className="psec" key={sec.key} style={{ '--oc': sec.color } as React.CSSProperties}>
+          <header className="psec__head">
+            <span className="psec__dot" aria-hidden="true" />
+            <h2 className="psec__h">{sec.title}</h2>
           </header>
           {sec.note && <p className="psec__note">{sec.note}</p>}
-          <div className="dgroup__body">
+
+          {/* Short fields sit two-up; only the long ones take a full
+              row. Twenty-five stacked rows was a form, not a record. */}
+          <div className="pgrid">
             {sec.fields.map(f => (
-              <FieldRow key={f.key} label={f.label}>
-                {f.type === 'select' ? (
-                  <SelectField label={f.label} value={p[f.key] as string}
-                    options={f.options ?? []} onChange={v => set(f.key, v)} />
-                ) : f.type === 'score' ? (
-                  <ScoreField value={p.strengthScore} onChange={v => set('strengthScore', v)} />
-                ) : (
-                  <TextField long={f.type === 'longtext'} value={p[f.key] as string}
-                    placeholder={f.hint} onChange={v => set(f.key, v)} />
-                )}
-              </FieldRow>
+              <div
+                key={f.key}
+                id={`prof-${f.key}`}
+                className={`frow frow--p ${f.type === 'longtext' ? 'frow--wide' : ''}`}
+              >
+                <div className="frow__label">{f.label}</div>
+                <div className="frow__value">
+                  {f.type === 'select' ? (
+                    <SelectField label={f.label} value={p[f.key] as string}
+                      options={f.options ?? []} onChange={v => set(f.key, v)}
+                      swatches={f.key === 'decisionPower' ? DECISION_COLOR
+                        : f.key === 'commStyle' ? STYLE_COLOR : undefined} />
+                  ) : f.type === 'score' ? (
+                    <ScoreField value={p.strengthScore} onChange={v => set('strengthScore', v)} />
+                  ) : (
+                    <TextField long={f.type === 'longtext'} value={p[f.key] as string}
+                      placeholder={f.hint} onChange={v => set(f.key, v)} />
+                  )}
+                </div>
+              </div>
             ))}
           </div>
         </section>

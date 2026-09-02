@@ -7,6 +7,7 @@ import { useMemo, useState } from 'react';
 import { useStore } from '../store';
 import { Card } from '../components/Card';
 import { daysFromToday, daysSince, todayLabel } from '../lib/dates';
+import { completeness } from '../lib/profile';
 import type { AnyCard, Commitment, Contact } from '../types';
 import './lists.css';
 
@@ -130,7 +131,22 @@ function attentionScore(c: Contact) {
   return ((since - c.cadenceDays) / c.cadenceDays) * STRENGTH_WEIGHT[c.strength];
 }
 
-type Sort = 'priority' | 'recent' | 'name' | 'strength';
+type Sort = 'priority' | 'recent' | 'name' | 'surname' | 'strength';
+
+/** Last token of the name. Handles "Hugh Ellery-Watts" correctly. */
+function surnameOf(name: string) {
+  const parts = name.trim().split(/\s+/);
+  return parts[parts.length - 1] ?? name;
+}
+
+/** The letter a contact files under, following whichever sort is on. */
+function initialOf(c: Contact, sort: Sort) {
+  const n = sort === 'surname' ? surnameOf(c.title) : c.title;
+  const ch = n.charAt(0).toUpperCase();
+  return /[A-Z]/.test(ch) ? ch : '#';
+}
+
+const ALPHABET = ['#', ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')];
 
 export function People({ go }: { go: (v: string, id?: string) => void }) {
   const { cards } = useStore();
@@ -182,11 +198,15 @@ export function People({ go }: { go: (v: string, id?: string) => void }) {
     if (sort === 'priority') sorted.sort((a, b) => attentionScore(b) - attentionScore(a));
     if (sort === 'recent') sorted.sort((a, b) => (daysSince(a.lastInteraction) ?? 0) - (daysSince(b.lastInteraction) ?? 0));
     if (sort === 'name') sorted.sort((a, b) => a.title.localeCompare(b.title));
+    if (sort === 'surname') sorted.sort((a, b) =>
+      surnameOf(a.title).localeCompare(surnameOf(b.title)) || a.title.localeCompare(b.title));
     if (sort === 'strength') sorted.sort((a, b) =>
       STRENGTH_WEIGHT[b.strength] - STRENGTH_WEIGHT[a.strength] || a.title.localeCompare(b.title));
     return sorted;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab, q, city, sort, all]);
+
+  const alphabetical = sort === 'name' || sort === 'surname';
 
   return (
     <Page
@@ -225,7 +245,7 @@ export function People({ go }: { go: (v: string, id?: string) => void }) {
         <span className="controls__label">Sort</span>
         {([
           ['priority', 'Who needs you'], ['recent', 'Last contact'],
-          ['name', 'Name'], ['strength', 'Closeness'],
+          ['name', 'First name'], ['surname', 'Surname'], ['strength', 'Closeness'],
         ] as const).map(([k, label]) => (
           <button
             key={k}
@@ -247,8 +267,60 @@ export function People({ go }: { go: (v: string, id?: string) => void }) {
         <span className="controls__count tnum">{shown.length}</span>
       </div>
 
-      <List items={shown} go={go} />
+      {alphabetical ? <AlphaList items={shown} sort={sort} go={go} /> : <List items={shown} go={go} />}
     </Page>
+  );
+}
+
+/* ---- A–Z ----------------------------------------------------
+   Forty contacts is past the point where scrolling is navigation.
+   Letters with nobody behind them stay visible but inert, because
+   a jumping strip is harder to hit than a static one.           */
+function AlphaList({ items, sort, go }: {
+  items: Contact[]; sort: Sort; go: (v: string, id?: string) => void;
+}) {
+  const groups = new Map<string, Contact[]>();
+  for (const c of items) {
+    const k = initialOf(c, sort);
+    if (!groups.has(k)) groups.set(k, []);
+    groups.get(k)!.push(c);
+  }
+
+  const jump = (letter: string) =>
+    document.getElementById(`alpha-${letter}`)
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  if (!items.length) return <p className="empty">Nobody matches that.</p>;
+
+  return (
+    <>
+      <div className="alpha" role="navigation" aria-label="Jump to letter">
+        {ALPHABET.map(l => (
+          <button
+            key={l}
+            className={`alpha__l ${groups.has(l) ? '' : 'alpha__l--none'}`}
+            onClick={() => groups.has(l) && jump(l)}
+            disabled={!groups.has(l)}
+            aria-label={groups.has(l) ? `Jump to ${l}` : `No contacts under ${l}`}
+          >{l}</button>
+        ))}
+      </div>
+
+      {[...groups.entries()].map(([letter, list]) => (
+        <section className="alphagroup" key={letter} id={`alpha-${letter}`}>
+          <div className="alphagroup__head">
+            <span className="alphagroup__l">{letter}</span>
+            <span className="alphagroup__rule" />
+            <span className="alphagroup__n">{list.length}</span>
+          </div>
+          <ul className="list list-dense">
+            {list.map(c => (
+              <li key={c.id}><Card card={c} onOpen={id => go('detail', id)} /></li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </>
   );
 }
 

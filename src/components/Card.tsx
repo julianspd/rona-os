@@ -19,6 +19,7 @@ import {
 } from './primitives';
 import type { Action } from './primitives';
 import { useStore } from '../store';
+import { completeness } from '../lib/profile';
 
 /* ---- Base -------------------------------------------------- */
 export function AttentionCard({
@@ -169,7 +170,20 @@ export function ContactCard({ c, onOpen }: { c: Contact; onOpen?: (id: string) =
         </span>
         <LocalTime city={c.city} timezone={c.timezone} />
       </>}
-      right={c.flags.map(f => <FlagBadge key={f} flag={f} />)}
+      right={<>
+        {/* A key account with a thin profile is the gap worth seeing
+            from the list, rather than only after opening the record. */}
+        {c.keyAccount && (() => {
+          const s = completeness(c);
+          return (
+            <span className={`kmini ${s.percent < 50 ? 'kmini--thin' : ''}`}
+              title={`Profile ${s.percent}% complete`}>
+              <span className="kmini__dot" aria-hidden="true" />{s.percent}%
+            </span>
+          );
+        })()}
+        {c.flags.map(f => <FlagBadge key={f} flag={f} />)}
+      </>}
       actions={[{ label: 'Logged today', onClick: () => logInteraction(c.id), primary: overdue }]}
     />
   );

@@ -259,3 +259,64 @@
   .channels { flex-direction: column; align-items: flex-start; }
   .channels__note { margin-left: 0; }
 }
+
+/* ============================================================
+   A–Z
+   ============================================================ */
+.alpha {
+  display: flex; flex-wrap: wrap; gap: 2px;
+  padding: var(--s2) 0 var(--s4);
+  margin-bottom: var(--s2);
+  border-bottom: var(--hairline);
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 20;
+}
+
+.alpha__l {
+  min-width: 26px; height: 30px;
+  border-radius: var(--r-sm);
+  font-size: var(--fs-action);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-2);
+  transition: background var(--t), color var(--t);
+}
+.alpha__l:hover:not(:disabled) { background: var(--gold-surface); color: var(--gold-deep); }
+
+/* Empty letters stay in place rather than disappearing — a strip
+   that reflows as you filter is harder to hit than a static one. */
+.alpha__l--none { color: var(--ink-4); cursor: default; }
+
+.alphagroup { margin-bottom: var(--s5); scroll-margin-top: 52px; }
+
+.alphagroup__head {
+  display: flex; align-items: center; gap: var(--s3);
+  margin-bottom: var(--s2);
+}
+.alphagroup__l {
+  font-family: var(--font-serif);
+  font-size: var(--fs-serif-sm);
+  color: var(--gold-deep);
+  line-height: 1;
+  min-width: 16px;
+}
+.alphagroup__rule { flex: 1; height: 1px; background: var(--border); }
+.alphagroup__n { font-size: var(--fs-micro); color: var(--ink-4); font-variant-numeric: tabular-nums; }
+
+/* ---- Completeness, from the list ---------------------------- */
+.kmini {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: var(--fs-micro);
+  color: var(--gold-deep);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.kmini__dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
+.kmini--thin { color: var(--u-overdue-fg); }
+.kmini--thin .kmini__dot { background: var(--u-overdue-fg); }
+
+@media (max-width: 760px) {
+  .alpha { gap: 1px; padding-bottom: var(--s3); }
+  .alpha__l { min-width: 0; flex: 1; height: 34px; }
+}

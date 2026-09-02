@@ -30,6 +30,9 @@ export interface ProfileField {
 export interface ProfileSection {
   key: string;
   title: string;
+  /** Same muted family as life areas, so the two sit together. */
+  color: string;
+  /** Short fields sit two-up; long ones take the full width. */
   /** Her own annotation, kept because it explains why the section exists. */
   note?: string;
   fields: ProfileField[];
@@ -37,7 +40,7 @@ export interface ProfileSection {
 
 export const PROFILE: ProfileSection[] = [
   {
-    key: 'core', title: 'Core',
+    key: 'core', title: 'Core', color: '#5B6B8A',
     fields: [
       { key: 'team', label: 'Team / division', type: 'text', scored: true },
       { key: 'decisionPower', label: 'Decision power', type: 'select', scored: true,
@@ -49,7 +52,7 @@ export const PROFILE: ProfileSection[] = [
     ],
   },
   {
-    key: 'personal', title: 'Personal context',
+    key: 'personal', title: 'Personal context', color: '#8A5A62',
     note: 'This is where deals are actually unlocked.',
     fields: [
       { key: 'hometown', label: 'Hometown / background', type: 'text', scored: true },
@@ -61,7 +64,7 @@ export const PROFILE: ProfileSection[] = [
     ],
   },
   {
-    key: 'values', title: 'Cultural & values signals',
+    key: 'values', title: 'Cultural & values signals', color: '#6A7A46',
     note: 'Drives gifting, invitations, partnership ideas, and the timing of an ask.',
     fields: [
       { key: 'causes', label: 'Nonprofits / causes', type: 'longtext', scored: true },
@@ -71,7 +74,7 @@ export const PROFILE: ProfileSection[] = [
     ],
   },
   {
-    key: 'motivators', title: 'Professional motivators',
+    key: 'motivators', title: 'Professional motivators', color: '#5A5B8C',
     fields: [
       { key: 'successLooksLike', label: 'What success looks like for them', type: 'longtext', scored: true },
       { key: 'pressures', label: 'Current pressures', type: 'longtext', scored: true,
@@ -81,7 +84,7 @@ export const PROFILE: ProfileSection[] = [
     ],
   },
   {
-    key: 'status', title: 'Relationship status',
+    key: 'status', title: 'Relationship status', color: '#3F7A6E',
     fields: [
       { key: 'strengthScore', label: 'Strength (1–5)', type: 'score', scored: true },
       { key: 'relationshipOwner', label: 'Who owns it internally', type: 'text' },
@@ -89,7 +92,7 @@ export const PROFILE: ProfileSection[] = [
     ],
   },
   {
-    key: 'strategic', title: 'Strategic opportunities',
+    key: 'strategic', title: 'Strategic opportunities', color: '#7A6248',
     fields: [
       { key: 'trustedWith', label: 'Where we already have trust', type: 'longtext', scored: true },
       { key: 'adjacentTeams', label: 'Adjacent teams to meet', type: 'text', scored: true },
@@ -123,6 +126,26 @@ export function completeness(c: Contact): Completeness {
     missing,
   };
 }
+
+/** Which section a field belongs to — so a gap can be coloured by
+    the part of the picture it is missing from. */
+export function sectionOf(key: string): ProfileSection | undefined {
+  return PROFILE.find(s => s.fields.some(f => f.key === key));
+}
+
+/* Decision power and communication style are the two option sets
+   worth colouring: both change how you approach somebody. */
+export const DECISION_COLOR: Record<string, string> = {
+  'Decision Maker': '#8A5A62',
+  'Influencer': '#5A5B8C',
+  'Champion': '#3F7A6E',
+};
+
+export const STYLE_COLOR: Record<string, string> = {
+  'Direct': '#8A6A52',
+  'Collaborative': '#3F7A6E',
+  'Vision-led': '#5A5B8C',
+};
 
 /** Her five-point score, mapped onto the tiers that drive cadence. */
 export const SCORE_MEANING: Record<number, string> = {

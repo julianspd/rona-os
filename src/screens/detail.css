@@ -212,3 +212,71 @@
   .score__dot { width: 40px; height: 40px; }
   .score__meaning { flex-basis: 100%; }
 }
+
+/* ============================================================
+   Profile — compact, coloured, quick to fill
+   ============================================================ */
+
+.psec { margin-bottom: var(--s6); }
+
+.psec__head {
+  display: flex; align-items: center; gap: var(--s2);
+  padding-bottom: var(--s2);
+  margin-bottom: var(--s3);
+  border-bottom: 1px solid var(--border);
+}
+/* The section's hue lives in the dot; the heading stays ink, so six
+   sections read as one document rather than six posters. */
+.psec__dot { width: 7px; height: 7px; border-radius: 50%; background: var(--oc); flex: none; }
+.psec__h {
+  font-size: var(--fs-meta);
+  font-weight: var(--w-semi);
+  color: var(--ink);
+}
+
+/* Short fields two-up, long ones full width. Twenty-five stacked
+   rows was a form; this is a record you can take in. */
+.pgrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 var(--s5);
+  background: var(--surface);
+  border: var(--hairline);
+  border-radius: var(--r);
+  padding: var(--s2) var(--s4);
+}
+.frow--wide { grid-column: 1 / -1; }
+
+.frow--p {
+  display: block;
+  padding: var(--s3) 0;
+  border-bottom: 1px solid var(--border);
+}
+.frow--p .frow__label { padding-top: 0; margin-bottom: 3px; }
+
+/* Briefly marks the field a gap-chip just sent you to */
+.frow--flash { background: var(--gold-surface); border-radius: var(--r-sm); }
+
+/* ---- Gaps you can act on ------------------------------------ */
+.pgaps { margin-top: var(--s3); }
+.pgaps__row { display: flex; flex-wrap: wrap; gap: var(--s1); margin-top: var(--s2); }
+
+.pgap {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: var(--fs-action);
+  color: var(--ink-2);
+  background: var(--surface);
+  border: 1px dashed var(--border-2);
+  border-radius: var(--r-pill);
+  padding: 4px 11px 4px 9px;
+  min-height: 30px;
+  transition: border-color var(--t), color var(--t), background var(--t);
+}
+.pgap:hover { border-style: solid; border-color: var(--oc); color: var(--oc); background: var(--surface); }
+.pgap__dot { width: 6px; height: 6px; border-radius: 50%; background: var(--oc); opacity: .45; flex: none; }
+.pgap:hover .pgap__dot { opacity: 1; }
+
+@media (max-width: 760px) {
+  .pgrid { grid-template-columns: 1fr; padding: 0 var(--s4); }
+  .pgap { min-height: 38px; }
+}
