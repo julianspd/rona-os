@@ -14,8 +14,9 @@ import { useState } from 'react';
 import { useStore } from '../store';
 import { Card } from '../components/Card';
 import {
-  AreaField, DateField, FieldRow, SelectField, TagField, TextField,
+  AreaField, DateField, Empty, FieldRow, SelectField, TagField, TextField,
 } from '../components/Fields';
+import { Picker } from '../components/Picker';
 import { GROUPS, fieldsFor } from '../lib/fields';
 import type { FieldSpec } from '../lib/fields';
 import {
@@ -150,6 +151,18 @@ export function Detail({ id, go }: { id: string; go: Go }) {
         <button className="act act--primary" onClick={() => complete(c.id)}>Mark done</button>
         <button className="act" onClick={() => archive(c.id)}>Drop it</button>
       </div>
+    </div>
+  );
+}
+
+/** One field. Same shape reading or editing, like everywhere else. */
+function Row({ label, children, wide }: {
+  label: string; children: React.ReactNode; wide?: boolean;
+}) {
+  return (
+    <div className={`frow frow--p ${wide ? 'frow--wide' : ''}`}>
+      <div className="frow__label">{label}</div>
+      <div className="frow__value">{children}</div>
     </div>
   );
 }
@@ -318,16 +331,32 @@ function ScoreField({ value, onChange }: {
 
 /* ---- Contacts keep their own shape --------------------------- */
 function ContactDetail({ c, go }: { c: Contact; go: Go }) {
-  const { cards, logInteraction } = useStore();
+  const { cards, logInteraction, update } = useStore();
+  const [renaming, setRenaming] = useState(false);
   const theirs = cards.filter(x =>
     x.kind === 'commitment' && (x as Commitment).personId === c.id);
+
+  const set = (k: keyof Contact, v: unknown) => update(c.id, { [k]: v } as never);
 
   return (
     <div className="page detail2">
       <header className="dhead">
         <button className="crumb" onClick={() => go('people')}>← People</button>
         <div className="dhead__top">
-          <h1 className="dhead__title">{c.title}</h1>
+          {renaming ? (
+            <input
+              className="dhead__title dhead__title--edit"
+              autoFocus
+              value={c.title}
+              onBlur={() => setRenaming(false)}
+              onKeyDown={e => e.key === 'Enter' && setRenaming(false)}
+              onChange={e => set('title', e.target.value)}
+            />
+          ) : (
+            <h1 className="dhead__title dhead__title--btn" onClick={() => setRenaming(true)}>
+              {c.title}
+            </h1>
+          )}
           <button className="act act--primary" onClick={() => logInteraction(c.id)}>
             Logged today
           </button>
@@ -341,31 +370,92 @@ function ContactDetail({ c, go }: { c: Contact; go: Go }) {
         </div>
       </header>
 
-      <section className="dgroup">
-        <h2 className="dgroup__h">Context</h2>
-        <div className="dgroup__body">
-          {c.howWeMet && <FieldRow label="How we met"><span className="fval">{c.howWeMet}</span></FieldRow>}
-          {c.theyCareAbout && <FieldRow label="Cares about"><span className="fval">{c.theyCareAbout}</span></FieldRow>}
-          {c.workingOn && <FieldRow label="Working on"><span className="fval">{c.workingOn}</span></FieldRow>}
-          {c.waysICanHelp && <FieldRow label="I can help with"><span className="fval">{c.waysICanHelp}</span></FieldRow>}
-          {c.giftIdeas && <FieldRow label="Gift ideas"><span className="fval">{c.giftIdeas}</span></FieldRow>}
-          <FieldRow label="Cadence"><span className="fval">Every {c.cadenceDays} days</span></FieldRow>
-          {(c.importantDates ?? []).map(d => (
-            <FieldRow key={d.label} label={d.label}>
-              <span className="fval">{annualLabel(d.date)} · {untilLabel(daysUntilAnnual(d.date))}</span>
-            </FieldRow>
-          ))}
+      {/* Everything here is editable, and empty rows still show. A
+          field you cannot see is a field that never gets filled —
+          which is how "how we met" stayed blank on half the list. */}
+      <section className="psec" style={{ '--oc': '#5B6B8A' } as React.CSSProperties}>
+        <header className="psec__head">
+          <span className="psec__dot" aria-hidden="true" />
+          <h2 className="psec__h">Who they are</h2>
+        </header>
+        <div className="pgrid">
+          <Row label="Role"><TextField value={c.role} onChange={v => set('role', v)} /></Row>
+          <Row label="Organisation"><TextField value={c.organization} onChange={v => set('organization', v)} /></Row>
+          <Row label="City"><TextField value={c.city} onChange={v => set('city', v)} placeholder="Sets their local time" /></Row>
+          <Row label="Closeness">
+            <SelectField label="Closeness" value={c.strength}
+              options={['Inner Circle', 'Active', 'Warm', 'New', 'Dormant']}
+              onChange={v => set('strength', v)} />
+          </Row>
+          <Row label="Check in every">
+            <SelectField label="Cadence" value={String(c.cadenceDays)}
+              options={['14', '30', '60', '90', '180', '365']}
+              onChange={v => set('cadenceDays', Number(v) || 90)} />
+          </Row>
         </div>
       </section>
 
-      {!!c.channels?.length && (
-        <div className="channels">
-          <span className="channels__label">Reaches them by</span>
-          {c.channels.map(ch => (
-            <button key={ch} className="channel" disabled title="Not connected in this demo">{ch}</button>
-          ))}
-          <span className="channels__note">Not connected yet</span>
+      <section className="psec" style={{ '--oc': '#8A5A62' } as React.CSSProperties}>
+        <header className="psec__head">
+          <span className="psec__dot" aria-hidden="true" />
+          <h2 className="psec__h">What you know</h2>
+        </header>
+        <div className="pgrid">
+          <Row label="How we met" wide><TextField long value={c.howWeMet} onChange={v => set('howWeMet', v)} /></Row>
+          <Row label="Cares about" wide><TextField long value={c.theyCareAbout} onChange={v => set('theyCareAbout', v)} /></Row>
+          <Row label="Working on" wide><TextField long value={c.workingOn} onChange={v => set('workingOn', v)} /></Row>
+          <Row label="I can help with" wide><TextField long value={c.waysICanHelp} onChange={v => set('waysICanHelp', v)} /></Row>
+          <Row label="Gift ideas" wide>
+            <TextField long value={c.giftIdeas} onChange={v => set('giftIdeas', v)}
+              placeholder="Remembering the date is the easy half" />
+          </Row>
         </div>
+      </section>
+
+      <section className="psec" style={{ '--oc': '#3F7A6E' } as React.CSSProperties}>
+        <header className="psec__head">
+          <span className="psec__dot" aria-hidden="true" />
+          <h2 className="psec__h">How you reach them</h2>
+        </header>
+        <div className="pgrid">
+          <Row label="Channels" wide>
+            <Picker
+              label="Channels"
+              multi
+              options={['Gmail', 'Slack', 'WhatsApp', 'iMessage', 'Zoom', 'Google Meet'].map(v => ({ value: v }))}
+              selected={c.channels ?? []}
+              onSelect={v => {
+                const cur = c.channels ?? [];
+                set('channels', cur.includes(v as never)
+                  ? cur.filter(x => x !== v) : [...cur, v]);
+              }}
+              trigger={c.channels?.length
+                ? <span className="areas">{c.channels.map(ch => <span key={ch} className="ftag">{ch}</span>)}</span>
+                : <Empty />}
+            />
+          </Row>
+          {!!c.channels?.length && (
+            <Row label="" wide>
+              <span className="channels__note">Not connected yet — shown as intent</span>
+            </Row>
+          )}
+        </div>
+      </section>
+
+      {!!(c.importantDates ?? []).length && (
+        <section className="psec" style={{ '--oc': '#7A6248' } as React.CSSProperties}>
+          <header className="psec__head">
+            <span className="psec__dot" aria-hidden="true" />
+            <h2 className="psec__h">Dates that come round</h2>
+          </header>
+          <div className="pgrid">
+            {(c.importantDates ?? []).map(d => (
+              <Row key={d.label} label={d.label}>
+                <span className="fval">{annualLabel(d.date)} · {untilLabel(daysUntilAnnual(d.date))}</span>
+              </Row>
+            ))}
+          </div>
+        </section>
       )}
 
       <ProfileBlock c={c} />
